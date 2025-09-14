@@ -14,22 +14,32 @@ interface LatLng {
   lng: number;
 }
 
-interface Location {
-  position: LatLng;
-  id?: string;
+export interface Location {
+  id?: string;           // <- note: string
+  name?: string;
+  position: { lat: number; lng: number };
+  [key: string]: any;
+}
+
+
+interface Office {
+  id: number;
+  name: string;
+  lat: number;
+  lng: number;
 }
 
 interface MapComponentProps {
   mapCenter: LatLng;
   selectedLocation?: Location;
   officeLocations?: any[]; // Ideally, type this properly if you know office shape
-  transformOfficeData?: (office: any) => Location;
+  transformOfficeData?: (office: Office) => Location;
   handleCardClick?: (location: Location) => void;
   searchCoordinates?: LatLng;
-  pickupLat?:  string;
-  pickupLng?:  string;
+  pickupLat?: string;
+  pickupLng?: string;
   dropLat?: string;
-  dropLng?:  string;
+  dropLng?: string;
 }
 
 export default function MapComponent({

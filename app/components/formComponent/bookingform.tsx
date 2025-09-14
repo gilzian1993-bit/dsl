@@ -7,8 +7,38 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import Calendar from "../../../components/ui/calendar";
 import { format } from "date-fns";
 import TimePicker from "../time-picker";
+import { Dispatch, SetStateAction } from "react";
 
-export default function BookingForm(props: any) {
+interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+interface BookingFormProps {
+  tripType: string;
+  setTripType: Dispatch<SetStateAction<string>>;
+  pickupDate: Date | null;
+  setPickupDate: Dispatch<SetStateAction<Date | null>>;
+  pickupLocation: string;
+  setPickupLocation: Dispatch<SetStateAction<string>>;
+  dropLocation: string;
+  setDropLocation: Dispatch<SetStateAction<string>>;
+  pickupCoords: LatLng | null;
+  setPickupCoords: Dispatch<SetStateAction<LatLng | null>>;
+  dropCoords: LatLng | null;
+  setDropCoords: Dispatch<SetStateAction<LatLng | null>>;
+  selectedTime: string;
+  setSelectedTime: Dispatch<SetStateAction<string>>;
+  selectedDate: Date | null;
+  setSelectedDate: Dispatch<SetStateAction<Date | null>>;
+  isTimePickerOpen: boolean;
+  setIsTimePickerOpen: Dispatch<SetStateAction<boolean>>;
+  hours: number;
+  setHours: Dispatch<SetStateAction<number>>;
+  handleBookNow: () => void;
+  loading: boolean;
+}
+export default function BookingForm(props: BookingFormProps) {
   const {
     tripType,
     setTripType,
@@ -41,6 +71,7 @@ export default function BookingForm(props: any) {
 
   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
   const dropRef = useRef<google.maps.places.Autocomplete | null>(null);
+  // const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined);
 
   const libraries: Libraries = ["places"];
   const { isLoaded } = useLoadScript({
@@ -94,8 +125,8 @@ export default function BookingForm(props: any) {
             key={type}
             onClick={() => setTripType(type)}
             className={`px-6 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-200 ${tripType === type
-                ? "bg-white text-gray-900 shadow"
-                : "text-white hover:bg-gray-700"
+              ? "bg-white text-gray-900 shadow"
+              : "text-white hover:bg-gray-700"
               }`}
           >
             {type === "pointToPoint" ? "Point-to-Point" : "Hourly Rate"}
@@ -227,13 +258,14 @@ export default function BookingForm(props: any) {
             <PopoverContent className="w-auto p-0 z-[9999]">
               <Calendar
                 mode="single"
-                selected={pickupDate}
+                selected={pickupDate ?? undefined} // convert null → undefined
                 onSelect={(date: Date | undefined) => {
-                  setPickupDate(date);
+                  setPickupDate(date ?? null);    // keep null in state
                   setIsCalendarOpen(false);
                 }}
-                initialFocus
               />
+
+
             </PopoverContent>
           </Popover>
           {errors.pickupDate && (
@@ -259,7 +291,7 @@ export default function BookingForm(props: any) {
             <PopoverContent side="top" align="center" className="w-auto p-0 z-[9999]">
               <div className="bg-white rounded-md shadow-lg p-4">
                 <TimePicker
-                
+
                   selectedTime={selectedTime}
                   onTimeSelect={handleTimeSelect}
                   onClose={() => setIsTimePickerOpen(false)}

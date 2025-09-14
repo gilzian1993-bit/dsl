@@ -6,7 +6,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react"
-import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
+import { DayButton, DayPicker, DayPickerProps, getDefaultClassNames } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -15,7 +15,7 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
- captionLayout = "label",
+  captionLayout = "label",
 
   buttonVariant = "ghost",
   formatters,
@@ -217,7 +217,7 @@ function CalendarDayButton({
   )
 }
 
-export default function CalendarWithActions(props: any) {
+export default function CalendarWithActions(props: DayPickerProps) {
   return (
     <div className="inline-block bg-white rounded-md shadow-md">
       <Calendar {...props} />

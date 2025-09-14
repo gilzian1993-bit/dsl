@@ -19,7 +19,21 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import MapComponent from "./GoogleMap";
+import type { Location } from './GoogleMap';
+
 // import MapComponent from "./GoogleMap";
+interface Office {
+    id: number;
+    name: string;
+    lat: number;
+    lng: number;
+}
+
+interface LatLng {
+    lat: number;
+    lng: number;
+}
+
 
 interface VehicleOption {
     id: number;
@@ -191,7 +205,7 @@ export default function VehicleSelection({ onNext, step }: { onNext: (vehicle: V
     const dropLng = Number(searchParams.get("dropLng") || "0");
     const mapCenter = pickupLat && pickupLng ? { lat: pickupLat, lng: pickupLng } : { lat: 34.0522, lng: -118.2437 }; // Default to LA
     const router = useRouter();
-    let price = 0;
+
     function calculatePrice(vehicle: VehicleOption, distance: number, hours: number, tripType: string): number {
         let price = 0;
 
@@ -286,18 +300,20 @@ export default function VehicleSelection({ onNext, step }: { onNext: (vehicle: V
                         <div className="mb-6">
                             <div className="w-full  shadow-md bg-white overflow-hidden rounded-lg">
                                 {/* Google Maps Embed showing route from pickup to drop location */}
+
+
                                 <MapComponent
                                     mapCenter={mapCenter}
-                                   selectedLocation={undefined}
+                                    selectedLocation={undefined}
                                     officeLocations={[]}
-                                    transformOfficeData={(office: any) => office}
-                                    handleCardClick={(location: any) => console.log(location)}
-                                    // searchCoordinates={null}
+                                    // transformOfficeData={(office: Office) => office}
+                                    handleCardClick={(location: Location) => console.log(location)}
                                     pickupLat={pickupLat.toString()}
                                     pickupLng={pickupLng.toString()}
                                     dropLat={dropLat.toString()}
                                     dropLng={dropLng.toString()}
                                 />
+
 
 
                             </div>

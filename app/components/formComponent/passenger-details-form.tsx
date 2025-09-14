@@ -376,7 +376,8 @@ export default function PassengerDetailsForm({
             {activeToggle === "meetGreetYes" && (
                 <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mt-2 mb-5">
                     <p className="text-gray-600 text-md">
-                        We'll arrange a personal assistant to meet you at the airport.
+                        We&apos;ll arrange a personal assistant to meet you at the airport.
+
                     </p>
                     <p className="text-gray-800 font-medium mt-2">
                         Note: An additional $25 will be added to your total price.
