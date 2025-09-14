@@ -13,6 +13,14 @@ interface LatLng {
   lat: number;
   lng: number;
 }
+interface FormErrors {
+  pickupLocation?: string;
+  dropLocation?: string;
+  pickupDate?: string;
+  selectedTime?: string;
+  hours?: string;
+}
+
 
 interface BookingFormProps {
   tripType: string;
@@ -67,7 +75,7 @@ export default function BookingForm(props: BookingFormProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
   const dropRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -92,7 +100,7 @@ export default function BookingForm(props: BookingFormProps) {
 
   // ✅ Validate fields before booking
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: FormErrors = {};
 
     if (!pickupLocation) newErrors.pickupLocation = "Pickup location is required";
     if (!pickupDate) newErrors.pickupDate = "Date is required";

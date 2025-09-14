@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   GoogleMap,
@@ -7,32 +9,35 @@ import {
   DirectionsRenderer,
 } from "@react-google-maps/api";
 
-const API_KEY = "YOUR_API_KEY_HERE"; // replace with secured key
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY_HERE";
 
-interface LatLng {
+// LatLng type for positions
+export interface LatLng {
   lat: number;
   lng: number;
 }
 
+// Generic location type for markers
 export interface Location {
-  id?: string;           // <- note: string
+  id: string;
   name?: string;
-  position: { lat: number; lng: number };
-  [key: string]: any;
+  position: LatLng;
 }
 
-
-interface Office {
+// Office type from backend or static data
+export interface Office {
   id: number;
   name: string;
   lat: number;
   lng: number;
+ 
 }
 
+// Props for the map component
 interface MapComponentProps {
   mapCenter: LatLng;
   selectedLocation?: Location;
-  officeLocations?: any[]; // Ideally, type this properly if you know office shape
+  officeLocations?: Office[];
   transformOfficeData?: (office: Office) => Location;
   handleCardClick?: (location: Location) => void;
   searchCoordinates?: LatLng;
@@ -57,6 +62,15 @@ export default function MapComponent({
   const [directionsResponse, setDirectionsResponse] =
     useState<google.maps.DirectionsResult | null>(null);
 
+  // Parse string coordinates to LatLng
+  const parseLatLng = (lat?: string, lng?: string): LatLng | undefined => {
+    if (!lat || !lng) return undefined;
+    return { lat: parseFloat(lat), lng: parseFloat(lng) };
+  };
+
+  const pickupPosition = parseLatLng(pickupLat, pickupLng);
+  const dropPosition = parseLatLng(dropLat, dropLng);
+
   return (
     <LoadScript googleMapsApiKey={API_KEY}>
       <GoogleMap
@@ -73,20 +87,16 @@ export default function MapComponent({
           mapTypeControl: false,
         }}
       >
-        {pickupLat && pickupLng && dropLat && dropLng && (
+        {/* Directions */}
+        {pickupPosition && dropPosition && (
           <DirectionsService
             options={{
-              origin: { lat: parseFloat(pickupLat), lng: parseFloat(pickupLng) },
-              destination: {
-                lat: parseFloat(dropLat),
-                lng: parseFloat(dropLng),
-              },
-              travelMode: "DRIVING" as google.maps.TravelMode
+              origin: pickupPosition,
+              destination: dropPosition,
+              travelMode: "DRIVING" as google.maps.TravelMode,
             }}
             callback={(result, status) => {
-              if (status === "OK" && result) {
-                setDirectionsResponse(result);
-              }
+              if (status === "OK" && result) setDirectionsResponse(result);
             }}
           />
         )}
@@ -101,22 +111,25 @@ export default function MapComponent({
           />
         )}
 
-        {pickupLat && pickupLng && (
+        {/* Pickup marker */}
+        {pickupPosition && (
           <Marker
-            position={{ lat: parseFloat(pickupLat.toString()), lng: parseFloat(pickupLng.toString()) }}
+            position={pickupPosition}
             label={{ text: "A", color: "white", fontWeight: "bold" }}
             icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
           />
         )}
 
-        {dropLat && dropLng && (
+        {/* Drop marker */}
+        {dropPosition && (
           <Marker
-            position={{ lat: parseFloat(dropLat.toString()), lng: parseFloat(dropLng.toString()) }}
+            position={dropPosition}
             label={{ text: "B", color: "white", fontWeight: "bold" }}
             icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
           />
         )}
 
+        {/* Center marker */}
         {mapCenter && (
           <Marker
             position={mapCenter}
@@ -130,25 +143,29 @@ export default function MapComponent({
           />
         )}
 
-        {selectedLocation ? (
+        {/* Selected location marker */}
+        {selectedLocation && (
           <Marker
             position={selectedLocation.position}
             icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
           />
-        ) : (
-          officeLocations.map((office) => {
-            const location = transformOfficeData?.(office);
-            return location ? (
-              <Marker
-                key={location.id}
-                position={location.position}
-                onClick={() => handleCardClick?.(location)}
-                icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }}
-              />
-            ) : null;
-          })
         )}
 
+        {/* Office locations */}
+        {officeLocations.map((office) => {
+          const location = transformOfficeData?.(office);
+          if (!location) return null;
+          return (
+            <Marker
+              key={location.id}
+              position={location.position}
+              onClick={() => handleCardClick?.(location)}
+              icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }}
+            />
+          );
+        })}
+
+        {/* Search marker */}
         {searchCoordinates && (
           <Marker
             position={searchCoordinates}
