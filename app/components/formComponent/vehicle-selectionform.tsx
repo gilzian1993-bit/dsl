@@ -19,6 +19,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import MapComponent from "./GoogleMap";
+// import MapComponent from "./GoogleMap";
 
 interface VehicleOption {
     id: number;
@@ -287,16 +288,17 @@ export default function VehicleSelection({ onNext, step }: { onNext: (vehicle: V
                                 {/* Google Maps Embed showing route from pickup to drop location */}
                                 <MapComponent
                                     mapCenter={mapCenter}
-                                    selectedLocation={null} // pass if any
-                                    officeLocations={[]}    // pass your office locations array
-                                    transformOfficeData={(office: any) => office} // pass your transform function
-                                    handleCardClick={(location: any) => console.log(location)} // replace with your handler
-                                    searchCoordinates={null} // pass if needed
-                                    pickupLat={pickupLat}
-                                    pickupLng={pickupLng}
-                                    dropLat={dropLat}
-                                    dropLng={dropLng}
+                                   selectedLocation={undefined}
+                                    officeLocations={[]}
+                                    transformOfficeData={(office: any) => office}
+                                    handleCardClick={(location: any) => console.log(location)}
+                                    // searchCoordinates={null}
+                                    pickupLat={pickupLat.toString()}
+                                    pickupLng={pickupLng.toString()}
+                                    dropLat={dropLat.toString()}
+                                    dropLng={dropLng.toString()}
                                 />
+
 
                             </div>
                         </div>
@@ -500,7 +502,7 @@ export default function VehicleSelection({ onNext, step }: { onNext: (vehicle: V
 
                                         {/* Price (centered) */}
                                         <div className="text-xl font-bold text-gray-900  text-center">
-                                             ${calculatePrice(current, distance, hours, tripType).toFixed(2)}
+                                            ${calculatePrice(current, distance, hours, tripType).toFixed(2)}
 
 
                                         </div>
@@ -630,7 +632,7 @@ export default function VehicleSelection({ onNext, step }: { onNext: (vehicle: V
 
 
                                         <div className="text-gray-900 font-bold text-xl mt-4">
-                                             ${calculatePrice(current, distance, hours, tripType).toFixed(2)}
+                                            ${calculatePrice(current, distance, hours, tripType).toFixed(2)}
 
 
 

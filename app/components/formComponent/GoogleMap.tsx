@@ -7,12 +7,35 @@ import {
   DirectionsRenderer,
 } from "@react-google-maps/api";
 
-const API_KEY = "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU"; // Replace with your secured API key if needed
+const API_KEY = "YOUR_API_KEY_HERE"; // replace with secured key
+
+interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+interface Location {
+  position: LatLng;
+  id?: string;
+}
+
+interface MapComponentProps {
+  mapCenter: LatLng;
+  selectedLocation?: Location;
+  officeLocations?: any[]; // Ideally, type this properly if you know office shape
+  transformOfficeData?: (office: any) => Location;
+  handleCardClick?: (location: Location) => void;
+  searchCoordinates?: LatLng;
+  pickupLat?:  string;
+  pickupLng?:  string;
+  dropLat?: string;
+  dropLng?:  string;
+}
 
 export default function MapComponent({
   mapCenter,
   selectedLocation,
-  officeLocations,
+  officeLocations = [],
   transformOfficeData,
   handleCardClick,
   searchCoordinates,
@@ -20,7 +43,7 @@ export default function MapComponent({
   pickupLng,
   dropLat,
   dropLng,
-}: any) {
+}: MapComponentProps) {
   const [directionsResponse, setDirectionsResponse] =
     useState<google.maps.DirectionsResult | null>(null);
 
@@ -34,90 +57,12 @@ export default function MapComponent({
           borderRadius: "0px",
         }}
         center={mapCenter}
-        zoom={10} // Adjusted for a 30mi range
+        zoom={10}
         options={{
           streetViewControl: false,
           mapTypeControl: false,
-          styles: [
-            { elementType: "geometry", stylers: [{ color: "#f5f5f5" }] },
-            { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-            { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
-            { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] },
-            {
-              featureType: "administrative.land_parcel",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#bdbdbd" }],
-            },
-            {
-              featureType: "poi",
-              elementType: "geometry",
-              stylers: [{ color: "#eeeeee" }],
-            },
-            {
-              featureType: "poi",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#757575" }],
-            },
-            {
-              featureType: "poi.park",
-              elementType: "geometry",
-              stylers: [{ color: "#e5e5e5" }],
-            },
-            {
-              featureType: "poi.park",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#9e9e9e" }],
-            },
-            {
-              featureType: "road",
-              elementType: "geometry",
-              stylers: [{ color: "#ffffff" }],
-            },
-            {
-              featureType: "road.arterial",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#757575" }],
-            },
-            {
-              featureType: "road.highway",
-              elementType: "geometry",
-              stylers: [{ color: "#dadada" }],
-            },
-            {
-              featureType: "road.highway",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#616161" }],
-            },
-            {
-              featureType: "road.local",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#9e9e9e" }],
-            },
-            {
-              featureType: "transit.line",
-              elementType: "geometry",
-              stylers: [{ color: "#e5e5e5" }],
-            },
-            {
-              featureType: "transit.station",
-              elementType: "geometry",
-              stylers: [{ color: "#eeeeee" }],
-            },
-            {
-              featureType: "water",
-              elementType: "geometry",
-              stylers: [{ color: "#c9c9c9" }],
-            },
-            {
-              featureType: "water",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#9e9e9e" }],
-            },
-          ],
         }}
-
       >
-        {/* 🚗 Directions Service */}
         {pickupLat && pickupLng && dropLat && dropLng && (
           <DirectionsService
             options={{
@@ -136,57 +81,37 @@ export default function MapComponent({
           />
         )}
 
-        {/* 🛣️ Render Route */}
         {directionsResponse && (
           <DirectionsRenderer
             options={{
               directions: directionsResponse,
-              suppressMarkers: true, // Hide default A/B markers
-              polylineOptions: {
-                strokeColor: "#C9C9C9",
-                strokeWeight: 5,
-              },
+              suppressMarkers: true,
+              polylineOptions: { strokeColor: "#C9C9C9", strokeWeight: 5 },
             }}
           />
         )}
 
-        {/* 🅰️ Pickup Marker with label A */}
         {pickupLat && pickupLng && (
           <Marker
-            position={{ lat: parseFloat(pickupLat), lng: parseFloat(pickupLng) }}
-            label={{
-              text: "A",
-              color: "white",
-              fontWeight: "bold",
-            }}
-            icon={{
-              url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            }}
+            position={{ lat: parseFloat(pickupLat.toString()), lng: parseFloat(pickupLng.toString()) }}
+            label={{ text: "A", color: "white", fontWeight: "bold" }}
+            icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
           />
         )}
 
-        {/* 🅱️ Drop Marker with label B */}
         {dropLat && dropLng && (
           <Marker
-            position={{ lat: parseFloat(dropLat), lng: parseFloat(dropLng) }}
-            label={{
-              text: "B",
-              color: "white",
-              fontWeight: "bold",
-            }}
-            icon={{
-              url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            }}
+            position={{ lat: parseFloat(dropLat.toString()), lng: parseFloat(dropLng.toString()) }}
+            label={{ text: "B", color: "white", fontWeight: "bold" }}
+            icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
           />
         )}
 
-        {/* ⚫ Black Center Marker (Midpoint or user location) */}
         {mapCenter && (
           <Marker
             position={mapCenter}
             icon={{
               path: window.google?.maps.SymbolPath.CIRCLE,
-
               scale: 8,
               fillColor: "#000000",
               fillOpacity: 1,
@@ -195,37 +120,29 @@ export default function MapComponent({
           />
         )}
 
-        {/* 📍 Selected Location Marker */}
         {selectedLocation ? (
           <Marker
             position={selectedLocation.position}
-            icon={{
-              url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            }}
+            icon={{ url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }}
           />
         ) : (
-          officeLocations.map((office: any) => {
-            const location = transformOfficeData(office);
-            return (
+          officeLocations.map((office) => {
+            const location = transformOfficeData?.(office);
+            return location ? (
               <Marker
                 key={location.id}
                 position={location.position}
-                onClick={() => handleCardClick(location)}
-                icon={{
-                  url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-                }}
+                onClick={() => handleCardClick?.(location)}
+                icon={{ url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }}
               />
-            );
+            ) : null;
           })
         )}
 
-        {/* 🔵 Search Coordinates Marker */}
         {searchCoordinates && (
           <Marker
             position={searchCoordinates}
-            icon={{
-              url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-            }}
+            icon={{ url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }}
           />
         )}
       </GoogleMap>
