@@ -103,20 +103,18 @@ useEffect(() => {
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </nav>
-
+{/* gg */}
       {/* Mobile menu with framer-motion animation */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-  key="mobileMenu"
-  initial={{ x: "100%", opacity: 0 }}
-  animate={{ x: 0, opacity: 1 }}
-  exit={{ x: "100%", opacity: 0 }}
-  transition={{ duration: 0.35, ease: "easeInOut" }}
-  className="fixed inset-0 top-14 bg-[#232323]/95 backdrop-blur-sm flex flex-col px-5 justify-start py-6 space-y-6 md:hidden z-[9999]"
->
-
-
+            key="mobileMenu"
+            initial={{ x: "100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "100%", opacity: 0 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="fixed inset-0 top-14 bg-[#232323]/95 backdrop-blur-sm flex flex-col px-5  justify-start py-6 space-y-6 md:hidden z-50"
+          >
             {navItems.map((item) => {
               const isActive = pathname === item.path;
               return (
