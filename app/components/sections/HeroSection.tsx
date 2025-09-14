@@ -12,12 +12,14 @@ import BookingForm from "../formComponent/bookingform";
 
 export default function HeroSection() {
   const [tripType, setTripType] = useState("pointToPoint");
-  const [pickupDate, setPickupDate] = useState<Date | null>();
+  const [pickupDate, setPickupDate] = useState<Date | null>(null);
+
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropLocation, setDropLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedTime, setSelectedTime] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
   // ✅ Parent component
   const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
 
