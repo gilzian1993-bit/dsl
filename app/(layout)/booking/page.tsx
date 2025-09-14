@@ -1,10 +1,11 @@
-"use client"
+import BookingPageClient from '@/app/components/BookingPageClient';
+import { Suspense } from 'react';
+// import BookingClient from './BookingClient';
 
-import BookingPageClient from "@/app/components/BookingPageClient";
-
-
-export default function BookingPage() {
-  // This component can still be server-rendered
-  // but the interactive part (searchParams) is moved to client
-  return <BookingPageClient />;
+export default function Page() {
+  return (
+    <Suspense fallback={<p>Loading booking...</p>}>
+      <BookingPageClient />
+    </Suspense>
+  );
 }
