@@ -1,4 +1,4 @@
-// app/booking/page.tsx
+"use client"
 
 import BookingPageClient from "@/app/components/BookingPageClient";
 
