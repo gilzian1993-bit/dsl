@@ -18,6 +18,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import MapComponent from "./GoogleMap";
 import type { Location } from "./GoogleMap";
+type PriceBreakdown = {
+  basePrice: number;
+  gratuity: number;
+  tollFee: number;
+  tax: number;
+  airportFee?: number;
+  total: number;
+};
+
+type SelectedVehicle = Omit<VehicleOption, "price"> & {
+  price: PriceBreakdown;
+  vehicleTitle: string;
+  tripType: string;
+  hours?: number;
+};
 
 interface VehicleOption {
     id: number;
@@ -169,11 +184,12 @@ const groupedVehicles: Record<string, VehicleOption[]> = vehicles.reduce((acc, v
     return acc;
 }, {} as Record<string, VehicleOption[]>);
 
+
 export default function VehicleSelection({
     onNext,
     step,
 }: {
-    onNext: (vehicle: any) => void;
+    onNext: (vehicle: SelectedVehicle) => void; // ✅ no 'any'
     step: number;
 }) {
     const searchParams = useSearchParams();

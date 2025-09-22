@@ -50,11 +50,14 @@ const ContactSection: React.FC = () => {
                 subject: '',
                 message: ''
             });
-        } catch (error: any) {
-            toast.error(error.message || 'Failed to send message!', { id: toastId });
-        } finally {
-            setIsSubmitting(false);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message, { id: toastId });
+            } else {
+                toast.error('Failed to send message!', { id: toastId });
+            }
         }
+
     };
 
     return (
