@@ -1,17 +1,11 @@
 "use client";
-import MapComponent from "@/app/components/formComponent/GoogleMap";
+
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+
 
 
 export default function PaymentSuccessPage() {
-    const searchParams = useSearchParams();
-    const pickupLat = Number(searchParams.get("pickupLat") || "0");
-    const pickupLng = Number(searchParams.get("pickupLng") || "0");
-    const dropLat = Number(searchParams.get("dropLat") || "0");
-    const dropLng = Number(searchParams.get("dropLng") || "0");
-    const router = useRouter();
-    const mapCenter = pickupLat && pickupLng ? { lat: pickupLat, lng: pickupLng } : { lat: 34.0522, lng: -118.2437 }; // Default to LA
+
 
 
     return (
