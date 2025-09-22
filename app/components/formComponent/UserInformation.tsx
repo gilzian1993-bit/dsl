@@ -31,10 +31,37 @@ interface UserInformationProps {
     dropLocation: string;
     pickupDate: string;
     pickupTime: string;
-    onNext: () => void;
+    onNext: (data: {
+        fullName: string;
+        email: string;
+        phone: string;
+        tripType: string;
+        meetGreetYes: boolean;
+        airportPickup: boolean;
+        carSeats: boolean;
+        returnTrip: boolean;
+        rearFacingSeat: number;
+        boosterSeat: number;
+        passengers: number;
+        luggage: number;
+        airlineCode?: string;
+        flightNumber?: string;
+        returnDate?: string;
+        returnTime?: string;
+    }) => void;
+
     onBack: () => void;
     step: number;
     tripType: string;
+}
+
+interface Price {
+    basePrice: number;
+    gratuity: number;
+    tollFee: number;
+    airportFee: number;
+    tax: number;
+    total: number;
 }
 
 interface VehicleOption {
@@ -42,11 +69,15 @@ interface VehicleOption {
     name: string;
     type: string;
     image: string;
-    price: number;
     passengers: number;
     bags: number;
-    features: string[];
+    hourly?: number;
+    features?: string[];
+    price: number | Price;   // 👈 can be number OR object
+    tripType?: string;
+    vehicleTitle?: string;
 }
+
 interface Props {
     vehicle: VehicleOption;
     onNext: () => void;
@@ -62,7 +93,7 @@ const vehicles: VehicleOption[] = [
         image: "/images/sedan/cadilac-xts.png",
         price: 95,
         passengers: 3,
-        bags: 2,
+        bags: 3,
         features: ["WiFi", "Leather Seats", "Climate Control"],
     },
     {
@@ -72,7 +103,7 @@ const vehicles: VehicleOption[] = [
         image: "/images/sedan/lincoln.png",
         price: 95,
         passengers: 3,
-        bags: 2,
+        bags: 3,
         features: ["WiFi", "Premium Audio", "Leather Seats"],
     },
     {
@@ -82,7 +113,7 @@ const vehicles: VehicleOption[] = [
         image: "/images/sedan/cadilac.cts.png",
         price: 95,
         passengers: 3,
-        bags: 2,
+        bags: 3,
         features: ["WiFi", "USB Charging", "Tinted Windows"],
     },
     {
@@ -92,7 +123,7 @@ const vehicles: VehicleOption[] = [
         image: "/images/sedan/cadilac.png",
         price: 95,
         passengers: 3,
-        bags: 2,
+        bags: 3,
         features: ["WiFi", "Heated Seats", "Panoramic Roof"],
     },
 
@@ -103,7 +134,7 @@ const vehicles: VehicleOption[] = [
         type: "MID SUV",
         image: "/images/SUV/lincoln-aviator.png",
         price: 130,
-        passengers: 5,
+        passengers: 4,
         bags: 4,
         features: ["WiFi", "Leather Seats", "Rear Climate Control"],
     },
@@ -113,7 +144,7 @@ const vehicles: VehicleOption[] = [
         type: "MID SUV",
         image: "/images/SUV/cadilac-xt6.png",
         price: 130,
-        passengers: 5,
+        passengers: 4,
         bags: 4,
         features: ["WiFi", "Premium Audio", "All-Wheel Drive"],
     },
@@ -190,13 +221,21 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [airportPickup, setAirportPickup] = useState(false);
     const meetGreetCost = meetGreetYes ? 25 : 0;
     const airportPickupCost = airportPickup ? 5 : 0;
-    const tip = 20;      // fixed tip
-    const tax = 5;       // fixed tax
-    const tollFee = 10;  // fixed toll fee
 
-    const totalPrice = vehicle.price + meetGreetCost + airportPickupCost + tip + tax + tollFee;
 
-    console.log("Total Price:", totalPrice);
+    // helper to normalize vehicle.price
+    const getVehiclePrice = (vehicle: VehicleOption): number => {
+        if (typeof vehicle.price === "number") {
+            return vehicle.price;
+        }
+        return vehicle.price.total;
+    };
+
+    const basePrice = getVehiclePrice(vehicle);
+
+    const totalPrice = basePrice + meetGreetCost + airportPickupCost;
+    const [finalTotal, setFinalTotal] = useState(totalPrice);
+
 
 
 
@@ -430,7 +469,10 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                     <ArrowRight className="w-4 h-4 text-white" />
                                 </div>
                                 <h2 className="font-bold text-gray-800">Pickup </h2>
-                                <span className="ml-auto text-sm font-bold text-gray-600"> ${vehicle.price.toFixed(2)}</span>
+                                <span className="ml-auto text-sm font-bold text-gray-600"> ${typeof vehicle.price === "number"
+                                    ? vehicle.price.toFixed(2)
+                                    : Number(vehicle.price.total).toFixed(2)}
+                                </span>
                             </div>
 
                             <hr className="border-black mb-4" />
@@ -448,7 +490,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                             <div className="flex items-center gap-2 mb-3">
                                 <h2 className="font-light text-gray-800">Total Price</h2>
                                 <span className="ml-auto text-base font-bold text-gray-600">
-                                    ${totalPrice.toFixed(2)}
+                                    ${finalTotal.toFixed(2)}
                                 </span>
                             </div>
 
@@ -512,7 +554,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
                                     {/* Price (centered) */}
                                     <div className="text-xl font-bold text-gray-900 text-center">
-                                        ${vehicle.price}
+                                        ${getVehiclePrice(vehicle).toFixed(2)}
                                     </div>
 
                                     {/* Bags */}
@@ -598,14 +640,16 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
                                     </button>
                                     <div className="text-gray-900 font-bold mt-4 text-xl">
-                                        ${vehicle.price.toFixed(2)}
+                                        ${getVehiclePrice(vehicle).toFixed(2)}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="w-full mx-auto space-y-4 mt-4 px-4">   <PassengerDetailsForm onBack={onBack} onNext={onNext} tripType={tripType} meetGreetYes={meetGreetYes}              // ✅ pass value
-                            setMeetGreetYes={setMeetGreetYes} airportPickup={airportPickup} setAirportPickup={setAirportPickup} vehicle={vehicle} /></div>
+                        <div className="w-full mx-auto space-y-4 mt-4 px-4">   <PassengerDetailsForm onBack={onBack} onNext={(data) => {
+                            onNext(data); 
+                        }} totalPrice={totalPrice} tripType={tripType} meetGreetYes={meetGreetYes}              // ✅ pass value
+                            onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)} setMeetGreetYes={setMeetGreetYes} airportPickup={airportPickup} setAirportPickup={setAirportPickup} vehicle={vehicle} /></div>
                     </div>
 
 

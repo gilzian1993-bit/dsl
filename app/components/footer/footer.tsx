@@ -86,13 +86,13 @@ export default function Footer() {
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-gray-300 flex-shrink-0" />
                 <a
-                  href="tel:+8001234567"
+                  href="tel:+18006793415"
                   className="text-gray-300 text-sm hover:text-white"
                 >
-                  +800 123 4567
+                  +1 800 679 3415
                 </a>
               </div>
-              <div className="flex items-center gap-3">
+              {/* <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-gray-300 flex-shrink-0" />
                 <a
                   href="tel:+12124567890"
@@ -100,14 +100,14 @@ export default function Footer() {
                 >
                   +1 212 456 7890
                 </a>
-              </div>
+              </div> */}
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-gray-300 flex-shrink-0" />
                 <a
-                  href="mailto:booking@limo.com"
+                  href="mailto:info@dsllimoservice.com"
                   className="text-gray-300 text-sm hover:text-white"
                 >
-                  booking@limo.com
+                  info@dsllimoservice.com
                 </a>
               </div>
             </div>

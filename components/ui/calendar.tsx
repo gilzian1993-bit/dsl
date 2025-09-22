@@ -219,8 +219,8 @@ function CalendarDayButton({
 
 export default function CalendarWithActions(props: DayPickerProps) {
   return (
-    <div className="inline-block bg-white rounded-md shadow-md">
-      <Calendar {...props} />
+    <div className="">
+      <Calendar {...props}   disabled={{ before: new Date() }}  />
       {/* <div className="flex justify-end gap-3 px-3 py-2 border-t border-gray-200">
         <Button variant="ghost" size="sm">Cancel</Button>
         <Button size="sm">OK</Button>

@@ -30,7 +30,7 @@ const vehicles = [
     image: "/images/sedan/lincoln.png",
     features: [
       { icon: Users, text: "3 Passengers" },
-      { icon: Briefcase, text: "2 Luggage" },
+      { icon: Briefcase, text: "3 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "WiFi Hot Spot" },
     ],
@@ -42,7 +42,7 @@ const vehicles = [
     image: "/images/sedan/cadilac.cts.png",
     features: [
       { icon: Users, text: "3 Passengers" },
-      { icon: Briefcase, text: "2 Luggage" },
+      { icon: Briefcase, text: "3 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "WiFi Hot Spot" },
     ],
@@ -53,7 +53,7 @@ const vehicles = [
     type: "SEDAN",
     image: "/images/sedan/cadilac.png",
     features: [
-      { icon: Users, text: "4 Passengers" },
+      { icon: Users, text: "3 Passengers" },
       { icon: Briefcase, text: "3 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "WiFi Hot Spot" },

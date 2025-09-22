@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Plane, Users, Calendar, Info, House } from 'lucide-react';
-
+import { Mail, Phone, House } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
 
 const ContactSection: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -12,10 +12,6 @@ const ContactSection: React.FC = () => {
         message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<{
-        success: boolean;
-        message: string;
-    } | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -28,13 +24,42 @@ const ContactSection: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setSubmitStatus(null);
 
+        // Show loading toast
+        const toastId = toast.loading('Sending message...');
 
+        try {
+            const response = await fetch('https://devsquare-apis.vercel.app/api/dslLimoService/contact ', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) throw new Error('Something went wrong!');
+
+            const data = await response.json();
+
+            // Update toast to success
+            toast.success(data.message || 'Message sent successfully!', { id: toastId });
+
+            // Clear form
+            setFormData({
+                name: '',
+                email: '',
+                phone: '',
+                subject: '',
+                message: ''
+            });
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to send message!', { id: toastId });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <div className=" mx-auto  ">
+        <div className=" mx-auto max-w-5xl ">
+            <Toaster position="top-right" reverseOrder={false} />
             <div className=" max-w-7xl flex flex-col md:flex-row md:space-x-12 px-6 py-16">
                 {/* Left: Contact Form */}
                 <div className="flex-1 md:pr-12">
@@ -82,18 +107,36 @@ const ContactSection: React.FC = () => {
                                 className="w-full px-3 py-2 border border-gray-200 rounded bg-white resize-none focus:border-gray-400 focus:ring-0"
                             />
                         </div>
-                        <div>
-                            <button
-                                type="submit"
-                                className="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-2 rounded font-medium shadow-sm transition"
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? 'Sending...' : 'Send'}
-                            </button>
-                        </div>
-                        {submitStatus && (
-                            <div className={`text-sm mt-2 ${submitStatus.success ? 'text-green-600' : 'text-red-600'}`}>{submitStatus.message}</div>
-                        )}
+                        <button
+                            type="submit"
+                            className="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-2 rounded font-medium shadow-sm transition flex items-center justify-center gap-2"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting && (
+                                <svg
+                                    className="animate-spin h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                    ></path>
+                                </svg>
+                            )}
+                            {isSubmitting ? 'Sending...' : 'Send'}
+                        </button>
+
                     </form>
                 </div>
                 {/* Right: Info & Social */}
@@ -155,7 +198,7 @@ const ContactSection: React.FC = () => {
                         {/* Card 1: Email */}
                         <div className="bg-white rounded shadow-md flex-1 max-w-xs mx-2 flex flex-col items-center py-8 px-4">
                             <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0097a7] mb-4">
-                                 <Mail className="w-8 h-8  fill-current text-white" />
+                                <Mail className="w-8 h-8  fill-current text-white" />
                             </div>
                             <h4 className="text-base font-semibold mb-2 text-gray-800">Contact By Email</h4>
                             <p className="text-sm text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -163,7 +206,7 @@ const ContactSection: React.FC = () => {
                         {/* Card 2: Phone */}
                         <div className="bg-white rounded shadow-md flex-1 max-w-xs mx-2 flex flex-col items-center py-8 px-4">
                             <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0097a7] mb-4">
-                               <Phone className="w-8 h-8  fill-current text-white" />
+                                <Phone className="w-8 h-8  fill-current text-white" />
                             </div>
                             <h4 className="text-base font-semibold mb-2 text-gray-800">Contact By Phone</h4>
                             <p className="text-sm text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -171,7 +214,7 @@ const ContactSection: React.FC = () => {
                         {/* Card 3: Visit */}
                         <div className="bg-white rounded shadow-md flex-1 max-w-xs mx-2 flex flex-col items-center py-8 px-4">
                             <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0097a7] mb-4">
-                              <House  className="w-8 h-8  fill-current text-white" />
+                                <House className="w-8 h-8  fill-current text-white" />
                             </div>
                             <h4 className="text-base font-semibold mb-2 text-gray-800">Come To See Us</h4>
                             <p className="text-sm text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -182,7 +225,7 @@ const ContactSection: React.FC = () => {
 
         </div>
     );
-    
+
 };
 
 export default ContactSection;

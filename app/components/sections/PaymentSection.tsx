@@ -12,21 +12,64 @@ import { CardElement, useStripe, useElements, PaymentElement, Elements } from "@
 import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentCard from "../PaymentCard";
+interface PaymentSectionProps {
+    step: number;
+    vehicle: VehicleOption;
+    pickupLocation: string;
+    dropLocation: string;
+    pickupDate: string;
+    pickupTime: string;
+    passengers: number;
+    luggage: number;
+    fullName: string;
+    email: string;
+    phone: string;
+    tripType: string;
+    // Toggles
+    meetGreetYes: boolean;
+    airportPickup: boolean;
+    carSeats: boolean;
+    returnTrip: boolean;
+
+    // Extra fields
+    rearFacingSeat: number;
+    boosterSeat: number;
+    airlineCode?: string;
+    flightNumber?: string;
+    returnDate?: string;
+    returnTime?: string;
+
+    totalPrice: number;
+    onBack: () => void;
+    onNext: () => void;
+}
 
 interface UserInfo {
     fullName: string;
     email: string;
     phone: string;
 }
+interface Price {
+    basePrice: number;
+    gratuity: number;
+    tollFee: number;
+    airportFee: number;
+    tax: number;
+    total: number;
+}
+
 interface VehicleOption {
     id: number;
     name: string;
     type: string;
     image: string;
-    price: number;
     passengers: number;
     bags: number;
-    features: string[];
+    hourly?: number;
+    features?: string[];
+    price: number | Price;   // 👈 can be number OR object
+    tripType?: string;
+    vehicleTitle?: string;
 }
 interface UserInformationProps {
     vehicle: VehicleOption;
@@ -43,24 +86,82 @@ if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
     throw new Error("Key not defined")
 }
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY ?? '')
+interface PaymentSectionProps {
+    step: number;
+    vehicle: VehicleOption;
+    pickupLocation: string;
+    dropLocation: string;
+    pickupDate: string;
+    pickupTime: string;
+    passengers: number;
+    luggage: number;
+    fullName: string;
+    email: string;
+    phone: string;
+    tripType: string;
+    // Toggles
+    meetGreetYes: boolean;
+    airportPickup: boolean;
+    carSeats: boolean;
+    returnTrip: boolean;
+    hours:number;
+
+    // Extra fields
+    rearFacingSeat: number;
+    boosterSeat: number;
+    airlineCode?: string;
+    flightNumber?: string;
+    returnDate?: string;
+    returnTime?: string;
+
+    totalPrice: number;
+    onBack: () => void;
+    onNext: () => void;
+}
 
 export default function PaymentSection({
     vehicle,
     onBack,
+    onNext,
     step,
+    fullName,
+    email,
+    phone,
+    tripType,
+
     pickupLocation,
     dropLocation,
     pickupDate,
     pickupTime,
+    passengers,
+    luggage,
+    rearFacingSeat,
+    boosterSeat,
     meetGreetYes,
-}: UserInformationProps) {
-    const [loading, setLoading] = useState(false);
+    airportPickup,
+    carSeats,
+    returnTrip,
+    totalPrice,
+hours,
+    // 👇 add these missing ones
+    airlineCode,
+    flightNumber,
+    returnDate,
+    returnTime,
+}: PaymentSectionProps) {
+     console.log("airlinecode", airlineCode);
+    const meetGreetCost = meetGreetYes ? 25 : 0;
 
-    const stripe = useStripe();
-    const elements = useElements();
+    const getVehiclePrice = (vehicle: VehicleOption): number => {
+        if (typeof vehicle.price === "number") {
+            return vehicle.price;
+        }
+        return vehicle.price.total;
+    };
 
-    const meetGreetCost = meetGreetYes === true ? 25 : 0;
-    const totalPrice = vehicle.price + meetGreetCost;
+    const basePrice = getVehiclePrice(vehicle);
+    const finalTotal = totalPrice ?? basePrice + meetGreetCost;
+
 
 
 
@@ -296,7 +397,7 @@ export default function PaymentSection({
                                     <ArrowRight className="w-4 h-4 text-white" />
                                 </div>
                                 <h2 className="font-bold text-gray-800">Pickup </h2>
-                                <span className="ml-auto text-sm font-bold text-gray-600"> ${vehicle.price.toFixed(2)}</span>
+                                <span className="ml-auto text-sm font-bold text-gray-600"> ${getVehiclePrice(vehicle).toFixed(2)}</span>
                             </div>
 
                             <hr className="border-black mb-4" />
@@ -348,13 +449,39 @@ export default function PaymentSection({
                             stripe={stripePromise}
                             options={{
                                 mode: "payment",          // ✅ must specify mode when using amount/currency
-                                amount: Math.round(vehicle.price * 100), // ✅ number in cents
+                                amount: Math.round(totalPrice * 100), // ✅ number in cents
                                 currency: "usd",
                             }}
                         >
 
 
-                            <PaymentCard  amount={Math.round(totalPrice * 100)} />
+                            <PaymentCard
+                                amount={Math.round(totalPrice * 100)}
+                                vehicle={vehicle}
+                                hours={hours}
+                                pickupLocation={pickupLocation}
+                                dropLocation={dropLocation}
+                                pickupDate={pickupDate}
+                                pickupTime={pickupTime}
+                                passengers={passengers}
+                                luggage={luggage}
+                                rearFacingSeat={rearFacingSeat}
+                                boosterSeat={boosterSeat}
+                                meetGreetYes={meetGreetYes}
+                                airportPickup={airportPickup}
+                                carSeats={carSeats}
+                                fullName={fullName}
+                                email={email}
+                                tripType={tripType}
+                                phone={phone}
+                                returnTrip={returnTrip}
+                                airlineCode={airlineCode}   // ✅ now uses props
+                                flightNumber={flightNumber} // ✅ now uses props
+                                returnDate={returnDate}
+                                returnTime={returnTime}
+                            />
+
+
 
                         </Elements>
                     </div>

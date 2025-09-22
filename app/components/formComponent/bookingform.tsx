@@ -8,7 +8,7 @@ import Calendar from "../../../components/ui/calendar";
 import { format } from "date-fns";
 import TimePicker from "../time-picker";
 import { Dispatch, SetStateAction } from "react";
-
+import { toast, Toaster } from "sonner";
 interface LatLng {
   lat: number;
   lng: number;
@@ -107,7 +107,15 @@ export default function BookingForm(props: BookingFormProps) {
     if (!selectedTime) newErrors.selectedTime = "Time is required";
 
     if (tripType === "pointToPoint") {
-      if (!dropLocation) newErrors.dropLocation = "Drop location is required";
+      if (!dropLocation) {
+        newErrors.dropLocation = "Drop location is required";
+      } else if (
+        pickupLocation.trim().toLowerCase() === dropLocation.trim().toLowerCase()
+      ) {
+        // 🚫 Show toast if pickup = drop
+        toast.error("Pickup and Drop location cannot be the same. Please select different locations.");
+        return false;
+      }
     }
 
     if (tripType === "hourlyRate") {
@@ -118,6 +126,7 @@ export default function BookingForm(props: BookingFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
+
   const onBookNow = () => {
     if (validateForm()) {
       handleBookNow();
@@ -125,8 +134,10 @@ export default function BookingForm(props: BookingFormProps) {
   };
 
   return (
+
     <div className="relative z-10 bg-white rounded-xl shadow-2xl px-6 py-7 mx-auto w-full max-w-5xl">
       {/* ---TABS--- */}
+     
       <div className="flex absolute -top-7 bg-[#232323] rounded-full p-1 overflow-hidden shadow-md">
         {["pointToPoint", "hourlyRate"].map((type) => (
           <button
@@ -252,37 +263,35 @@ export default function BookingForm(props: BookingFormProps) {
         {/* Date */}
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-600 mb-1">Date</label>
-          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen} modal={false}>
             <PopoverTrigger asChild>
               <button
                 type="button"
-                onClick={() => setIsCalendarOpen(true)}
                 className="relative w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-left"
               >
                 <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 {pickupDate ? format(pickupDate, "EEE dd MMM yyyy") : "Select Date"}
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 z-[9999]">
+            <PopoverContent className="w-auto p-0 z-[9999]" align="start" side="bottom">
               <Calendar
                 mode="single"
-                selected={pickupDate ?? undefined} // convert null → undefined
+                selected={pickupDate ?? undefined}
                 onSelect={(date: Date | undefined) => {
-                  setPickupDate(date ?? null);    // keep null in state
+                  setPickupDate(date ?? null);
                   setIsCalendarOpen(false);
                 }}
               />
-
-
             </PopoverContent>
           </Popover>
+
           {errors.pickupDate && (
             <p className="text-red-500 text-sm mt-1">{errors.pickupDate}</p>
           )}
         </div>
 
         {/* Time */}
-        <div className="flex flex-col relative">
+        <div className="flex flex-col ">
           <label className="text-sm font-medium text-gray-600 mb-1">Time</label>
           <Popover open={isTimePickerOpen} onOpenChange={setIsTimePickerOpen}>
             <PopoverTrigger asChild>
@@ -320,26 +329,7 @@ export default function BookingForm(props: BookingFormProps) {
             className="bg-[#23b1c0] hover:bg-[#1e9aa8] text-white rounded-md font-semibold text-base px-6 py-3 shadow-md transition-all w-full flex justify-center items-center gap-2"
           >
             {loading ? (
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
+              <div className="w-5 h-5 border border-gray-300 border-t-4 border-t-gray-500 rounded-full animate-spin"></div>
             ) : (
               "BOOK NOW"
             )}
