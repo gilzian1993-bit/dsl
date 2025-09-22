@@ -18,33 +18,40 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import MapComponent from "./GoogleMap";
 import type { Location } from "./GoogleMap";
-type PriceBreakdown = {
-  basePrice: number;
-  gratuity: number;
-  tollFee: number;
-  tax: number;
-  airportFee?: number;
-  total: number;
-};
 
-type SelectedVehicle = Omit<VehicleOption, "price"> & {
-  price: PriceBreakdown;
-  vehicleTitle: string;
-  tripType: string;
-  hours?: number;
-};
+// interfaces
+interface PriceBreakdown {
+    basePrice: number;
+    gratuity: number;
+    tollFee: number;
+    tax: number;
+    total: number;
+}
 
 interface VehicleOption {
     id: number;
     name: string;
     type: string;
     image: string;
-    price: number;
+    price: number;     // still the final price
     hourly: number;
     passengers: number;
     bags: number;
     features: string[];
+    vehicleTitle?: string;
+    tripType?: string;
+
+    // 👇 New optional fields
+    basePrice?: number;
+    gratuity?: number;
+    tollFee?: number;
+    airportFee?: number;
+    tax?: number;
+    total?: number;
+    hours?: number;
 }
+
+
 
 const vehicles: VehicleOption[] = [
     // 🚘 Sedans
@@ -184,12 +191,11 @@ const groupedVehicles: Record<string, VehicleOption[]> = vehicles.reduce((acc, v
     return acc;
 }, {} as Record<string, VehicleOption[]>);
 
-
 export default function VehicleSelection({
     onNext,
     step,
 }: {
-    onNext: (vehicle: SelectedVehicle) => void; // ✅ no 'any'
+    onNext: (vehicle: VehicleOption) => void;  // 👈 use VehicleOption instead of any
     step: number;
 }) {
     const searchParams = useSearchParams();
@@ -559,9 +565,9 @@ export default function VehicleSelection({
                                 <button
                                     onClick={() => {
                                         setLoadingVehicleId(current.id); // set which vehicle is loading
-                                        const selectedVehicle = {
+                                        const selectedVehicle: VehicleOption = {
                                             ...current,
-                                            price: calculatePrice(current, distance, hours, tripType),
+                                            price: breakdown.total,
                                             vehicleTitle: getVehicleTitle(current.type),
                                             tripType: tripType,
                                         };
@@ -659,12 +665,12 @@ export default function VehicleSelection({
                                     <button
                                         onClick={() => {
                                             setLoadingVehicleId(current.id);
-                                            const selectedVehicle = {
+                                            const selectedVehicle: VehicleOption = {
                                                 ...current,
-                                                price: calculatePrice(current, distance, hours, tripType),
+                                                price: breakdown.total,
                                                 vehicleTitle: getVehicleTitle(current.type),
                                                 tripType: tripType,
-                                                basePrice: calculatePrice(current, distance, hours, tripType).basePrice,
+                                                basePrice: breakdown.basePrice,
                                                 gratuity: 20,
                                                 tollFee: 10,
                                                 airportFee: 5,

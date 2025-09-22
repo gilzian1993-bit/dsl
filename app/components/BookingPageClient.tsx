@@ -68,7 +68,7 @@ export default function BookingPageClient() {
       {step === 1 && (
         <VehicleSelection
           step={step}
-          onNext={(vehicle) => {
+          onNext={(vehicle:VehicleOption) => {
             setSelectedVehicle(vehicle);
             setStep(2);
           }}
