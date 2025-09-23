@@ -89,7 +89,22 @@ export default function HeroSection() {
   const subtitleRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  const backgrounds = [
+    "/header.png",
+    "/header2.png",
+    "/header3.png",
+    "/header4.png",
+  ];
+  const [currentBg, setCurrentBg] = useState(0);
 
+  // Auto change background every 5s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBg((prev) => (prev + 1) % backgrounds.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [backgrounds.length]);
   useEffect(() => {
     const animate = (el: HTMLElement | null, delay: number) => {
       if (!el) return;
@@ -118,24 +133,23 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section
-      className="relative w-full min-h-[440px] flex flex-col items-center justify-center pt-16 bg-cover bg-center"
-      style={{ backgroundImage: "url('/hero-section.png')" }}
+     <section
+      className="relative w-full min-h-[440px] flex flex-col items-center justify-center pt-16 bg-cover bg-center transition-all duration-1000"
+      style={{ backgroundImage: `url(${backgrounds[currentBg]})` } }
     >
-      {/* Overlay */}
-      <div ref={overlayRef} className="absolute inset-0 bg-black/20 z-0" />
-
+     
+   <div ref={overlayRef} className="absolute inset-0 bg-black/20 z-0" />
       {/* Text */}
       <div className="relative z-10 text-center mb-6">
         <h1
           ref={titleRef}
-          className="text-[#23b1c0] text-4xl md:text-5xl font-bold font-hind tracking-wide mb-2"
+          className="text-[#FFFFFF] text-4xl md:text-5xl font-bold font-hind tracking-wide mb-2"
         >
           The Best Fleet Services
         </h1>
         <div
           ref={subtitleRef}
-          className="text-[#A6DDE8] text-2xl md:text-3xl font-normal"
+          className="text-[#FFFFFF] text-2xl md:text-3xl font-normal"
         >
           In New York
         </div>
@@ -143,7 +157,7 @@ export default function HeroSection() {
 
       {/* Booking Box */}
       {/* Booking Box */}
-      <div ref={formRef} className="w-full flex justify-center">
+      <div ref={formRef} className="w-full flex mt-5 justify-center">
 
         <BookingForm
           tripType={tripType}

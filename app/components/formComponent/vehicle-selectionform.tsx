@@ -12,6 +12,8 @@ import {
     MapPin,
     X,
     ChevronDown,
+    Route,
+    Clock,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -222,7 +224,7 @@ export default function VehicleSelection({
     const mapCenter =
         pickupLat && pickupLng ? { lat: pickupLat, lng: pickupLng } : { lat: 34.0522, lng: -118.2437 };
 
-    // Price calculation
+
     function calculatePrice(
         vehicle: VehicleOption,
         distance: number,
@@ -232,20 +234,39 @@ export default function VehicleSelection({
         let basePrice = 0;
 
         if (tripType === "hourly") {
-            // Only hourly * vehicle hourly rate
+
             basePrice = Number((hours * vehicle.hourly).toFixed(2));
+
         } else {
-            // Point-to-point pricing
+
             switch (vehicle.type) {
                 case "SEDAN":
-                    basePrice = distance <= 20 ? 85 : distance * 3;
+                    basePrice =
+                        distance <= 10
+                            ? 85
+                            : distance <= 20
+                                ? 100
+                                : 100 + (distance - 20) * 3;
                     break;
+
                 case "MID SUV":
-                    basePrice = distance <= 20 ? 95 : distance * 3.25;
+                    basePrice =
+                        distance <= 10
+                            ? 95
+                            : distance <= 20
+                                ? 110
+                                : 110 + (distance - 20) * 3.25;
                     break;
+
                 case "SUV":
-                    basePrice = distance <= 20 ? 110 : distance * 3.75;
+                    basePrice =
+                        distance <= 10
+                            ? 110
+                            : distance <= 20
+                                ? 125
+                                : 125 + (distance - 20) * 3.75;
                     break;
+
                 case "SPRINTER":
                     basePrice =
                         distance <= 17
@@ -254,21 +275,32 @@ export default function VehicleSelection({
                                 ? 250
                                 : 250 + (distance - 38) * 2.3;
                     break;
+
                 default:
                     basePrice = vehicle.price;
             }
+
         }
 
-        const gratuity = 20; // flat fee
-        const tollFee = 10;  // flat fee
-        const airportFee = 5; // flat fee
-        const tax = 5;       // flat fee
-        const total = basePrice + gratuity + tollFee + tax;
 
-        return { basePrice, gratuity, tollFee, tax, total };
+        const gratuity = basePrice * 0.20;
+        const tax = basePrice * 0.05;
+
+        const airportFee = 5;
+
+        const total = basePrice + gratuity + tax + airportFee;
+
+        console.log("Base:", basePrice);
+        console.log("Gratuity (20%):", gratuity);
+
+        console.log("Tax (5%):", tax);
+        console.log("Airport Fee:", airportFee);
+        console.log("Total:", total);
+        console.log("Distance:", distance);
+        return { basePrice, gratuity, tax, airportFee, total };
     }
 
-    // Carousel auto-rotate (mobile)
+
     useEffect(() => {
         if (window.innerWidth < 768) {
             const interval = setInterval(() => {
@@ -367,12 +399,30 @@ export default function VehicleSelection({
                                 <div className="ml-3 pt-3">
                                     <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
                                         <Image src="/calendar.svg" alt="Calendar" width={16} height={16} />
-                                        <span className="font-medium">{pickupDate}</span>
+                                        <span className="font-medium">  {pickupDate
+                                            ? new Date(pickupDate).toLocaleDateString("en-US", {
+                                                weekday: "short",   // e.g. Mon
+                                                month: "short",     // e.g. Sep
+                                                day: "numeric",     // e.g. 12
+                                                year: "numeric",    // e.g. 2025
+                                            })
+                                            : ""}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                                    <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
                                         <Image src="/clock--.svg" alt="Clock" width={16} height={16} />
                                         <span className="font-medium">{pickupTime}</span>
                                     </div>
+                                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                                        <Route className="w-4 h-4 text-gray-600" />
+                                        <span className="font-medium">{distance} miles</span>
+                                    </div>
+                                    {tripType === "hourlyRate" && (
+                                        <div className="flex items-center gap-3 text-sm text-gray-700">
+                                            <Clock className="w-4 h-4 text-gray-600" />
+                                            <span className="font-medium">{hours} hrs</span>
+                                        </div>
+                                    )}
+
                                 </div>
                             </div>
                         )}
@@ -435,10 +485,20 @@ export default function VehicleSelection({
                                     </span>
 
                                 </div>
-                                <div className="flex items-center gap-3 text-sm text-gray-700">
+                                <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
                                     <img src="/clock--.svg" alt="Clock" className="w-4 h-4" />
                                     <span className="font-medium">{pickupTime}</span>
                                 </div>
+                                <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
+                                    <Route className="w-4 h-4 text-gray-600" />
+                                    <span className="font-medium">{distance} miles</span>
+                                </div>
+                                {tripType === "hourlyRate" && (
+                                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                                        <Clock className="w-4 h-4 text-gray-600" />
+                                        <span className="font-medium">{hours} hrs</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -672,7 +732,7 @@ export default function VehicleSelection({
                                                 tripType: tripType,
                                                 basePrice: breakdown.basePrice,
                                                 gratuity: 20,
-                                                tollFee: 10,
+                                             
                                                 airportFee: 5,
                                                 tax: 5,
                                                 total: calculatePrice(current, distance, hours, tripType).total,

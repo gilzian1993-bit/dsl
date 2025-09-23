@@ -1,8 +1,16 @@
+// PaymentCardCustom.tsx
 "use client";
 
-import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+    CardNumberElement,
+    CardExpiryElement,
+    CardCvcElement,
+    useStripe,
+    useElements,
+} from "@stripe/react-stripe-js";
 import { v4 as uuidv4 } from "uuid";
+import { Check } from "lucide-react";
 
 interface Price {
     basePrice: number;
@@ -51,7 +59,20 @@ interface PaymentCardProps {
     returnDate?: string;
     returnTime?: string;
     hours: number;
+    distance: number;
 }
+
+const ElementStyles = {
+    base: {
+        fontSize: "14px",
+        color: "#111827",
+        "::placeholder": { color: "#9CA3AF" },
+        fontSmoothing: "antialiased",
+    },
+    invalid: {
+        color: "#ef4444",
+    },
+};
 
 export default function PaymentCard({
     amount,
@@ -76,53 +97,50 @@ export default function PaymentCard({
     flightNumber,
     returnDate,
     hours,
+    distance,
     returnTime,
 }: PaymentCardProps) {
-    const stripe = useStripe();
-    const elements = useElements();
-    const [clientSecret, setClientSecret] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
 
-    // --- Debug: log props
-    useEffect(() => {
-        console.log("PaymentCard mounted with props:", {
-            amount,
-            vehicle,
-            pickupLocation,
-            dropLocation,
-            pickupDate,
-            pickupTime,
-            passengers,
-            luggage,
-            fullName,
-            email,
-            phone,
-            tripType,
-            rearFacingSeat,
-            boosterSeat,
-            meetGreetYes,
-            airportPickup,
-            carSeats,
-            returnTrip,
-            airlineCode,
-            flightNumber,
-            returnDate,
-            returnTime,
-        });
-    }, []);
     const basePrice = typeof vehicle.price === "object" ? vehicle.price.basePrice : vehicle.price;
     const tollFee = typeof vehicle.price === "object" ? vehicle.price.tollFee : 0;
     const airportFee = typeof vehicle.price === "object" ? vehicle.price.airportFee : 0;
     const gratuity = typeof vehicle.price === "object" ? vehicle.price.gratuity : 0;
     const total = typeof vehicle.price === "object" ? vehicle.price.total : vehicle.price;
+    const stripe = useStripe();
+    const elements = useElements();
 
+    // 🔥 Debug log
+    console.log("💰 Pricing Breakdown:", {
+        basePrice,
+        tollFee,
+        airportFee,
+        gratuity,
+        vehicle,
+        total,
+        vehiclePrice: vehicle.price
+    });
 
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const [cardHolder, setCardHolder] = useState("");
+    const [billingAddress, setBillingAddress] = useState("");
+    const [maskedNumberPreview, setMaskedNumberPreview] = useState("•••• •••• •••• ••••");
+    const [expiryPreview, setExpiryPreview] = useState("••/••");
+    
+    function formatIsoDate(isoDate: string | undefined) {
+        if (!isoDate) return "";
+        const d = new Date(isoDate);
+        if (isNaN(d.getTime())) return "";
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
 
     useEffect(() => {
         (async () => {
-            console.log("Creating payment intent...");
             try {
                 const res = await fetch("/api/create-payment-intent", {
                     method: "POST",
@@ -138,142 +156,248 @@ export default function PaymentCard({
                     }),
                 });
 
-                console.log("Payment intent response status:", res.status);
-
-                if (!res.ok) throw new Error("Failed to create payment intent");
+                if (!res.ok) {
+                    const text = await res.text();
+                    console.error("❌ Payment Intent fetch failed:", res.status, text);
+                    throw new Error("Failed to create payment intent");
+                }
 
                 const data = await res.json();
-                console.log("Payment intent data:", data);
                 setClientSecret(data.clientSecret);
             } catch (err) {
-                console.error("Error creating payment intent:", err);
+                console.error("❌ Fetch Error:", err);
                 setErrorMessage(err instanceof Error ? err.message : "Unknown error");
             }
         })();
     }, [amount, vehicle, pickupLocation, dropLocation, pickupDate, pickupTime, meetGreetYes]);
 
-
-
-    // --- Handle Payment Submission ---
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const bookingId = uuidv4();
-        console.log("handleSubmit triggered");
+        setErrorMessage(null);
 
         if (!stripe || !elements || !clientSecret) {
-            console.warn("Stripe or elements or clientSecret missing");
+            setErrorMessage("Payment system not ready.");
             return;
         }
 
         setLoading(true);
-        setErrorMessage(null);
-
         try {
-            // 1️⃣ Submit payment info from the Stripe element
-            console.log("Submitting payment element...");
-            const { error: submitError } = await elements.submit();
-            if (submitError) throw new Error(submitError.message ?? "Invalid payment details");
+            const cardElement = elements.getElement(CardNumberElement);
+            if (!cardElement) throw new Error("Card element not found");
 
-            // 2️⃣ Confirm payment manually without automatic redirect
-            console.log("Confirming Stripe payment...");
-            const { paymentIntent, error } = await stripe.confirmPayment({
-                elements,
-                clientSecret,
-                confirmParams: {
-                    return_url: `${window.location.origin}/payment-success`, // ✅ Required by Stripe
+            const bookingId = uuidv4();
+
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: cardHolder || fullName || "Guest",
+                        email: email,
+                        phone: phone,
+                        address: billingAddress ? { line1: billingAddress } : undefined,
+                    },
                 },
-                redirect: "if_required",
             });
 
+            if (error) throw new Error(error.message ?? "Payment failed");
+            if (!paymentIntent) throw new Error("No payment intent returned");
 
-            if (error) throw new Error(error.message || "Payment failed");
-
-            // 3️⃣ Check payment status
-            if (!paymentIntent) throw new Error("Payment intent not returned");
-            console.log("PaymentIntent status:", paymentIntent.status);
-
-            if (paymentIntent.status === "succeeded") {
-                console.log("Payment succeeded, calling booking API...");
-
-
+            if (paymentIntent?.status === "succeeded") {
+                // ✅ FIXED: Make booking API call but don't block redirect on errors
                 try {
-                    const bookingRes = await fetch("https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
+                    await fetch("http://localhost:3002/api/dslLimoService/booking", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             id: bookingId,
                             from_location: pickupLocation,
                             to_location: dropLocation,
-                            pickup_date: pickupDate,
+                            pickup_date: formatIsoDate(pickupDate),
                             pickup_time: pickupTime,
-                            return_date: returnDate,
+                            return_date: formatIsoDate(returnDate),
                             return_time: returnTime,
-                            price: total,
+                            price: amount,
                             base_price: basePrice,
-                            toll_fee: tollFee,
-                            airport_fee: airportFee,
-                            gratuity: gratuity,
+                            airport_fee: 5,
+                            gratuity: 20,
+                            distance: Math.round(distance),
                             email,
-                            hours: tripType === "hourly" ? hours : "N/A",
+                            hours: tripType === "hourly" ? hours : 0,
                             name: fullName,
-                            carType: vehicle.type,
+                            car_type: vehicle.type,
                             phone_number: phone,
                             Passengers: passengers,
                             luggage,
                             flight_number: flightNumber,
                             airline_code: airlineCode,
                             tripType,
-                            meetGreetYes,
-                            airportPickup,
-                            rearFacingSeat: rearFacingSeat,
-                            boosterSeat: boosterSeat,
-
+                            rear_seats: rearFacingSeat,
+                            booster_seats: boosterSeat,
                         }),
                     });
-
-                    const bookingData = await bookingRes.json();
-                    console.log("Booking confirmed:", bookingData);
-                } catch (err) {
-                    console.error("Booking API failed:", err);
+                } catch (bookingError) {
+                    console.error("⚠️ Booking API error (proceeding anyway):", bookingError);
+                    // Continue to success page even if booking API fails
                 }
 
-                console.log("Redirecting to payment-success...");
+                // ✅ ALWAYS redirect to success page after successful payment
                 window.location.href = "/payment-success";
-            }
-
-            else {
-                console.warn("Payment not completed. Status:", paymentIntent.status);
+            } else {
                 setErrorMessage("Payment was not successful.");
             }
-
         } catch (err) {
-            console.error("handleSubmit error:", err);
-            setErrorMessage(err instanceof Error ? err.message : "Unknown error");
+            setErrorMessage(err instanceof Error ? err.message : String(err));
         } finally {
             setLoading(false);
         }
     };
 
-    if (!clientSecret) {
-        return (
-            <div className="flex items-center justify-center min-h-[200px]">
-                <div className="w-12 h-12 border-4 border-gray-300 border-t-4 border-t-blue-500 rounded-full animate-spin"></div>
-            </div>
-        );
-    }
-
-
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <PaymentElement className="p-3 border rounded-md" />
-            {errorMessage && <p className="text-red-600 text-sm">{errorMessage}</p>}
-            <button
-                type="submit"
-                disabled={!stripe || loading}
-                className="w-full bg-[#008492] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#006d77] transition"
+        <div className="max-w-3xl mx-auto">
+            <form
+                onSubmit={handleSubmit}
+                className="bg-white rounded-lg shadow-md p-6 flex flex-col-reverse md:flex-row gap-6"
             >
-                {loading ? <div className="w-4 h-4 border border-gray-300 border-t-4 border-t-gray-500 rounded-full animate-spin"></div> : `Pay $${total}`}
-            </button>
-        </form>
+
+                {/* Left side form */}
+                <div className="flex-1 space-y-4">
+                    <div className="mb-6">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-3">PAYMENT INFORMATION</h1>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <Check className="w-3 h-3 text-white" />
+                            </div>
+                            <span>All transactions are secure and encrypted. Safe and secure payments.</span>
+                        </div>
+                    </div>
+
+                    {/* Card Holder */}
+                    <div>
+                        <label className="text-sm text-gray-700 block mb-1">
+                            Card Holder Name
+                        </label>
+                        <input
+                            value={cardHolder}
+                            onChange={(e) => setCardHolder(e.target.value)}
+                            placeholder="Card Holder Name"
+                            className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#008492]"
+                        />
+                    </div>
+
+                    {/* Card Number */}
+                    <div>
+                        <label className="text-sm text-gray-700 block mb-1">
+                            Card Number
+                        </label>
+                        <div className="border rounded-md px-3 py-2">
+                            <CardNumberElement options={{ style: ElementStyles }} />
+                        </div>
+                    </div>
+
+                    {/* Expiry + CVC */}
+                    <div className="flex gap-3">
+                        <div className="w-1/2">
+                            <label className="text-sm text-gray-700 block mb-1">
+                                Expiration Date
+                            </label>
+                            <div className="border rounded-md px-3 py-2">
+                                <CardExpiryElement options={{ style: ElementStyles }} />
+                            </div>
+                        </div>
+                        <div className="w-1/2">
+                            <label className="text-sm text-gray-700 block mb-1">CVC</label>
+                            <div className="border rounded-md px-3 py-2">
+                                <CardCvcElement options={{ style: ElementStyles }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Billing */}
+                    <div>
+                        <label className="text-sm text-gray-700 block mb-1">
+                            Enter Billing Information
+                        </label>
+                        <input
+                            value={billingAddress}
+                            onChange={(e) => setBillingAddress(e.target.value)}
+                            placeholder="Billing address"
+                            className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#008492]"
+                        />
+                    </div>
+
+                    {/* Terms */}
+                    <div className="text-xs text-gray-500 space-y-2">
+                        <div className="flex items-start gap-2">
+                            <span className="text-gray-500 mt-[2px]">ℹ️</span>
+                            <span>Please review our cancellation policy before proceeding.</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                            <input type="checkbox" className="mt-1" />
+                            <span>
+                                I agree to the terms and authorize the payment (optional).
+                            </span>
+                        </div>
+                    </div>
+
+                    {errorMessage && (
+                        <p className="text-red-600 text-sm">{errorMessage}</p>
+                    )}
+
+                    {/* Submit Button aligned right */}
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={!stripe || loading}
+                            className="bg-black text-white py-3 px-6 rounded-md font-semibold hover:opacity-95 transition"
+                        >
+                            {loading ? (
+                                <div className="w-5 h-5 border border-white border-t-4 border-t-transparent rounded-full mx-auto animate-spin" />
+                            ) : (
+                                "PROCEED TO CHECKOUT"
+                            )}
+                        </button>
+                    </div>
+
+                </div>
+
+                {/* Right side card mockup */}
+                <div className="w-72 shrink-0 flex flex-col items-center justify-center">
+                    <div className="relative w-72 h-44 rounded-xl bg-black text-white p-4 shadow-lg">
+                        {/* Chip */}
+                        <div className="absolute top-4 left-4 w-10 h-8 bg-yellow-400 rounded-sm"></div>
+
+                        {/* Number */}
+                        <div className="absolute top-14 left-6 right-6 text-lg tracking-widest text-gray-300">
+                            {maskedNumberPreview}
+                        </div>
+
+                        {/* Holder + Expiry */}
+                        <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-xs">
+                            <div>
+                                <div className="text-gray-400 text-[10px]">YOUR NAME HERE</div>
+                                <div className="text-sm mt-1">
+                                    {cardHolder ? cardHolder.toUpperCase() : "YOUR NAME HERE"}
+                                </div>
+                            </div>
+                            <div className="text-right text-[10px]">
+                                <div className="text-gray-400">valid thru</div>
+                                <div className="mt-1">{expiryPreview}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Secure badges */}
+                    <div className="mt-4 flex gap-3">
+                        <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2">
+                            <span className="text-xs text-gray-500">SECURE SSL ENCRYPTION</span>
+                        </div>
+                        <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2">
+                            <span className="text-xs text-gray-500">SECURE PAY</span>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
     );
 }

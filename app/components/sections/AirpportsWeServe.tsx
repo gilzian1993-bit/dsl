@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 
 const airports = [
   { name: "JOHN F. KENNEDY AIRPORT (JFK)", image: "/image 1.png", href: "#" },
-  { name: "LAGUARDIA AIRPORT (LGA)", image: "/image 2.png", href: "#" },
+  { name: "LAGUARDIA AIRPORT (LGA)", image: "/image2.png", href: "#" },
   { name: "NEWARK AIRPORT (EWR)", image: "/image 3.png", href: "#" },
   { name: "TETERBORO AIRPORT (TEB)", image: "/image 4.png", href: "#" },
   { name: "WESTCHESTER COUNTY (HPN)", image: "/image 6.png", href: "#" },
@@ -25,14 +25,14 @@ export default function AirportsWeServe() {
 
   // Auto scroll for both desktop and mobile
   useEffect(() => {
-    const interval = setInterval(nextSlide, 3000);
+    const interval = setInterval(nextSlide, 6000);
     return () => clearInterval(interval);
   }, []);
 
 
   return (
     <section
-      className="relative max-w-6xl mx-auto px-4 md:px-8 py-12 bg-[#138fa2]/90 flex flex-col items-center overflow-hidden rounded-xl"
+      className="relative max-w-6xl mx-auto px-4 md:px-8 py-12 bg-[#138fa2]/90 flex flex-col items-center overflow-hidden"
       style={{
         backgroundImage: "url('/section.png')",
         backgroundSize: "cover",
@@ -45,10 +45,10 @@ export default function AirportsWeServe() {
       </h2>
 
       {/* Divider with star */}
-      <div className="flex items-center justify-center mb-6">
-        <div className="flex-1 h-px bg-white/40"></div>
-        <Star className="w-5 h-5 text-white mx-3 fill-white" />
-        <div className="flex-1 h-px bg-white/40"></div>
+      <div className="flex items-center justify-center my-3 sm:my-4">
+        <div className="flex-1 h-px bg-white/30 max-w-12 sm:max-w-16 md:max-w-20"></div>
+        <Star className="w-4 sm:w-5 h-4 sm:h-5 text-white mx-2 sm:mx-3 fill-white" />
+        <div className="flex-1 h-px bg-white/30 max-w-12 sm:max-w-16 md:max-w-20"></div>
       </div>
 
       {/* Description */}

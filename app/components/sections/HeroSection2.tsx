@@ -74,7 +74,7 @@ export default function HeroSection2({
       {/* Fleet Car Image */}
       {image && (
         <div
-          className={`relative z-10 mt-8 sm:mt-12 -mb-20 sm:-mb-28 md:-mb-36 px-4 w-full transform transition-all duration-700 delay-600 ${
+          className={`relative z-10 mt-8 sm:mt-12 -mb-12 sm:-mb-28 md:-mb-25 px-4 w-full transform transition-all duration-700 delay-600 ${
             inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}
         >

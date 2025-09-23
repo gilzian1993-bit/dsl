@@ -104,8 +104,8 @@ interface PaymentSectionProps {
     airportPickup: boolean;
     carSeats: boolean;
     returnTrip: boolean;
-    hours:number;
-
+    hours: number;
+    distance: number;
     // Extra fields
     rearFacingSeat: number;
     boosterSeat: number;
@@ -142,14 +142,15 @@ export default function PaymentSection({
     carSeats,
     returnTrip,
     totalPrice,
-hours,
+    hours,
+    distance,
     // 👇 add these missing ones
     airlineCode,
     flightNumber,
     returnDate,
     returnTime,
 }: PaymentSectionProps) {
-     console.log("airlinecode", airlineCode);
+    console.log("airlinecode", airlineCode);
     const meetGreetCost = meetGreetYes ? 25 : 0;
 
     const getVehiclePrice = (vehicle: VehicleOption): number => {
@@ -178,12 +179,12 @@ hours,
             </div>
 
             {/* Layout */}
-            <div className="min-h-screen max-w-5xl mx-auto">
+            <div className="min-h-screen max-w-6xl mx-auto">
                 <div className="flex flex-col md:flex-row">
 
 
                     {/* Left Panel (Trip details) */}
-                    <div className="w-full md:w-80 p-4">
+                   <div className="w-full md:w-80 p-4">
 
                         {/* Mobile: Trip Details */}
                         {/* <div className="md:hidden block mb-3">
@@ -387,17 +388,17 @@ hours,
 
                                 <h2 className="font-bold text-base text-gray-800">Price Breakdown</h2>
 
-                                <button className="flex items-center gap-2 px-4  py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors">
-                                    <Edit className="w-4 h-4" />
-                                    Edit
-                                </button>
+
                             </div>
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="bg-[#008492] p-1.5 rounded-md flex items-center justify-center">
                                     <ArrowRight className="w-4 h-4 text-white" />
                                 </div>
                                 <h2 className="font-bold text-gray-800">Pickup </h2>
-                                <span className="ml-auto text-sm font-bold text-gray-600"> ${getVehiclePrice(vehicle).toFixed(2)}</span>
+                                <span className="ml-auto text-sm font-bold text-gray-600"> ${typeof vehicle.price === "number"
+                                    ? vehicle.price.toFixed(2)
+                                    : Number(vehicle.price.total).toFixed(2)}
+                                </span>
                             </div>
 
                             <hr className="border-black mb-4" />
@@ -415,7 +416,7 @@ hours,
                             <div className="flex items-center gap-2 mb-3">
                                 <h2 className="font-light text-gray-800">Total Price</h2>
                                 <span className="ml-auto text-base font-bold text-gray-600">
-                                    ${totalPrice.toFixed(2)}
+                                    ${finalTotal.toFixed(2)}
                                 </span>
                             </div>
 
@@ -474,6 +475,7 @@ hours,
                                 email={email}
                                 tripType={tripType}
                                 phone={phone}
+                                distance={distance}
                                 returnTrip={returnTrip}
                                 airlineCode={airlineCode}   // ✅ now uses props
                                 flightNumber={flightNumber} // ✅ now uses props

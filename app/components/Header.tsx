@@ -6,7 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-
+import { FaWhatsapp } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 interface NavItem {
   label: string;
   path: string;
@@ -33,7 +34,7 @@ const HeaderBar: React.FC = () => {
   const pathname = usePathname();
   const backgroundImage = pageBackgrounds[pathname] || "/hero-section.png";
   const [mobileOpen, setMobileOpen] = useState(false);
-useEffect(() => {
+  useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -45,13 +46,11 @@ useEffect(() => {
       document.body.style.overflow = "auto";
     };
   }, [mobileOpen]);
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <header className="relative w-full bg-[#232323] overflow-hidden z-20">
+    <header className="relative w-full border-t border-t-[#777777] bg-[#232323] overflow-hidden z-20">
       {/* Background overlay */}
-      <div
-        className="absolute inset-0 w-full h-full bg-cover bg-center opacity-20 pointer-events-none z-0"
-        style={{ backgroundImage: `url('${backgroundImage}')` }}
-      />
+
 
       <nav className="relative z-10 h-14 px-4 flex items-center justify-between md:justify-center">
         {/* Logo (mobile left, desktop centered) */}
@@ -76,11 +75,10 @@ useEffect(() => {
               >
                 <Link
                   href={item.path}
-                  className={`block px-3 py-1 h-full flex items-center justify-center transition-colors border-b-2 ${
-                    isActive
-                      ? "border-[#008492] text-[#008492] font-semibold"
-                      : "border-transparent text-[#ededed] hover:text-[#008492]"
-                  }`}
+                  className={`block px-3 py-1 h-full flex items-center justify-center transition-colors border-b-2  ${isActive
+                    ? "border-[#008492] text-white font-semibold"
+                    : "border-transparent text-[#ededed] hover:text-[#008492]"
+                    }`}
                   aria-current={isActive ? "page" : undefined}
                 >
                   {item.label}
@@ -94,6 +92,33 @@ useEffect(() => {
         <div className="hidden md:block absolute right-[20%] top-1/2 -translate-y-1/2 z-20">
           <Search className="w-[15px] h-[15px] text-[#ededed] cursor-pointer" />
         </div>
+        <div className="flex-1 flex mr-5 justify-end md:hidden gap-3">
+          {/* Email */}
+          <a
+            href="mailto:info@dsllimoservice.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-9 h-9 rounded-md bg-[#F56040] text-white shadow"
+            onClick={() => setIsOpen(false)}
+            aria-label="Email"
+          >
+            <MdEmail className="w-6 h-6" />
+          </a>
+
+          {/* WhatsApp */}
+          <a
+            href="https://wa.me/+1 800 679 3415"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-9 h-9 rounded-md bg-[#25D366] text-white shadow"
+            onClick={() => setIsOpen(false)}
+            aria-label="WhatsApp"
+          >
+            <FaWhatsapp className="w-6 h-6" />
+          </a>
+        </div>
+
+
 
         {/* Mobile menu button */}
         <button
@@ -103,7 +128,7 @@ useEffect(() => {
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </nav>
-{/* gg */}
+      {/* gg */}
       {/* Mobile menu with framer-motion animation */}
       <AnimatePresence>
         {mobileOpen && (
@@ -122,11 +147,10 @@ useEffect(() => {
                   key={item.label}
                   href={item.path}
                   onClick={() => setMobileOpen(false)}
-                  className={`text-lg font-medium transition-colors ${
-                    isActive
-                      ? "text-[#008492] font-semibold"
-                      : "text-white hover:text-[#008492]"
-                  }`}
+                  className={`text-lg font-medium transition-colors ${isActive
+                    ? "text-[#008492] font-semibold"
+                    : "text-white hover:text-[#008492]"
+                    }`}
                 >
                   {item.label}
                 </Link>

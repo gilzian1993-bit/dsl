@@ -29,7 +29,7 @@ const ContactSection: React.FC = () => {
         const toastId = toast.loading('Sending message...');
 
         try {
-            const response = await fetch('https://devsquare-apis.vercel.app/api/dslLimoService/contact ', {
+            const response = await fetch('https://devsquare-apis.vercel.app/api/dslLimoService/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -56,8 +56,10 @@ const ContactSection: React.FC = () => {
             } else {
                 toast.error('Failed to send message!', { id: toastId });
             }
+        } finally {
+            // ✅ Reset loading state
+            setIsSubmitting(false);
         }
-
     };
 
     return (
@@ -97,6 +99,7 @@ const ContactSection: React.FC = () => {
                                 name="subject"
                                 value={formData.subject}
                                 onChange={handleChange}
+                                required
                                 className="w-full h-10 px-3 border border-gray-200 rounded bg-white focus:border-gray-400 focus:ring-0"
                             />
                         </div>
@@ -106,6 +109,7 @@ const ContactSection: React.FC = () => {
                                 name="message"
                                 value={formData.message}
                                 onChange={handleChange}
+                                required
                                 rows={7}
                                 className="w-full px-3 py-2 border border-gray-200 rounded bg-white resize-none focus:border-gray-400 focus:ring-0"
                             />

@@ -48,13 +48,13 @@ interface PassengerDetailsFormProps {
     flightNumber?: string;
     returnDate?: string;
     returnTime?: string;
+    finalTotal?: number;
   }) => void;
   onBack: () => void;
   tripType: string;
   meetGreetYes: boolean;
   setMeetGreetYes: React.Dispatch<React.SetStateAction<boolean>>;
-  airportPickup: boolean;
-  setAirportPickup: React.Dispatch<React.SetStateAction<boolean>>;
+  finalTotal: number;
   vehicle: VehicleOption;
   totalPrice: number;
   onPriceChange: (updatedTotal: number) => void;
@@ -66,11 +66,11 @@ export default function PassengerDetailsForm({
   tripType,
   meetGreetYes,
   setMeetGreetYes,
-  airportPickup,
-  setAirportPickup,
+
   vehicle,
   totalPrice,
   onPriceChange,
+  finalTotal,
 }: PassengerDetailsFormProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -96,7 +96,7 @@ export default function PassengerDetailsForm({
   const [showMeetGreet, setShowMeetGreet] = useState(false);
   const [showCarSeats, setShowCarSeats] = useState(false);
   const [showReturnTrip, setShowReturnTrip] = useState(false);
-
+  const [airportPickup, setAirportPickup] = useState(false);
   // 🔹 Real-time price calculation
   useEffect(() => {
     const seatCharge = carSeats ? (rearFacingSeat + boosterSeat) * 10 : 0;
@@ -132,6 +132,7 @@ export default function PassengerDetailsForm({
         meetGreetYes,
         airportPickup,
         carSeats,
+        finalTotal,
         returnTrip,
         rearFacingSeat: carSeats ? rearFacingSeat : 0,
         boosterSeat: carSeats ? boosterSeat : 0,
@@ -284,7 +285,7 @@ export default function PassengerDetailsForm({
             </div>
           </label>
           <span className="text-base text-gray-700">Airport Pickup</span>
-          <Info className="w-4 h-4 text-gray-400" />
+          {/* <Info className="w-4 h-4 text-gray-400" /> */}
         </div>
 
         {/* Meet & Greet */}
@@ -311,7 +312,7 @@ export default function PassengerDetailsForm({
             </div>
           </label>
           <span className="text-base text-gray-700">Meet & Greet</span>
-          <Info className="w-4 h-4 text-gray-400" />
+          {/* <Info className="w-4 h-4 text-gray-400" /> */}
         </div>
       </div>
 
@@ -320,7 +321,7 @@ export default function PassengerDetailsForm({
       {/* Car Seats + Return Trip */}
       <div className="mb-6 flex md:flex-row flex-col sm:items-center sm:gap-6 gap-4">
         {/* Car Seats Toggle */}
-        <div className="flex items-center gap-2">
+        <div className="flex  items-center gap-2 relative group">
           <label className="relative items-center cursor-pointer">
             <input
               type="checkbox"
@@ -328,8 +329,6 @@ export default function PassengerDetailsForm({
               onChange={() => {
                 setCarSeats(!carSeats);
                 setShowCarSeats(!showCarSeats);
-
-
               }}
               className="sr-only"
             />
@@ -344,7 +343,15 @@ export default function PassengerDetailsForm({
             </div>
           </label>
           <span className="text-base text-gray-900">Car Seats?</span>
-          <Info className="w-4 h-4 text-gray-400" />
+
+          {/* Info icon with tooltip */}
+          <div className="relative group">
+            <Info className="w-4 h-4 text-gray-400 cursor-pointer" />
+            {/* Tooltip card */}
+            <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+              $10 will be added in total price for per rear and booster seats.
+            </div>
+          </div>
         </div>
 
         {/* Return Trip Toggle */}
@@ -371,7 +378,7 @@ export default function PassengerDetailsForm({
             </div>
           </label>
           <span className="text-base text-gray-900">Return Trip?</span>
-          <Info className="w-4 h-4 text-gray-400" />
+          {/* <Info className="w-4 h-4 text-gray-400" /> */}
         </div>
       </div>
       {/* Flight Info if Airport Pickup */}
@@ -379,7 +386,7 @@ export default function PassengerDetailsForm({
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-base font-bold text-gray-900">Flight Departure Information</h3>
-            <Info className="w-4 h-4 text-gray-400" />
+            {/* <Info className="w-4 h-4 text-gray-400" /> */}
           </div>
           <p className="text-base text-gray-600 mb-4">
             Helps us schedule your pickup accordingly and ensure timely drop-off at the airport.

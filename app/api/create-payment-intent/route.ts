@@ -7,17 +7,12 @@ export async function POST(request: NextRequest) {
   try {
     const { amount } = await request.json();
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount,
+      amount: amount * 100,
       currency: "usd",
       automatic_payment_methods: { enabled: true },
-      payment_method_options: {
-        card: {
-          setup_future_usage: null,
-        },
-      },
-
     });
-    console.log("paymentIntent : ",paymentIntent)
+
+    console.log("paymentIntent : ", paymentIntent)
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error("Internal Error:", error);

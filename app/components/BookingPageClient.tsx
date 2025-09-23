@@ -61,14 +61,14 @@ export default function BookingPageClient() {
   const pickupTime = searchParams.get("pickupTime") || "";
   const tripType = searchParams.get("tripType") || "";
   const hours = Number(searchParams.get("hours") || 0);
-
+  const distance = Number(searchParams.get("distance") || 0);
   return (
     <div>
       {/* Step 1: Vehicle Selection */}
       {step === 1 && (
         <VehicleSelection
           step={step}
-          onNext={(vehicle:VehicleOption) => {
+          onNext={(vehicle: VehicleOption) => {
             setSelectedVehicle(vehicle);
             setStep(2);
           }}
@@ -102,7 +102,8 @@ export default function BookingPageClient() {
           email={userInfo.email}
           phone={userInfo.phone}
           tripType={userInfo.tripType}
-
+          distance={distance}
+          
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
           pickupDate={pickupDate}

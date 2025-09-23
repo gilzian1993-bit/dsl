@@ -9,7 +9,7 @@ export default function Fleet() {
         title="OUR FLEET"
         subtitle="We offer you a super VIP experience in New York, New Jersey, NYC Metro, LUX"
         backgroundImage="/serve-image.png"
-        image="/fleet-image.png" // only one image now
+        image="/fleet-header.png" // only one image now
       />
       <OurFleetSection/>
     </>

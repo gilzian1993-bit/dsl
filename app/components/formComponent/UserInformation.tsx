@@ -218,9 +218,9 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [showModal, setShowModal] = useState(false);
     const [showTripDetailsMobile, setShowTripDetailsMobile] = useState(false);
     const [meetGreetYes, setMeetGreetYes] = useState(false);
-    const [airportPickup, setAirportPickup] = useState(false);
+    // const [airportPickup, setAirportPickup] = useState(false);
     const meetGreetCost = meetGreetYes ? 25 : 0;
-    const airportPickupCost = airportPickup ? 5 : 0;
+    // const airportPickupCost = airportPickup ? 5 : 0;
 
 
     // helper to normalize vehicle.price
@@ -233,7 +233,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
     const basePrice = getVehiclePrice(vehicle);
 
-    const totalPrice = basePrice + meetGreetCost + airportPickupCost;
+    const totalPrice = basePrice + meetGreetCost;
     const [finalTotal, setFinalTotal] = useState(totalPrice);
 
 
@@ -648,8 +648,8 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
                         <div className="w-full mx-auto space-y-4 mt-4 px-4">   <PassengerDetailsForm onBack={onBack} onNext={(data) => {
                             onNext(data); 
-                        }} totalPrice={totalPrice} tripType={tripType} meetGreetYes={meetGreetYes}              // ✅ pass value
-                            onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)} setMeetGreetYes={setMeetGreetYes} airportPickup={airportPickup} setAirportPickup={setAirportPickup} vehicle={vehicle} /></div>
+                        }} totalPrice={totalPrice} tripType={tripType} finalTotal={finalTotal}  meetGreetYes={meetGreetYes}              // ✅ pass value
+                            onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)} setMeetGreetYes={setMeetGreetYes}  vehicle={vehicle} /></div>
                     </div>
 
 
