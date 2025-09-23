@@ -205,7 +205,7 @@ export default function PaymentCard({
             if (paymentIntent?.status === "succeeded") {
                 // ✅ FIXED: Make booking API call but don't block redirect on errors
                 try {
-                    await fetch("http://localhost:3002/api/dslLimoService/booking", {
+                    await fetch("https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
