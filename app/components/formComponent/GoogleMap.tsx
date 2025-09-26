@@ -17,10 +17,11 @@ interface GoogleMapsRouteProps {
 
 declare global {
   interface Window {
-    google: any
-    initMap: () => void
+    google: typeof google; // Explicitly using the existing google object type
+    initMap: () => void;
   }
 }
+
 const API_KEY = "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU";
 
 
