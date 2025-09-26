@@ -133,6 +133,7 @@ export default function BookingForm(props: BookingFormProps) {
     setHours(hour);
     setOpen(false);
   };
+  
 
   // ✅ Validate fields before booking
   const validateForm = () => {

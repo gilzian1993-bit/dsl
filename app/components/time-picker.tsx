@@ -113,7 +113,7 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
         </div>
 
         {/* AM/PM */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col justify-end items-center">
           <label className="text-sm font-medium text-gray-600 mb-2">Period</label>
           <select
             value={period}
@@ -132,20 +132,16 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
       </div>
 
       {/* OK and Cancel Buttons */}
-      <div className="flex gap-4 mt-4">
-        <button
-          onClick={handleOK}
-          className="bg-[#008492] hover:bg-[#007472] text-white py-3 px-6 rounded-md font-semibold transition"
-        >
-          OK
-        </button>
-        <button
-          onClick={handleCancel}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-900 py-3 px-6 rounded-md font-semibold transition"
-        >
-          Cancel
-        </button>
-      </div>
+<div className="flex justify-end gap-4 mt-4">
+  <button
+    onClick={handleOK}
+    className="bg-[#008492] hover:bg-[#007472] text-white py-3 px-6 rounded-md font-semibold transition"
+  >
+    OK
+  </button>
+</div>
+
+
     </div>
   );
 };
