@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Mail, Phone, House } from 'lucide-react';
+import { Mail, Phone, House, MapPin } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 const ContactSection: React.FC = () => {
@@ -151,84 +151,44 @@ const ContactSection: React.FC = () => {
                     <div>
                         <h3 className="text-xs font-bold text-gray-700 mb-2 tracking-wider uppercase">Before Contacting Us</h3>
                         <p className="text-sm text-gray-600">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Non rhoncus in velit, morbi magna sapien velit aliquam.
+                            DSL Limo offers top-rated limousine and car services in New York and New Jersey, with professional, licensed drivers. We ensure secure, memorable rides to airports or nearby states at reasonable rates. With a vast network and quick response time, customer satisfaction is our top priority.
                         </p>
                     </div>
                     <div>
                         <h3 className="text-xs font-bold text-gray-700 mb-2 tracking-wider uppercase">Contact Information</h3>
                         <div className="space-y-2 text-sm text-gray-700">
-                            <div className="flex items-start">
-                                <img src="/direction-sign.svg" alt="Address" className="w-5 h-5 mr-2 inline" />
-                                184 Main Collins Street West Victoria 8007 Australia
+                            <div className="flex items-start gap-4">
+                               <MapPin className="w-4 h-4 text-black  flex-shrink-0" />
+                                3193 Washington Rd, Parlin, NJ 08859, USA
                             </div>
-                            <div className="flex items-center">
-                                <img src="/phone.svg" alt="Phone" className="w-5 h-5 mr-2 inline" />
-                                800-222-222
+                            <div className="flex items-center gap-4">
+                                <Phone className="w-4 h-4  flex-shrink-0" />
+                               <a  href="tel:+18006793415">+1 800 679 3415</a> 
                             </div>
-                            <div className="flex items-center">
-                                <img src="/email.svg" alt="Email" className="w-5 h-5 mr-2 inline" />
-                                contact@abc.com
+                            <div className="flex items-center gap-4">
+                                <Mail className="w-4 h-4 flex-shrink-0" />
+                               <a href="mailto:info@dsllimoservice.com">info@dsllimoservice.com</a> 
                             </div>
-                            <div className="flex items-center">
-                                <img src="/clock.svg" alt="Hours" className="w-5 h-5 mr-2 inline" />
-                                Everyday 9:00-17:00
-                            </div>
+                           
                         </div>
                     </div>
                     <div>
                         <h3 className="text-xs font-bold text-gray-700 mb-2 tracking-wider uppercase">Social Media</h3>
                         <div className="flex gap-3">
-                            <a href="#" className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                            <a href="https://www.facebook.com/share/19umZJX6Cc/?mibextid=wwXIfr" className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition">
                                 <img src="/facebook.svg" alt="Facebook" className="w-5 h-5" />
                             </a>
-                            <a href="#" className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition">
-                                <img src="/twitter.svg" alt="Twitter" className="w-5 h-5" />
-                            </a>
-                            <a href="#" className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                           
+                            <a href="https://www.instagram.com/dsl_limo25?igsh=c3A5eXY4NjlnYXN2&utm_source=qr" className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition">
                                 <img src="/instagram.svg" alt="Instagram" className="w-5 h-5" />
                             </a>
-                            <a href="#" className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition">
-                                <img src="/pinterest.svg" alt="Pinterest" className="w-5 h-5" />
-                            </a>
-                            <a href="#" className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition">
-                                <img src="/dribble.svg" alt="Dribble" className="w-5 h-5" />
-                            </a>
+                            
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Contact Methods Cards Section */}
-            <div className="w-full flex flex-col items-center justify-center mt-16">
-                <div className="w-full bg-cover bg-center py-10" style={{ backgroundImage: "url('/images/contact.jpg')" }}>
-                    <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6 justify-center items-center">
-                        {/* Card 1: Email */}
-                        <div className="bg-white rounded shadow-md flex-1 max-w-xs mx-2 flex flex-col items-center py-8 px-4">
-                            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0097a7] mb-4">
-                                <Mail className="w-8 h-8  fill-current text-white" />
-                            </div>
-                            <h4 className="text-base font-semibold mb-2 text-gray-800">Contact By Email</h4>
-                            <p className="text-sm text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        </div>
-                        {/* Card 2: Phone */}
-                        <div className="bg-white rounded shadow-md flex-1 max-w-xs mx-2 flex flex-col items-center py-8 px-4">
-                            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0097a7] mb-4">
-                                <Phone className="w-8 h-8  fill-current text-white" />
-                            </div>
-                            <h4 className="text-base font-semibold mb-2 text-gray-800">Contact By Phone</h4>
-                            <p className="text-sm text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        </div>
-                        {/* Card 3: Visit */}
-                        <div className="bg-white rounded shadow-md flex-1 max-w-xs mx-2 flex flex-col items-center py-8 px-4">
-                            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0097a7] mb-4">
-                                <House className="w-8 h-8  fill-current text-white" />
-                            </div>
-                            <h4 className="text-base font-semibold mb-2 text-gray-800">Come To See Us</h4>
-                            <p className="text-sm text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          
 
         </div>
     );

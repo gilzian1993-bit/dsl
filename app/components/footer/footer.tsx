@@ -16,9 +16,32 @@ export default function Footer() {
               </Link>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
-              Cum sociis natoque penatibus et magnis dis parturient montes,
-              nascetur ridiculus mus. Morbi leo risus, porta.
+             DSL Limo offers top-rated limousine and car services in New York and New Jersey, with professional, licensed drivers. We ensure secure, memorable rides to airports or nearby states at reasonable rates. With a vast network and quick response time, customer satisfaction is our top priority.
             </p>
+            <h1 className="text-2xl mt-4 mb-4">SOCIAL LINKS</h1>
+            <div className="hidden md:flex flex-wrap gap-4">
+              {[
+                { href: "https://www.facebook.com/share/19umZJX6Cc/?mibextid=wwXIfr", src: "/facebook.svg", alt: "facebook" },
+                { href: "https://www.instagram.com/dsl_limo25?igsh=c3A5eXY4NjlnYXN2&utm_source=qr", src: "/instagram.svg", alt: "instagram" },
+              ].map((icon) => (
+                <a
+                  key={icon.alt}
+                  href={icon.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition"
+                >
+                  <Image
+                    src={icon.src}
+                    alt={icon.alt}
+                    width={22}
+                    height={22}
+                    className="object-contain  w-8 h-8"
+                  />
+                </a>
+              ))}
+            </div>
+
           </div>
 
           {/* Pages */}
@@ -78,9 +101,9 @@ export default function Footer() {
                 <MapPin className="w-4 h-4 text-gray-300 mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300 text-sm">
-                    123 Main Centre Street West,
+                    3193 Washington Rd, Parlin, NJ 08859, USA
                   </p>
-                  <p className="text-gray-300 text-sm">NY 10001 USA</p>
+
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -113,13 +136,14 @@ export default function Footer() {
             </div>
 
             {/* Mobile social icons */}
+             <h1 className="text-2xl mt-4 mb-4 md:hidden block">SOCIAL LINKS</h1>
             <div className="flex md:hidden block mt-4 gap-4">
               {[
                 { href: "https://www.facebook.com/share/19umZJX6Cc/?mibextid=wwXIfr", src: "/facebook.svg", alt: "facebook" },
-                { href: "https://twitter.com", src: "/twitter.svg", alt: "twitter" },
-                { href: "https://dribbble.com", src: "/dribble.svg", alt: "dribbble" },
-                { href: "https://pinterest.com", src: "/pinterest.svg", alt: "pinterest" },
-                { href: "https://google.com", src: "/google.svg", alt: "google" },
+                // { href: "https://twitter.com", src: "/twitter.svg", alt: "twitter" },
+                // { href: "https://dribbble.com", src: "/dribble.svg", alt: "dribbble" },
+                // { href: "https://pinterest.com", src: "/pinterest.svg", alt: "pinterest" },
+                // { href: "https://google.com", src: "/google.svg", alt: "google" },
                 { href: "https://www.instagram.com/dsl_limo25?igsh=c3A5eXY4NjlnYXN2&utm_source=qr", src: "/instagram.svg", alt: "instagram" },
               ].map((icon) => (
                 <a
@@ -127,14 +151,14 @@ export default function Footer() {
                   href={icon.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:opacity-80 transition"
+                  className="hover:opacity-80 transition "
                 >
                   <Image
                     src={icon.src}
                     alt={icon.alt}
                     width={22}
                     height={22}
-                    className="w-5 h-5 sm:w-6 sm:h-6"
+                    className="w-5 h-5 sm:w-7 sm:h-7"
                   />
                 </a>
               ))}
@@ -145,38 +169,17 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="bg-[#0F0F0F]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-6 gap-4">
-          <p className="text-gray-400 text-xs sm:text-sm text-center md:text-left">
-            Copyright © {new Date().getFullYear()} Grand Limo. All Rights
+        <div className="max-w-6xl mx-auto flex  md:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 py-6 gap-4">
+          <p className="text-gray-400 text-xs sm:text-sm  text-left">
+            Copyright © {new Date().getFullYear()} DSL Limo Services. All Rights
             Reserved
           </p>
 
           {/* Desktop social icons */}
-          <div className="hidden md:flex flex-wrap justify-center gap-4">
-            {[
-              { href: "https://www.facebook.com/share/19umZJX6Cc/?mibextid=wwXIfr", src: "/facebook.svg", alt: "facebook" },
-              { href: "https://twitter.com", src: "/twitter.svg", alt: "twitter" },
-              { href: "https://dribbble.com", src: "/dribble.svg", alt: "dribbble" },
-              { href: "https://pinterest.com", src: "/pinterest.svg", alt: "pinterest" },
-              { href: "https://google.com", src: "/google.svg", alt: "google" },
-              { href: "https://www.instagram.com/dsl_limo25?igsh=c3A5eXY4NjlnYXN2&utm_source=qr", src: "/instagram.svg", alt: "instagram" },
-            ].map((icon) => (
-              <a
-                key={icon.alt}
-                href={icon.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-80 transition"
-              >
-                <Image
-                  src={icon.src}
-                  alt={icon.alt}
-                  width={22}
-                  height={22}
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                />
-              </a>
-            ))}
+          <div className=" md:flex flex-wrap justify-center gap-4">
+            <p className="text-gray-400 text-xs sm:text-sm text-center md:text-left">
+              Developed by,<a href="https://thedevsquare.com/"> The DevSquare</a> 
+            </p>
           </div>
         </div>
       </div>

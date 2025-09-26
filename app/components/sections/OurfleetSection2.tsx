@@ -21,7 +21,7 @@ const vehicles = [
     type: "SEDAN",
     image: "/images/sedan/cadilac-xts.png",
     features: [
-      { icon: Users, text: "3 Passengers" },
+      { icon: Users, text: "2-3 Passengers" },
       { icon: Briefcase, text: "2 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "WiFi Hot Spot" },
@@ -33,7 +33,7 @@ const vehicles = [
     type: "SEDAN",
     image: "/images/sedan/lincoln.png",
     features: [
-      { icon: Users, text: "3 Passengers" },
+      { icon: Users, text: "2-3 Passengers" },
       { icon: Briefcase, text: "2 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "WiFi Hot Spot" },
@@ -45,7 +45,7 @@ const vehicles = [
     type: "SEDAN",
     image: "/images/sedan/cadilac.cts.png",
     features: [
-      { icon: Users, text: "3 Passengers" },
+      { icon: Users, text: "2-3 Passengers" },
       { icon: Briefcase, text: "2 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "WiFi Hot Spot" },
@@ -57,8 +57,8 @@ const vehicles = [
     type: "SEDAN",
     image: "/images/sedan/cadilac.png",
     features: [
-      { icon: Users, text: "4 Passengers" },
-      { icon: Briefcase, text: "3 Luggage" },
+      { icon: Users, text: "2-3 Passengers" },
+      { icon: Briefcase, text: "2 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "WiFi Hot Spot" },
     ],
@@ -69,8 +69,8 @@ const vehicles = [
     type: "MID SUV",
     image: "/images/SUV/lincoln-aviator.png",
     features: [
-      { icon: Users, text: "2-7 Passengers" },
-      { icon: Briefcase, text: "2-3 Suitcase" },
+      { icon: Users, text: "2-3 Passengers" },
+      { icon: Briefcase, text: "4 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "USB Port: Yes" },
     ],
@@ -81,8 +81,8 @@ const vehicles = [
     type: "MID SUV",
     image: "/images/SUV/cadilac-xt6.png",
     features: [
-      { icon: Users, text: "2-7 Passengers" },
-      { icon: Briefcase, text: "2-3 Suitcase" },
+      { icon: Users, text: "2-3 Passengers" },
+      { icon: Briefcase, text: "4 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "USB Port: Yes" },
     ],
@@ -94,7 +94,7 @@ const vehicles = [
     image: "/images/SUV/chevrolet.png",
     features: [
       { icon: Users, text: "6-7 Passengers" },
-      { icon: Briefcase, text: "6-7 Suitcase" },
+      { icon: Briefcase, text: "6-7 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "USB Port: Yes" },
     ],
@@ -106,7 +106,7 @@ const vehicles = [
     image: "/images/SUV/cadilac-escalate.png",
     features: [
       { icon: Users, text: "6-7 Passengers" },
-      { icon: Briefcase, text: "6-7 Suitcase" },
+      { icon: Briefcase, text: "6-7 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "USB Port: Yes" },
     ],
@@ -118,7 +118,7 @@ const vehicles = [
     image: "/images/SUV/GMC.png",
     features: [
       { icon: Users, text: "6-7 Passengers" },
-      { icon: Briefcase, text: "6-7 Suitcase" },
+      { icon: Briefcase, text: "6-7 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "USB Port: Yes" },
     ],
@@ -130,7 +130,7 @@ const vehicles = [
     image: "/images/SUV/lincol-navigator.png",
     features: [
       { icon: Users, text: "6-7 Passengers" },
-      { icon: Briefcase, text: "6-7 Suitcase" },
+      { icon: Briefcase, text: "6-7 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "USB Port: Yes" },
     ],
@@ -142,7 +142,7 @@ const vehicles = [
     image: "/images/spinter/spinter.png",
     features: [
       { icon: Users, text: "11 Passengers" },
-      { icon: Briefcase, text: "12 Suitcase" },
+      { icon: Briefcase, text: "12 Luggage" },
       { icon: Wind, text: "Air Conditioning: Yes" },
       { icon: Wifi, text: "USB Port: Yes" },
     ],
