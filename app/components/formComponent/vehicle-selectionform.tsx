@@ -19,7 +19,8 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import MapComponent from "./GoogleMap";
-import type { Location } from "./GoogleMap";
+import GoogleMapsRoute from "./GoogleMap";
+
 
 // interfaces
 interface PriceBreakdown {
@@ -180,7 +181,7 @@ const vehicles: VehicleOption[] = [
         image: "/images/spinter/spinter.png",
         price: 250,
         hourly: 250,
-        passengers: 14,
+        passengers: 11,
         bags: 10,
         features: ["WiFi", "TV Screen", "Extra Legroom"],
     },
@@ -224,7 +225,6 @@ export default function VehicleSelection({
     const mapCenter =
         pickupLat && pickupLng ? { lat: pickupLat, lng: pickupLng } : { lat: 34.0522, lng: -118.2437 };
 
-
     function calculatePrice(
         vehicle: VehicleOption,
         distance: number,
@@ -233,72 +233,103 @@ export default function VehicleSelection({
     ) {
         let basePrice = 0;
 
+        // Adjust pricing based on tripType
         if (tripType === "hourly") {
-
             basePrice = Number((hours * vehicle.hourly).toFixed(2));
-
         } else {
-
-            switch (vehicle.type) {
-                case "SEDAN":
-                    basePrice =
-                        distance <= 10
+            // Adjust pricing for LaGuardia Airport (LGA) and John F. Kennedy International Airport (JFK)
+            if (pickupLocation === "LaGuardia Airport (LGA)") {
+                if (vehicle.type === "SEDAN") {
+                    basePrice = distance <= 13 ? 210 : 210 + (distance - 13) * 3;
+                } else if (vehicle.type === "MID SUV") {
+                    basePrice = distance <= 13 ? 220 : 220 + (distance - 13) * 3.25;
+                } else if (vehicle.type === "SUV") {
+                    basePrice = distance <= 13 ? 240 : 240 + (distance - 13) * 3.50;
+                } else if (vehicle.type === "SPRINTER") {
+                    basePrice = distance <= 15 ? 210 : 210 + (distance - 15) * 7;
+                }
+            } else if (pickupLocation === "John F. Kennedy International Airport (JFK)") {
+                if (vehicle.type === "SEDAN") {
+                    basePrice = distance <= 13 ? 270 : 270 + (distance - 13) * 3;
+                } else if (vehicle.type === "MID SUV") {
+                    basePrice = distance <= 13 ? 280 : 280 + (distance - 13) * 3.25;
+                } else if (vehicle.type === "SUV") {
+                    basePrice = distance <= 13 ? 300 : 300 + (distance - 13) * 3.50;
+                } else if (vehicle.type === "SPRINTER") {
+                    basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
+                }
+            }
+            // Adjust pricing for other locations...
+            else if (pickupLocation === "Newark Liberty International Airport (EWR)") {
+                if (vehicle.type === "SEDAN") {
+                    basePrice = distance <= 13 ? 100 : 100 + (distance - 13) * 3;
+                } else if (vehicle.type === "MID SUV") {
+                    basePrice = distance <= 13 ? 120 : 120 + (distance - 13) * 3.25;
+                } else if (vehicle.type === "SUV") {
+                    basePrice = distance <= 13 ? 150 : 150 + (distance - 13) * 3.75;
+                } else if (vehicle.type === "SPRINTER") {
+                    basePrice = distance <= 15 ? 260 : 260 + (distance - 15) * 7;
+                }
+            }
+            // Default pricing for other locations
+            else {
+                switch (vehicle.type) {
+                    case "SEDAN":
+                        basePrice = distance <= 10
                             ? 85
                             : distance <= 20
                                 ? 100
                                 : 100 + (distance - 20) * 3;
-                    break;
-
-                case "MID SUV":
-                    basePrice =
-                        distance <= 10
+                        break;
+                    case "MID SUV":
+                        basePrice = distance <= 10
                             ? 95
                             : distance <= 20
                                 ? 110
                                 : 110 + (distance - 20) * 3.25;
-                    break;
-
-                case "SUV":
-                    basePrice =
-                        distance <= 10
+                        break;
+                    case "SUV":
+                        basePrice = distance <= 10
                             ? 110
                             : distance <= 20
                                 ? 125
                                 : 125 + (distance - 20) * 3.75;
-                    break;
-
-                case "SPRINTER":
-                    basePrice =
-                        distance <= 17
+                        break;
+                    case "SPRINTER":
+                        basePrice = distance <= 17
                             ? distance * 7
                             : distance <= 38
                                 ? 250
                                 : 250 + (distance - 38) * 2.3;
-                    break;
-
-                default:
-                    basePrice = vehicle.price;
+                        break;
+                    default:
+                        basePrice = vehicle.price;
+                }
             }
-
         }
-
 
         const gratuity = basePrice * 0.20;
         const tax = basePrice * 0.05;
 
-        const airportFee = 5;
-
-        const total = basePrice + gratuity + tax + airportFee;
+        // Add airport fee only for airport rides
+        const airportFee = tripType === "airport_ride" ? 5 : 0;
+        const countryCharges = tripType === "airport_ride" ? 10 : 0;
+        const total = basePrice + gratuity + tax + airportFee + countryCharges;
 
         console.log("Base:", basePrice);
         console.log("Gratuity (20%):", gratuity);
-
         console.log("Tax (5%):", tax);
         console.log("Airport Fee:", airportFee);
         console.log("Total:", total);
         console.log("Distance:", distance);
-        return { basePrice, gratuity, tax, airportFee, total };
+        console.log("Country charges:", countryCharges);
+
+        return { basePrice, gratuity, tax, airportFee, total, countryCharges };
     }
+
+
+
+
 
 
     useEffect(() => {
@@ -307,7 +338,7 @@ export default function VehicleSelection({
                 Object.keys(groupedVehicles).forEach((type) => {
                     handleNext(type);
                 });
-            }, 3000);
+            }, 6000);
             return () => clearInterval(interval);
         }
     }, []);
@@ -334,22 +365,14 @@ export default function VehicleSelection({
                 {/* LEFT PANEL (Trip Details + Map) */}
                 <div className="w-full md:w-80 p-4">
                     <div className="mb-6">
-                        <div className="w-full  shadow-md bg-white overflow-hidden rounded-lg">
+                        <div className="w-full ">
                             {/* Google Maps Embed showing route from pickup to drop location */}
 
 
-                            <MapComponent
-                                mapCenter={mapCenter}
-                                selectedLocation={undefined}
-                                officeLocations={[]}
-                                // transformOfficeData={(office: Office) => office}
-                                handleCardClick={(location: Location) => console.log(location)}
-                                pickupLat={pickupLat.toString()}
-                                pickupLng={pickupLng.toString()}
-                                dropLat={dropLat.toString()}
-                                dropLng={dropLng.toString()}
+                            <GoogleMapsRoute
+                                fromCoords={{ lat: pickupLat, lng: pickupLng }}
+                                toCoords={{ lat: dropLat, lng: dropLng }}
                             />
-
 
 
                         </div>
@@ -549,7 +572,7 @@ export default function VehicleSelection({
                                 </div>
                                 <div className="md:hidden block  p-4 flex flex-col items-center gap-2">
 
-                                    <div className="flex flex-row gap-4">  <h3 className="font-bold text-lg text-gray-800 text-center">{current.name}</h3>
+                                    <div className="flex flex-row gap-4">  <h3 className="font-bold text-lg text-gray-800 text-center">{getVehicleTitle(type)}</h3>
                                         <button
                                             type="button"
                                             onClick={() => setOpenVehicleModalId(openVehicleModalId === current.id ? null : current.id)}
@@ -607,12 +630,14 @@ export default function VehicleSelection({
                                         <span>{current.passengers}</span>
                                     </div>
 
-                                    {/* Price (centered) */}
-                                    <div className="text-xl font-bold text-gray-900  text-center">
-                                        ${breakdown.total.toFixed(2)}
+                                   {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
+                                        <div className="text-gray-900 font-bold text-xl mt-4">
+                                            ${breakdown.total.toFixed(2)}
 
 
-                                    </div>
+
+
+                                        </div>)}
 
                                     {/* Bags */}
                                     <div className="flex items-center bg-[#F6F6F6] border border-[#008492] px-3 py-2 rounded-full gap-1">
@@ -622,29 +647,41 @@ export default function VehicleSelection({
                                 </div>
 
 
-                                <button
-                                    onClick={() => {
-                                        setLoadingVehicleId(current.id); // set which vehicle is loading
-                                        const selectedVehicle: VehicleOption = {
-                                            ...current,
-                                            price: breakdown.total,
-                                            vehicleTitle: getVehicleTitle(current.type),
-                                            tripType: tripType,
-                                        };
-                                        setTimeout(() => {
-                                            onNext(selectedVehicle);
-                                            // don’t reset loading here, component will unmount anyway
-                                        }, 500);
-                                    }}
-                                    disabled={loadingVehicleId === current.id}
-                                    className="bg-[#008492] md:hidden block hover:bg-[#007472] text-white px-4 py-2 rounded-md font-medium w-full flex justify-center items-center gap-2"
-                                >
-                                    {loadingVehicleId === current.id ? (
-                                        <div className="w-5 h-5 border border-gray-300 border-t-4 border-t-white rounded-full animate-spin"></div>
+                                <div className="flex flex-col justify-end">
+                                    {/* Show the Request button for Sprinter on Mobile (when tripType is pointToPoint or hourlyRate) */}
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? (
+                                        <button
+                                            onClick={() => router.push("/contact")}  // Navigate to the contact page
+                                            className="flex items-center justify-center  gap-2 bg-[#008492] hover:bg-[#008492] text-white px-5 py-2 rounded-md font-medium text-sm md:hidden block"
+                                        >
+                                            Request
+                                        </button>
                                     ) : (
-                                        "Select Vehicle"
+                                        <button
+                                            onClick={() => {
+                                                setLoadingVehicleId(current.id); // Set the vehicle as loading
+                                                const selectedVehicle: VehicleOption = {
+                                                    ...current,
+                                                    price: breakdown.total,
+                                                    vehicleTitle: getVehicleTitle(current.type),
+                                                    tripType: tripType,
+                                                };
+                                                setTimeout(() => {
+                                                    onNext(selectedVehicle);  // Proceed with the selected vehicle
+                                                }, 500);
+                                            }}
+                                            disabled={loadingVehicleId === current.id}
+                                            className="bg-[#008492] md:hidden block hover:bg-[#007472] text-white px-4 py-2 rounded-md font-medium w-full flex justify-center items-center gap-2"
+                                        >
+                                            {loadingVehicleId === current.id ? (
+                                                <div className="w-5 h-5 border border-gray-300 border-t-4 border-t-white rounded-full animate-spin"></div>
+                                            ) : (
+                                                "Select Vehicle"
+                                            )}
+                                        </button>
                                     )}
-                                </button>
+                                </div>
+
 
 
                                 {/* Vehicle Info */}
@@ -654,7 +691,7 @@ export default function VehicleSelection({
                                         {/* Title + Info icon */}
                                         <div className="flex items-center gap-2 group relative">
                                             <h3 className="text-lg mt-1 font-semibold text-gray-800 uppercase">
-                                                Luxury - {getVehicleTitle(type)}
+                                                {getVehicleTitle(type)}
                                             </h3>
 
                                             <button type="button" className="focus:outline-none">
@@ -722,52 +759,55 @@ export default function VehicleSelection({
                                 {/* Action */}
                                 {/* Right section (button + price) */}
                                 <div className="flex md:block hidden flex-col items-end gap-2 min-w-[150px]">
-                                    <button
-                                        onClick={() => {
-                                            setLoadingVehicleId(current.id);
-                                            const selectedVehicle: VehicleOption = {
-                                                ...current,
-                                                price: breakdown.total,
-                                                vehicleTitle: getVehicleTitle(current.type),
-                                                tripType: tripType,
-                                                basePrice: breakdown.basePrice,
-                                                gratuity: 20,
-                                             
-                                                airportFee: 5,
-                                                tax: 5,
-                                                total: calculatePrice(current, distance, hours, tripType).total,
-                                                hours: tripType === "hourly" ? hours : undefined,
-                                            };
-                                            setTimeout(() => {
-                                                onNext(selectedVehicle);
-                                                // don’t reset loading here, component will unmount anyway
-                                            }, 500);
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? (
+                                        <button
+                                            onClick={() => router.push("/contact")}
+                                            className="flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md font-medium text-sm"
+                                        >
+                                            Request
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => {
+                                                setLoadingVehicleId(current.id);
+                                                const selectedVehicle: VehicleOption = {
+                                                    ...current,
+                                                    price: breakdown.total,
+                                                    vehicleTitle: getVehicleTitle(current.type),
+                                                    tripType: tripType,
+                                                    basePrice: breakdown.basePrice,
+                                                    gratuity: 20,
+                                                    airportFee: 5,
+                                                    tax: 5,
+                                                    total: breakdown.total,
+                                                    hours: tripType === "hourly" ? hours : undefined,
+                                                };
+                                                setTimeout(() => {
+                                                    onNext(selectedVehicle);
+                                                }, 500);
+                                            }}
+                                            disabled={loadingVehicleId === current.id}
+                                            className="flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md font-medium text-sm"
+                                        >
+                                            {loadingVehicleId === current.id ? (
+                                                <div className="w-5 h-5 border border-gray-300 border-t-4 border-t-white rounded-full animate-spin"></div>
+                                            ) : (
+                                                <>
+                                                    Select Vehicle
+                                                    <ArrowRight className="w-4 h-4" />
+                                                </>
+                                            )}
+                                        </button>
 
-                                            // If onNext is async, reset after it's done
-                                            // setLoadingVehicleId(null);
-                                        }}
-                                        disabled={loadingVehicleId === current.id}
-                                        className="flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md font-medium text-sm"
-                                    >
-                                        {loadingVehicleId === current.id ? (
-                                            <div className="w-5 h-5 border border-gray-300 border-t-4 border-t-white rounded-full animate-spin"></div>
-                                        ) : (
-                                            <>
-                                                Select Vehicle
-                                                <ArrowRight className="w-4 h-4" />
-                                            </>
-                                        )}
-                                    </button>
-
-
-
-                                    <div className="text-gray-900 font-bold text-xl mt-4">
-                                        ${breakdown.total.toFixed(2)}
+                                    )}
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
+                                        <div className="text-gray-900 font-bold text-xl mt-4">
+                                            ${breakdown.total.toFixed(2)}
 
 
 
 
-                                    </div>
+                                        </div>)}
 
                                     <div className="flex items-center gap-1 text-black mt-4   text-sm">
                                         <svg
@@ -796,7 +836,7 @@ export default function VehicleSelection({
 function getVehicleTitle(type: string) {
     switch (type) {
         case "SEDAN":
-            return "Sedan";
+            return "Luxury Sedan";   // 👈 Only sedan gets "Luxury"
         case "MID SUV":
             return "Mid-Size SUV";
         case "SUV":
@@ -807,3 +847,4 @@ function getVehicleTitle(type: string) {
             return type;
     }
 }
+

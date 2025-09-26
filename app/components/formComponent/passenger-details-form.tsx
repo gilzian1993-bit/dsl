@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { format } from "date-fns";
 import TimePicker from "../time-picker";
 import Calendar from "../../../components/ui/calendar";
+import TimeInput from "../time-picker";
 
 interface Price {
   basePrice: number;
@@ -47,6 +48,7 @@ interface PassengerDetailsFormProps {
     airlineCode?: string;
     flightNumber?: string;
     returnDate?: string;
+
     returnTime?: string;
     finalTotal?: number;
   }) => void;
@@ -57,6 +59,7 @@ interface PassengerDetailsFormProps {
   finalTotal: number;
   vehicle: VehicleOption;
   totalPrice: number;
+  pickupDate: string;
   onPriceChange: (updatedTotal: number) => void;
 }
 
@@ -66,7 +69,7 @@ export default function PassengerDetailsForm({
   tripType,
   meetGreetYes,
   setMeetGreetYes,
-
+  pickupDate,
   vehicle,
   totalPrice,
   onPriceChange,
@@ -107,22 +110,56 @@ export default function PassengerDetailsForm({
   }, [rearFacingSeat, boosterSeat, carSeats, meetGreetYes, totalPrice, onPriceChange]);
 
   // 🔹 Validation + next
+  // 🔹 Validation + next
   const handleNext = async () => {
     const newErrors: { [key: string]: string } = {};
 
+    // Full Name
     if (!fullName.trim()) newErrors.fullName = "Full Name is required";
+
+    // Email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) newErrors.email = "Email is required";
     else if (!emailRegex.test(email)) newErrors.email = "Please enter a valid email address";
 
+    // Phone
     const phoneRegex = /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)?\d{3}[\s.-]?\d{4}$/;
     if (!phone.trim()) newErrors.phone = "Phone number is required";
     else if (!phoneRegex.test(phone)) newErrors.phone = "Enter a valid US phone number";
 
+    // Passengers
+    if (!passengers || passengers < 1) {
+      newErrors.passengers = "At least 1 passenger is required";
+    }
+
+    // Luggage
+    if (luggage < 0) {
+      newErrors.luggage = "Luggage cannot be negative";
+    }
+
+    // 🔹 Airport Ride - Airport Pickup must be selected
+    if (tripType === "airportRide") {
+      if (!airlineCode.trim()) newErrors.airlineCode = "Airline name or code is required";
+      if (!flightNumber.trim()) newErrors.flightNumber = "Flight number is required";
+    }
+
+    // Return Trip Required Fields
+    if (tripType !== "hourlyRate" && returnTrip) {
+      if (!returnDate) newErrors.returnDate = "Return date is required";
+      if (!returnTime) newErrors.returnTime = "Return time is required";
+    }
+
+    // Car Seats Validation
+    if (carSeats) {
+      if (rearFacingSeat === 0 && boosterSeat === 0) {
+        newErrors.carSeats = "Please select at least one seat type";
+      }
+    }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setLoading(true); // show loader
+      setLoading(true);
 
       const formData = {
         fullName,
@@ -138,18 +175,37 @@ export default function PassengerDetailsForm({
         boosterSeat: carSeats ? boosterSeat : 0,
         passengers,
         luggage,
-        airlineCode: airportPickup ? airlineCode : "",
-        flightNumber: airportPickup ? flightNumber : "",
+        airlineCode:airlineCode,
+        flightNumber:  flightNumber,
         returnDate: returnTrip && returnDate ? returnDate.toISOString() : undefined,
         returnTime: returnTrip ? returnTime ?? undefined : undefined,
       };
+
       try {
-        await onNext(formData);
+
+        await setTimeout(() => {
+          onNext(formData);
+
+        }, 500);;
       } finally {
-        setTimeout(() => setLoading(false), 500); // spinner shows at least 0.5s
+        setTimeout(() => setLoading(false), 500);
       }
     }
   };
+
+
+
+  const handleTimeChange = (hour: number, minute: number) => {
+    // ✅ Convert to 12-hour format with AM/PM
+    const period = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+
+    const formatted = `${String(hour12).padStart(2, "0")}:${String(minute).padStart(2, "0")} ${period}`;
+    setReturnTime(formatted);
+
+    setIsReturnTimeOpen(false);
+  };
+
 
   return (
     <div className="md:p-6">
@@ -257,36 +313,39 @@ export default function PassengerDetailsForm({
             Luggage
           </span>
         </div>
+        {/* Airline and Flight Number (Required if Airport Ride) */}
+        {tripType === "airportRide" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Airline Name or Code"
+                value={airlineCode}
+                onChange={(e) => setAirlineCode(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              {errors.airlineCode && <p className="text-red-500 text-sm mt-1">{errors.airlineCode}</p>}
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Flight No #"
+                value={flightNumber}
+                onChange={(e) => setFlightNumber(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              {errors.flightNumber && <p className="text-red-500 text-sm mt-1">{errors.flightNumber}</p>}
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* Options */}
       <div className="mb-4 flex md:flex-row flex-col sm:items-center sm:gap-6 gap-4">
-        {/* Airport Pickup */}
-        <div className="flex items-center gap-2">
-          <label className="relative items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={airportPickup}
-              onChange={() => {
-                setAirportPickup(!airportPickup);
-                setShowAirportPickup(!showAirportPickup);
+        {/* Airport Pickup (only if tripType === "airportRide") */}
 
-              }}
-              className="sr-only"
-            />
-            <div
-              className={`w-11 h-6 rounded-full ${airportPickup ? "bg-[#008492]" : "bg-gray-300"
-                } relative transition-colors`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${airportPickup ? "translate-x-5" : "translate-x-0.5"
-                  }`}
-              ></div>
-            </div>
-          </label>
-          <span className="text-base text-gray-700">Airport Pickup</span>
-          {/* <Info className="w-4 h-4 text-gray-400" /> */}
-        </div>
+
 
         {/* Meet & Greet */}
         <div className="flex items-center gap-2">
@@ -297,24 +356,23 @@ export default function PassengerDetailsForm({
               onChange={() => {
                 setMeetGreetYes(!meetGreetYes);
                 setShowMeetGreet(!showMeetGreet);
-
               }}
               className="sr-only"
             />
             <div
-              className={`w-11 h-6 rounded-full ${meetGreetYes ? "bg-[#008492]" : "bg-gray-300"
+              className={`w-11 h-6 rounded-full ${showMeetGreet ? "bg-[#008492]" : "bg-gray-300"
                 } relative transition-colors`}
             >
               <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${meetGreetYes ? "translate-x-5" : "translate-x-0.5"
+                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${showMeetGreet ? "translate-x-5" : "translate-x-0.5"
                   }`}
               ></div>
             </div>
           </label>
           <span className="text-base text-gray-700">Meet & Greet</span>
-          {/* <Info className="w-4 h-4 text-gray-400" /> */}
         </div>
       </div>
+
 
 
 
@@ -353,69 +411,41 @@ export default function PassengerDetailsForm({
             </div>
           </div>
         </div>
+        {errors.carSeats && (
+          <p className="text-red-500 text-sm mt-1">{errors.carSeats}</p>
+        )}
 
         {/* Return Trip Toggle */}
-        <div className="flex items-center gap-2">
-          <label className="relative items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={returnTrip}
-              onChange={() => {
-                setReturnTrip(!returnTrip);
-                setShowReturnTrip(!showReturnTrip);
-
-              }}
-              className="sr-only"
-            />
-            <div
-              className={`w-11 h-6 rounded-full ${returnTrip ? "bg-[#008492]" : "bg-gray-300"
-                } relative transition-colors`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${returnTrip ? "translate-x-5" : "translate-x-0.5"
-                  }`}
-              ></div>
-            </div>
-          </label>
-          <span className="text-base text-gray-900">Return Trip?</span>
-          {/* <Info className="w-4 h-4 text-gray-400" /> */}
-        </div>
-      </div>
-      {/* Flight Info if Airport Pickup */}
-      {showAirportPickup && (
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-base font-bold text-gray-900">Flight Departure Information</h3>
-            {/* <Info className="w-4 h-4 text-gray-400" /> */}
-          </div>
-          <p className="text-base text-gray-600 mb-4">
-            Helps us schedule your pickup accordingly and ensure timely drop-off at the airport.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="relative">
-              <img
-                src="/plane.svg"
-                alt="Plane"
-                className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
+        {tripType !== "hourlyRate" && (
+          <div className="flex items-center gap-2">
+            <label className="relative items-center cursor-pointer">
               <input
-                type="text"
-                placeholder="Airline Name or Code"
-                value={airlineCode}
-                onChange={(e) => setAirlineCode(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                type="checkbox"
+                checked={returnTrip}
+                onChange={() => {
+                  setReturnTrip(!returnTrip);
+                  setShowReturnTrip(!showReturnTrip);
+
+                }}
+                className="sr-only"
               />
-            </div>
-            <input
-              type="text"
-              placeholder="Flight No #"
-              value={flightNumber}
-              onChange={(e) => setFlightNumber(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </div>
-        </div>
-      )}
+              <div
+                className={`w-11 h-6 rounded-full ${returnTrip ? "bg-[#008492]" : "bg-gray-300"
+                  } relative transition-colors`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${returnTrip ? "translate-x-5" : "translate-x-0.5"
+                    }`}
+                ></div>
+              </div>
+            </label>
+            <span className="text-base text-gray-900">Return Trip?</span>
+            {/* <Info className="w-4 h-4 text-gray-400" /> */}
+          </div>)}
+
+      </div>
+
+
 
       {/* Meet & Greet Info */}
       {showMeetGreet && (
@@ -464,8 +494,9 @@ export default function PassengerDetailsForm({
         </div>
       )}
 
+
       {/* Return Trip Details */}
-      {showReturnTrip && (
+      {tripType !== "hourlyRate" && showReturnTrip && (
         <div className="mb-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Return Date */}
@@ -490,10 +521,15 @@ export default function PassengerDetailsForm({
                       setReturnDate(date ?? null);
                       setIsReturnCalendarOpen(false);
                     }}
-                    initialFocus
+                    disabled={{ before: new Date(pickupDate) }} // Ensure pickupDate is a Date object
                   />
+
                 </PopoverContent>
               </Popover>
+              {/* Error under date */}
+              {errors.returnDate && (
+                <p className="text-red-500 text-sm mt-1">{errors.returnDate}</p>
+              )}
             </div>
 
             {/* Return Time */}
@@ -513,21 +549,19 @@ export default function PassengerDetailsForm({
 
                 <PopoverContent side="top" align="center" className="w-auto p-0 z-[9999]">
                   <div className="bg-white rounded-md shadow-lg p-4">
-                    <TimePicker
-                      selectedTime={returnTime ?? ""}
-                      onTimeSelect={(time: string) => {
-                        setReturnTime(time);
-                        setIsReturnTimeOpen(false);
-                      }}
-                      onClose={() => setIsReturnTimeOpen(false)}
-                    />
+                    <TimeInput minTime="09:30" onChange={handleTimeChange} />
                   </div>
                 </PopoverContent>
               </Popover>
+              {/* Error under time */}
+              {errors.returnTime && (
+                <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
+              )}
             </div>
           </div>
         </div>
       )}
+
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row sm:justify-end mb-4 gap-4">

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaPhone } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 interface NavItem {
   label: string;
@@ -107,14 +107,12 @@ const HeaderBar: React.FC = () => {
 
           {/* WhatsApp */}
           <a
-            href="https://wa.me/+1 800 679 3415"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-9 h-9 rounded-md bg-[#25D366] text-white shadow"
+            href="tel:+18006793415"
+            className="flex items-center justify-center w-9 h-9 rounded-md bg-[#1E90FF] text-white shadow"
             onClick={() => setIsOpen(false)}
-            aria-label="WhatsApp"
+            aria-label="Call"
           >
-            <FaWhatsapp className="w-6 h-6" />
+            <FaPhone className="w-6 h-6" />
           </a>
         </div>
 

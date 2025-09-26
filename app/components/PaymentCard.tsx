@@ -10,7 +10,7 @@ import {
     useElements,
 } from "@stripe/react-stripe-js";
 import { v4 as uuidv4 } from "uuid";
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
 
 interface Price {
     basePrice: number;
@@ -60,6 +60,7 @@ interface PaymentCardProps {
     returnTime?: string;
     hours: number;
     distance: number;
+    finalTotal: number;
 }
 
 const ElementStyles = {
@@ -99,6 +100,7 @@ export default function PaymentCard({
     hours,
     distance,
     returnTime,
+    finalTotal
 }: PaymentCardProps) {
 
     const basePrice = typeof vehicle.price === "object" ? vehicle.price.basePrice : vehicle.price;
@@ -128,7 +130,7 @@ export default function PaymentCard({
     const [billingAddress, setBillingAddress] = useState("");
     const [maskedNumberPreview, setMaskedNumberPreview] = useState("•••• •••• •••• ••••");
     const [expiryPreview, setExpiryPreview] = useState("••/••");
-    
+
     function formatIsoDate(isoDate: string | undefined) {
         if (!isoDate) return "";
         const d = new Date(isoDate);
@@ -136,7 +138,7 @@ export default function PaymentCard({
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, "0");
         const day = String(d.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
+        return `${month}-${day}-${year}`;
     }
 
     useEffect(() => {
@@ -216,9 +218,11 @@ export default function PaymentCard({
                             pickup_time: pickupTime,
                             return_date: formatIsoDate(returnDate),
                             return_time: returnTime,
-                            price: amount,
-                            base_price: basePrice,
+                            price: Math.round(finalTotal),
+                            base_price: Math.round(basePrice),
+                            tax: 5,
                             airport_fee: 5,
+                            country_charges: 10,
                             gratuity: 20,
                             distance: Math.round(distance),
                             email,
@@ -233,6 +237,9 @@ export default function PaymentCard({
                             tripType,
                             rear_seats: rearFacingSeat,
                             booster_seats: boosterSeat,
+                            meetGreet: meetGreetYes,
+                            airportPickup: airportPickup,
+                            carSeats: carSeats,
                         }),
                     });
                 } catch (bookingError) {
@@ -240,7 +247,7 @@ export default function PaymentCard({
                     // Continue to success page even if booking API fails
                 }
 
-                // ✅ ALWAYS redirect to success page after successful payment
+
                 window.location.href = "/payment-success";
             } else {
                 setErrorMessage("Payment was not successful.");
@@ -260,15 +267,17 @@ export default function PaymentCard({
             >
 
                 {/* Left side form */}
+
                 <div className="flex-1 space-y-4">
                     <div className="mb-6">
-                        <h1 className="text-2xl font-bold text-gray-800 mb-3">PAYMENT INFORMATION</h1>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <h1 className="text-2xl md:block hidden font-bold text-gray-800 mb-3">PAYMENT INFORMATION</h1>
+                        <div className="flex md:block hidden flex-col-reverse md:flex-row items-center gap-2 text-sm text-gray-600">
                             <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                                 <Check className="w-3 h-3 text-white" />
                             </div>
                             <span>All transactions are secure and encrypted. Safe and secure payments.</span>
                         </div>
+                        <span className="md:hidden block font-bold text-2xl">Card Details</span>
                     </div>
 
                     {/* Card Holder */}
@@ -328,11 +337,11 @@ export default function PaymentCard({
                     {/* Terms */}
                     <div className="text-xs text-gray-500 space-y-2">
                         <div className="flex items-start gap-2">
-                            <span className="text-gray-500 mt-[2px]">ℹ️</span>
+                            <Info className="w-5 h-5 text-gray-400 cursor-pointer" />
                             <span>Please review our cancellation policy before proceeding.</span>
                         </div>
                         <div className="flex items-start gap-2">
-                            <input type="checkbox" className="mt-1" />
+                            <Info className="w-5 h-5 text-gray-400 cursor-pointer" />
                             <span>
                                 I agree to the terms and authorize the payment (optional).
                             </span>
@@ -361,41 +370,45 @@ export default function PaymentCard({
                 </div>
 
                 {/* Right side card mockup */}
-                <div className="w-72 shrink-0 flex flex-col items-center justify-center">
-                    <div className="relative w-72 h-44 rounded-xl bg-black text-white p-4 shadow-lg">
-                        {/* Chip */}
-                        <div className="absolute top-4 left-4 w-10 h-8 bg-yellow-400 rounded-sm"></div>
+                <div className="w-full sm:w-72 md:w-82 lg:w-96 shrink-0 flex flex-col justify-center">
+  <h1 className="text-2xl md:hidden block font-bold text-gray-800 mb-5">PAYMENT INFORMATION</h1>
+  
+  {/* Payment Card Mockup */}
+  <div className="relative w-full h-44 sm:h-48 md:h-52 lg:h-56 rounded-xl bg-black text-white p-4 shadow-lg">
+    
+    {/* Chip */}
+    <div className="absolute top-4 left-4 w-10 h-8 bg-yellow-400 rounded-sm"></div>
+    
+    {/* Card Number */}
+    <div className="absolute top-14 left-6 right-6 text-lg tracking-widest text-gray-300">
+      {maskedNumberPreview}
+    </div>
+    
+    {/* Card Holder & Expiry */}
+    <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-xs">
+      {/* <div className="text-gray-400 text-[10px] sm:text-xs">YOUR NAME HERE</div> */}
+      <div className="text-sm mt-1 text-gray-400">
+        {cardHolder ? cardHolder.toUpperCase() : "YOUR NAME HERE"}
+      </div>
 
-                        {/* Number */}
-                        <div className="absolute top-14 left-6 right-6 text-lg tracking-widest text-gray-300">
-                            {maskedNumberPreview}
-                        </div>
+      <div className="text-right text-[10px] sm:text-xs">
+        <div className="text-gray-400">valid thru</div>
+        <div className="mt-1">{expiryPreview}</div>
+      </div>
+    </div>
+  </div>
+  
+  {/* Secure badges */}
+  <div className="mt-4 md:block hidden flex gap-3">
+    <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2">
+      <span className="text-xs text-gray-500">SECURE SSL ENCRYPTION</span>
+    </div>
+    <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2">
+      <span className="text-xs text-gray-500">SECURE PAY</span>
+    </div>
+  </div>
+</div>
 
-                        {/* Holder + Expiry */}
-                        <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-xs">
-                            <div>
-                                <div className="text-gray-400 text-[10px]">YOUR NAME HERE</div>
-                                <div className="text-sm mt-1">
-                                    {cardHolder ? cardHolder.toUpperCase() : "YOUR NAME HERE"}
-                                </div>
-                            </div>
-                            <div className="text-right text-[10px]">
-                                <div className="text-gray-400">valid thru</div>
-                                <div className="mt-1">{expiryPreview}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Secure badges */}
-                    <div className="mt-4 flex gap-3">
-                        <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2">
-                            <span className="text-xs text-gray-500">SECURE SSL ENCRYPTION</span>
-                        </div>
-                        <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2">
-                            <span className="text-xs text-gray-500">SECURE PAY</span>
-                        </div>
-                    </div>
-                </div>
 
             </form>
         </div>

@@ -3,36 +3,46 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 
 const airports = [
-  { name: "JOHN F. KENNEDY AIRPORT (JFK)", image: "/image 1.png", href: "#" },
-  { name: "LAGUARDIA AIRPORT (LGA)", image: "/image2.png", href: "#" },
   { name: "NEWARK AIRPORT (EWR)", image: "/image 3.png", href: "#" },
   { name: "TETERBORO AIRPORT (TEB)", image: "/image 4.png", href: "#" },
   { name: "WESTCHESTER COUNTY (HPN)", image: "/image 6.png", href: "#" },
+  { name: "JOHN F. KENNEDY AIRPORT (JFK)", image: "/image 1.png", href: "#" },
+  { name: "LAGUARDIA AIRPORT (LGA)", image: "/image2.png", href: "#" },
 ];
 
 export default function AirportsWeServe() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // detect screen size
+  useEffect(() => {
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
+  const slidesToShow = isMobile ? 1 : 3;
 
   const nextSlide = () =>
     setCurrentIndex((prev) =>
-      prev === airports.length - 3 ? 0 : prev + 1
+      prev === airports.length - slidesToShow ? 0 : prev + 1
     );
 
   const prevSlide = () =>
     setCurrentIndex((prev) =>
-      prev === 0 ? airports.length - 3 : prev - 1
+      prev === 0 ? airports.length - slidesToShow : prev - 1
     );
 
-  // Auto scroll for both desktop and mobile
+  // Auto scroll
   useEffect(() => {
-    const interval = setInterval(nextSlide, 6000);
+    const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
-  }, []);
-
+  }, [isMobile]);
 
   return (
     <section
-      className="relative max-w-6xl mx-auto px-4 md:px-8 py-12 bg-[#138fa2]/90 flex flex-col items-center overflow-hidden"
+      className=" max-w-6xl mx-auto px-4 md:px-8 py-12 bg-[#138fa2]/90 flex flex-col items-center overflow-hidden"
       style={{
         backgroundImage: "url('/section.png')",
         backgroundSize: "cover",
@@ -71,7 +81,7 @@ export default function AirportsWeServe() {
         {/* Mobile Carousel */}
         <div className="block md:hidden w-[260px] h-[280px] overflow-hidden relative">
           <div
-            className="flex transition-transform duration-700 ease-in-out"
+            className="flex transition-transform duration-[1500ms] ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {airports.map((airport) => (
@@ -96,10 +106,10 @@ export default function AirportsWeServe() {
         </div>
 
         {/* Desktop Carousel */}
-        {/* Desktop Carousel (3 cards visible, auto scroll) */}
-        <div className="hidden md:block w-full overflow-hidden relative">
+          <div className="hidden md:block w-full overflow-hidden relative">
           <div
-            className="flex transition-transform duration-700 ease-in-out"
+           className="flex transition-transform duration-2000 ease-in-out"
+
             style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
           >
             {airports.map((airport) => (

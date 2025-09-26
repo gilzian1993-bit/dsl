@@ -14,8 +14,8 @@ const fleetCategories = [
 ]
 
 const vehicles = [
-    { id: 1, name: "CADILLAC XTS - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac-xts.png" },
-    { id: 2, name: "LINCOLN CONTINENTAL - SEDAN", type: "SEDAN", image: "/images/sedan/lincoln.png" },
+    { id: 1, name: "CADILLAC XTS - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac-xts5.png" },
+    { id: 2, name: "LINCOLN CONTINENTAL - SEDAN", type: "SEDAN", image: "/images/sedan/lincoln4.png" },
     { id: 3, name: "CADILLAC CTS - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac.cts.png" },
     { id: 4, name: "CADILLAC LYRIQ - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac.png" },
     { id: 5, name: "Lincoln Aviator - MID SIZE SUV", type: "MID SUV", image: "/images/SUV/lincoln-aviator.png" },
@@ -48,20 +48,20 @@ export default function OurFleet() {
         activeCategory === "ALL"
             ? vehicles
             : vehicles.filter((v) => v.type === activeCategory)
-// Auto slide effect
-useEffect(() => {
-    const interval = setInterval(() => {
-        setStartIndex((prevIndex) => {
-            if (prevIndex + itemsPerPage < filteredVehicles.length) {
-                return prevIndex + itemsPerPage
-            } else {
-                return 0 // reset to start when reaching the end
-            }
-        })
-    }, 3000) // every 3 seconds
+    // Auto slide effect
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setStartIndex((prevIndex) => {
+                if (prevIndex + itemsPerPage < filteredVehicles.length) {
+                    return prevIndex + itemsPerPage
+                } else {
+                    return 0 // reset to start when reaching the end
+                }
+            })
+        }, 5000) // every 3 seconds
 
-    return () => clearInterval(interval)
-}, [filteredVehicles.length, itemsPerPage])
+        return () => clearInterval(interval)
+    }, [filteredVehicles.length, itemsPerPage])
 
     const paginatedVehicles = filteredVehicles.slice(startIndex, startIndex + itemsPerPage)
 
@@ -97,11 +97,10 @@ useEffect(() => {
                             <div key={category.name} className="flex items-center">
                                 <button
                                     onClick={() => handleCategoryChange(category.name)}
-                                    className={`px-2 py-1 transition-colors ${
-                                        activeCategory === category.name
+                                    className={`px-2 py-1 transition-colors ${activeCategory === category.name
                                             ? "text-teal-500 font-medium"
                                             : "text-gray-400 hover:text-gray-600"
-                                    }`}
+                                        }`}
                                 >
                                     {category.name}
                                 </button>
@@ -133,11 +132,12 @@ useEffect(() => {
                             <div
                                 key={vehicle.id}
                                 className="text-center  overflow-hidden  opacity-0"
-                                style={{
-                                    animation: inView
-                                        ? `fadeInUp 0.6s ease-out forwards ${index * 0.1 + 0.2}s`
-                                        : "none",
-                                }}
+                  style={{
+    animation: inView
+        ? `fadeInUp 1s ease-out forwards ${index * 1.5}s` // 👈 1.5s delay per car
+        : "none",
+}}
+
                             >
                                 <div className="relative h-60 w-full">
                                     <Image
@@ -167,17 +167,18 @@ useEffect(() => {
             </div>
 
             <style jsx>{`
-                @keyframes fadeInUp {
-                    0% {
-                        transform: translateY(10px);
-                        opacity: 0;
-                    }
-                    100% {
-                        transform: translateY(0);
-                        opacity: 1;
-                    }
-                }
-            `}</style>
+    @keyframes fadeInUp {
+        0% {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+`}</style>
+
         </section>
     )
 }

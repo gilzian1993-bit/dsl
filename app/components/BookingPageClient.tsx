@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import VehicleSelection from "@/app/components/formComponent/vehicle-selectionform";
 import UserInformation from "@/app/components/formComponent/UserInformation";
 import PaymentSection from "@/app/components/sections/PaymentSection";
+import { PriceProvider } from "./context/priceContext";
 
 interface Price {
   basePrice: number;
@@ -46,6 +47,7 @@ interface UserInfo {
   returnTime?: string;
   airlineCode?: string;
   flightNumber?: string;
+  finalTotal: number;
 }
 
 export default function BookingPageClient() {
@@ -62,8 +64,15 @@ export default function BookingPageClient() {
   const tripType = searchParams.get("tripType") || "";
   const hours = Number(searchParams.get("hours") || 0);
   const distance = Number(searchParams.get("distance") || 0);
+  // Compute finalTotal once vehicle is selected
+  const finalTotal =
+    selectedVehicle &&
+    (typeof selectedVehicle.price === "object"
+      ? selectedVehicle.price.total
+      : selectedVehicle.price);
+
   return (
-    <div>
+    <PriceProvider> <div>
       {/* Step 1: Vehicle Selection */}
       {step === 1 && (
         <VehicleSelection
@@ -103,7 +112,6 @@ export default function BookingPageClient() {
           phone={userInfo.phone}
           tripType={userInfo.tripType}
           distance={distance}
-          
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
           pickupDate={pickupDate}
@@ -130,8 +138,12 @@ export default function BookingPageClient() {
               ? selectedVehicle.price
               : selectedVehicle.price.total
           }
+          finalTotal={userInfo.finalTotal}
+
+
         />
       )}
-    </div>
+    </div></PriceProvider>
+
   );
 }

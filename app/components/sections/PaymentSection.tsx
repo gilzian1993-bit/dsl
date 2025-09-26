@@ -7,7 +7,7 @@ import {
     Info,
     Edit,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CardElement, useStripe, useElements, PaymentElement, Elements } from "@stripe/react-stripe-js";
 import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
@@ -113,7 +113,7 @@ interface PaymentSectionProps {
     flightNumber?: string;
     returnDate?: string;
     returnTime?: string;
-
+    finalTotal: number;
     totalPrice: number;
     onBack: () => void;
     onNext: () => void;
@@ -147,10 +147,47 @@ export default function PaymentSection({
     // 👇 add these missing ones
     airlineCode,
     flightNumber,
+    finalTotal,
     returnDate,
     returnTime,
 }: PaymentSectionProps) {
-    console.log("airlinecode", airlineCode);
+   useEffect(() => {
+        console.log("=== PAYMENT SECTION PROPS ===");
+        console.log("Step:", step);
+        console.log("Vehicle:", vehicle);
+        console.log("Pickup Location:", pickupLocation);
+        console.log("Drop Location:", dropLocation);
+        console.log("Pickup Date:", pickupDate);
+        console.log("Pickup Time:", pickupTime);
+        console.log("Passengers:", passengers);
+        console.log("Luggage:", luggage);
+        console.log("Full Name:", fullName);
+        console.log("Email:", email);
+        console.log("Phone:", phone);
+        console.log("Trip Type:", tripType);
+        console.log("Meet & Greet:", meetGreetYes);
+        console.log("Airport Pickup:", airportPickup);
+        console.log("Car Seats:", carSeats);
+        console.log("Return Trip:", returnTrip);
+        console.log("Rear Facing Seats:", rearFacingSeat);
+        console.log("Booster Seats:", boosterSeat);
+        console.log("Airline Code:", airlineCode);
+        console.log("Flight Number:", flightNumber);
+        console.log("Return Date:", returnDate);
+        console.log("Return Time:", returnTime);
+        console.log("Total Price:", totalPrice);
+        console.log("Final Total:", finalTotal);
+        console.log("Hours:", hours);
+        console.log("Distance:", distance);
+        console.log("=============================");
+    }, [
+        step, vehicle, pickupLocation, dropLocation, pickupDate, pickupTime,
+        passengers, luggage, fullName, email, phone, tripType, meetGreetYes,
+        airportPickup, carSeats, returnTrip, rearFacingSeat, boosterSeat,
+        airlineCode, flightNumber, returnDate, returnTime, totalPrice,
+        finalTotal, hours, distance
+    ]);
+
     const meetGreetCost = meetGreetYes ? 25 : 0;
 
     const getVehiclePrice = (vehicle: VehicleOption): number => {
@@ -161,7 +198,7 @@ export default function PaymentSection({
     };
 
     const basePrice = getVehiclePrice(vehicle);
-    const finalTotal = totalPrice ?? basePrice + meetGreetCost;
+    // const finalTotal = totalPrice ?? basePrice + meetGreetCost;
 
 
 
@@ -184,7 +221,7 @@ export default function PaymentSection({
 
 
                     {/* Left Panel (Trip details) */}
-                   <div className="w-full md:w-80 p-4">
+                    <div className="w-full md:w-80 p-4">
 
                         {/* Mobile: Trip Details */}
                         {/* <div className="md:hidden block mb-3">
@@ -416,7 +453,7 @@ export default function PaymentSection({
                             <div className="flex items-center gap-2 mb-3">
                                 <h2 className="font-light text-gray-800">Total Price</h2>
                                 <span className="ml-auto text-base font-bold text-gray-600">
-                                    ${finalTotal.toFixed(2)}
+                                    ${(finalTotal ?? totalPrice).toFixed(2)}
                                 </span>
                             </div>
 
@@ -460,6 +497,7 @@ export default function PaymentSection({
                                 amount={Math.round(totalPrice * 100)}
                                 vehicle={vehicle}
                                 hours={hours}
+                                finalTotal={finalTotal}
                                 pickupLocation={pickupLocation}
                                 dropLocation={dropLocation}
                                 pickupDate={pickupDate}

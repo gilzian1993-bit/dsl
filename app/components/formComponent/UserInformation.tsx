@@ -48,6 +48,7 @@ interface UserInformationProps {
         flightNumber?: string;
         returnDate?: string;
         returnTime?: string;
+        finalTotal: number;
     }) => void;
 
     onBack: () => void;
@@ -646,10 +647,25 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                             </div>
                         </div>
 
-                        <div className="w-full mx-auto space-y-4 mt-4 px-4">   <PassengerDetailsForm onBack={onBack} onNext={(data) => {
-                            onNext(data); 
-                        }} totalPrice={totalPrice} tripType={tripType} finalTotal={finalTotal}  meetGreetYes={meetGreetYes}              // ✅ pass value
-                            onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)} setMeetGreetYes={setMeetGreetYes}  vehicle={vehicle} /></div>
+                        <div className="w-full mx-auto space-y-4 mt-4 px-4">  
+                            <PassengerDetailsForm
+                                onBack={onBack}
+                                onNext={(data) => {
+                                    // Include the finalTotal in the data passed to onNext
+                                    onNext({
+                                        ...data,
+                                        finalTotal: finalTotal // This is the updated total from state
+                                    });
+                                }}
+                                pickupDate={pickupDate}
+                                totalPrice={totalPrice}
+                                tripType={tripType}
+                                finalTotal={finalTotal}
+                                meetGreetYes={meetGreetYes}
+                                onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)}
+                                setMeetGreetYes={setMeetGreetYes}
+                                vehicle={vehicle}
+                            /></div>
                     </div>
 
 

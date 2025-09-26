@@ -11,7 +11,7 @@ import { calculateDistance } from "@/app/actions/getDistance";
 import BookingForm from "../formComponent/bookingform";
 
 export default function HeroSection() {
-  const [tripType, setTripType] = useState("pointToPoint");
+  const [tripType, setTripType] = useState("airportRide");
   const [pickupDate, setPickupDate] = useState<Date | null>(null);
 
   const [pickupLocation, setPickupLocation] = useState("");
@@ -46,42 +46,60 @@ export default function HeroSection() {
   const handleTripTypeChange = (type: string) => setTripType(type);
 
   const handleBookNow = async () => {
-    setLoading(true);
+  setLoading(true);
+  let distance = 0;
 
-    let distance = 0;
-
-    if (tripType === "pointToPoint") {
-      // ✅ Only calculate distance when needed
-      const result = await calculateDistance({ from: pickupLocation, to: dropLocation });
-
-      if (result.error || !result.distance) {
-        alert(result.error || "Could not calculate distance");
-        setLoading(false);
-        return;
-      }
-
-      distance = result.distance;
-    }
-
-    const params = new URLSearchParams({
-      pickupLocation,
-      dropLocation,
-      pickupDate: pickupDate ? pickupDate.toISOString() : "",
-      pickupTime: selectedTime,
-      pickupLat: pickupCoords?.lat.toString() || "",
-      pickupLng: pickupCoords?.lng.toString() || "",
-      dropLat: dropCoords?.lat.toString() || "",
-      dropLng: dropCoords?.lng.toString() || "",
-      distance: distance.toFixed(2), // ✅ will be "0.00" for hourly
-      tripType,
-      hours: hours.toString(),
+  if (tripType === "pointToPoint") {
+    // ✅ Point-to-Point distance
+    const result = await calculateDistance({
+      from: pickupLocation,
+      to: dropLocation,
     });
 
-    setTimeout(() => {
+    if (result.error || !result.distance) {
+      alert(result.error || "Could not calculate distance");
       setLoading(false);
-      router.push(`/booking?${params.toString()}`);
-    }, 1500);
-  };
+      return;
+    }
+
+    distance = result.distance;
+  } 
+  else if (tripType === "airportRide") {
+    // ✅ Airport Ride distance (pickup -> airport)
+    const result = await calculateDistance({
+      from: pickupLocation,
+      to: dropLocation || pickupLocation, // fallback if drop isn't used
+    });
+
+    if (result.error || !result.distance) {
+      alert(result.error || "Could not calculate distance");
+      setLoading(false);
+      return;
+    }
+
+    distance = result.distance;
+  }
+
+  const params = new URLSearchParams({
+    pickupLocation,
+    dropLocation,
+    pickupDate: pickupDate ? pickupDate.toISOString() : "",
+    pickupTime: selectedTime,
+    pickupLat: pickupCoords?.lat.toString() || "",
+    pickupLng: pickupCoords?.lng.toString() || "",
+    dropLat: dropCoords?.lat.toString() || "",
+    dropLng: dropCoords?.lng.toString() || "",
+    distance: distance.toFixed(2),
+    tripType,
+    hours: hours.toString(),
+  });
+
+  setTimeout(() => {
+    setLoading(false);
+    router.push(`/booking?${params.toString()}`);
+  }, 1500);
+};
+
 
 
   // Animations
@@ -133,14 +151,14 @@ export default function HeroSection() {
   }, []);
 
   return (
-     <section
-      className="relative w-full min-h-[440px] flex flex-col items-center justify-center pt-16 bg-cover bg-center transition-all duration-1000"
-      style={{ backgroundImage: `url(${backgrounds[currentBg]})` } }
+    <section
+      className="relative w-full min-h-[440px] flex flex-col items-center md:pt-16 justify-center pt-34 bg-cover bg-center transition-all duration-1000"
+      style={{ backgroundImage: `url(${backgrounds[currentBg]})` }}
     >
-     
-   <div ref={overlayRef} className="absolute inset-0 bg-black/20 z-0" />
+
+      <div ref={overlayRef} className="absolute inset-0 bg-black/20 z-0" />
       {/* Text */}
-      <div className="relative z-10 text-center mb-6">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center mt-5 md:mb-6">
         <h1
           ref={titleRef}
           className="text-[#FFFFFF] text-4xl md:text-5xl font-bold font-hind tracking-wide mb-2"
@@ -155,9 +173,10 @@ export default function HeroSection() {
         </div>
       </div>
 
+
       {/* Booking Box */}
       {/* Booking Box */}
-      <div ref={formRef} className="w-full flex mt-5 justify-center">
+      <div ref={formRef} className="w-full flex md:mt-5 mt-47 justify-center">
 
         <BookingForm
           tripType={tripType}

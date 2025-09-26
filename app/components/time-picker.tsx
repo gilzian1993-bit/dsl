@@ -1,202 +1,132 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-interface TimePickerProps {
-  selectedTime: string;
-  onTimeSelect: (time: string) => void;
-  onClose: () => void;
+interface TimeInputProps {
+  hour?: number;
+  minute?: number;
+  minTime?: string; // e.g. "14:30"
+  onChange: (hour: number, minute: number) => void;
 }
 
-export default function TimePicker({
-  onClose,
-  selectedTime,
-  onTimeSelect,
-}: TimePickerProps) {
-  const [selectedHour, setSelectedHour] = useState<number>(10);
-  const [selectedMinute, setSelectedMinute] = useState<number>(0);
-  const [amPm, setAmPm] = useState<"AM" | "PM">("PM");
-  const [step, setStep] = useState<"hour" | "minute">("hour");
-  const svgRef = useRef<SVGSVGElement>(null);
+const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }) => {
+  // Convert given hour into 12-hour format with AM/PM
+  const initialHour = hour ?? new Date().getHours();
+  const initialMinute = minute ?? 0;
 
-  const formatTime = () => {
-    const displayHour = selectedHour === 0 ? 12 : selectedHour;
-    const paddedMinutes = selectedMinute.toString().padStart(2, "0");
-    return `${displayHour}:${paddedMinutes} ${amPm}`;
+  const [selectedHour, setSelectedHour] = useState(initialHour % 12 || 12);
+  const [selectedMinute, setSelectedMinute] = useState(initialMinute);
+  const [period, setPeriod] = useState(initialHour >= 12 ? "PM" : "AM");
+
+  useEffect(() => {
+    if (hour !== undefined) {
+      setSelectedHour(hour % 12 || 12);
+      setPeriod(hour >= 12 ? "PM" : "AM");
+    }
+    if (minute !== undefined) {
+      setSelectedMinute(minute);
+    }
+  }, [hour, minute]);
+
+  // Convert to 24h for validation
+  const to24Hour = (h: number, p: string) => {
+    if (p === "AM") {
+      return h === 12 ? 0 : h;
+    } else {
+      return h === 12 ? 12 : h + 12;
+    }
   };
 
-  const handleHourClick = (hour: number) => {
-    setSelectedHour(hour);
-    setStep("minute");
+  const isTimeDisabled = (h: number, m: number, p: string) => {
+    if (!minTime) return false;
+    const [minHour, minMinute] = minTime.split(":").map(Number);
+    const candidate = to24Hour(h, p);
+    return candidate < minHour || (candidate === minHour && m < minMinute);
   };
 
-  const handleMinuteFromPosition = (x: number, y: number) => {
-    const rect = svgRef.current!.getBoundingClientRect();
-    const cx = rect.width / 2;
-    const cy = rect.height / 2;
-    const dx = x - rect.left - cx;
-    const dy = y - rect.top - cy;
-    let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-    if (angle < 0) angle += 360;
-    const minute = Math.round((angle / 360) * 60) % 60;
-    setSelectedMinute(minute);
+  const handleHourChange = (newHour: number) => {
+    setSelectedHour(newHour);
+    onChange(to24Hour(newHour, period), selectedMinute);
   };
 
-  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
-    const move = (ev: MouseEvent | TouchEvent) => {
-      const clientX = "touches" in ev ? ev.touches[0].clientX : ev.clientX;
-      const clientY = "touches" in ev ? ev.touches[0].clientY : ev.clientY;
-      handleMinuteFromPosition(clientX, clientY);
-    };
-    const up = () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-      window.removeEventListener("touchmove", move);
-      window.removeEventListener("touchend", up);
-    };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-    window.addEventListener("touchmove", move);
-    window.addEventListener("touchend", up);
+  const handleMinuteChange = (newMinute: number) => {
+    setSelectedMinute(newMinute);
+    onChange(to24Hour(selectedHour, period), newMinute);
   };
 
-  const handleOK = () => {
-    onTimeSelect(formatTime());
-    onClose();
+  const handlePeriodChange = (newPeriod: string) => {
+    setPeriod(newPeriod);
+    onChange(to24Hour(selectedHour, newPeriod), selectedMinute);
   };
-  const handleMinuteClick = (minute: number) => setSelectedMinute(minute);
-
 
   return (
-    <div className="flex items-center justify-center">
-      <div className="w-[200px] bg-white  p-2">
-        {/* Display time */}
-        <div className="text-black px-2 py-1 text-center border-b mb-2">
-          <p className="text-lg font-light">{formatTime()}</p>
+    <div className="flex flex-col items-center">
+      <div className="flex items-center justify-center gap-4 mb-6">
+        {/* Hours */}
+        <div className="flex flex-col items-center">
+          <label className="text-sm font-medium text-gray-600 mb-2">Hour</label>
+          <select
+            value={selectedHour}
+            onChange={(e) => handleHourChange(parseInt(e.target.value))}
+            className="w-16 h-12 text-center border border-gray-300 rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 
+                       text-lg font-semibold"
+          >
+            {Array.from({ length: 12 }, (_, i) => {
+              const hour12 = i + 1;
+              const disabled = isTimeDisabled(hour12, selectedMinute, period);
+              return (
+                <option key={hour12} value={hour12} disabled={disabled}>
+                  {String(hour12).padStart(2, "0")}
+                </option>
+              );
+            })}
+          </select>
         </div>
 
-        {/* Hour Picker */}
-        {step === "hour" ? (
-          <div className="relative w-40 h-40 mx-auto flex items-center justify-center">
-            <button
-              onClick={() => setAmPm("AM")}
-              className={`absolute left-0 -bottom-5 px-2 py-1 text-xs rounded ${amPm === "AM" ? "bg-black text-white" : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              AM
-            </button>
+        <span className="text-2xl font-bold text-gray-400 mt-6">:</span>
 
-            <svg className="w-full h-full" viewBox="0 0 200 200">
-              <circle cx="100" cy="100" r="90" fill="#f8f9fa" />
-              {[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((hour) => {
-                const angle = (hour % 12) * 30 - 90;
-                const radius = 70;
-                const x = Math.cos((angle * Math.PI) / 180) * radius + 100;
-                const y = Math.sin((angle * Math.PI) / 180) * radius + 100;
-                const isSelected = selectedHour === hour;
-                return (
-                  <g key={hour}>
-                    {isSelected && <circle cx={x} cy={y} r="16" fill="#1f2937" />}
-                    <text
-                      x={x}
-                      y={y + 4}
-                      textAnchor="middle"
-                      className={`text-sm cursor-pointer select-none ${isSelected ? "fill-white font-medium" : "fill-gray-700"
-                        }`}
-                      onClick={() => handleHourClick(hour)}
-                    >
-                      {hour}
-                    </text>
-                  </g>
-                );
-              })}
-              <line
-                x1="100"
-                y1="100"
-                x2={Math.cos(((selectedHour % 12) * 30 - 90) * (Math.PI / 180)) * 70 + 100}
-                y2={Math.sin(((selectedHour % 12) * 30 - 90) * (Math.PI / 180)) * 70 + 100}
-                stroke="#1f2937"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <circle cx="100" cy="100" r="3" fill="#1f2937" />
-            </svg>
-
-            <button
-              onClick={() => setAmPm("PM")}
-              className={`absolute right-0 -bottom-5 px-2 py-1 text-xs rounded ${amPm === "PM" ? "bg-black text-white" : "text-gray-600 hover:bg-gray-100"
-                }`}
-            >
-              PM
-            </button>
-          </div>
-        ) : (
-          // Minute Picker with draggable hand
-          <div className="relative w-40 h-40 mx-auto flex items-center justify-center">
-            <svg
-              ref={svgRef}
-              className="w-full h-full"
-              viewBox="0 0 200 200"
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleMouseDown}
-            >
-              <circle cx="100" cy="100" r="90" fill="#f8f9fa" />
-              {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((minute) => {
-                const angle = (minute / 60) * 360 - 90;
-                const radius = 70;
-                const x = Math.cos((angle * Math.PI) / 180) * radius + 100;
-                const y = Math.sin((angle * Math.PI) / 180) * radius + 100;
-                const isSelected = selectedMinute === minute;
-                return (
-                  <g key={minute}>
-                    {isSelected && <circle cx={x} cy={y} r="10" fill="#1f2937" />}
-                    <text
-                      x={x}
-                      y={y + 4}
-                      textAnchor="middle"
-                      className={`text-xs cursor-pointer select-none ${isSelected ? "fill-white font-medium" : "fill-gray-700"
-                        }`}
-                      onClick={() => handleMinuteClick(minute)}
-                    >
-                      {minute.toString().padStart(2, "0")}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* Draggable minute hand */}
-              <line
-                x1="100"
-                y1="100"
-                x2={Math.cos((selectedMinute / 60) * 360 * (Math.PI / 180) - Math.PI / 2) * 70 + 100}
-                y2={Math.sin((selectedMinute / 60) * 360 * (Math.PI / 180) - Math.PI / 2) * 70 + 100}
-                stroke="#1f2937"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <circle cx="100" cy="100" r="3" fill="#1f2937" />
-            </svg>
-          </div>
-        )}
-
-        {/* Bottom Buttons */}
-            {step === "minute" && (<div className="flex justify-end gap-3 px-4 pt-3 pb-2">
-      
-          <button
-            onClick={onClose}
-            className="text-gray-600 hover:text-gray-800 text-xs font-medium"
+        {/* Minutes */}
+        <div className="flex flex-col items-center">
+          <label className="text-sm font-medium text-gray-600 mb-2">Minute</label>
+          <select
+            value={selectedMinute}
+            onChange={(e) => handleMinuteChange(parseInt(e.target.value))}
+            className="w-16 h-12 text-center border border-gray-300 rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 
+                       text-lg font-semibold"
           >
-            Cancel
-          </button>
-         
-            <button
-              onClick={handleOK}
-              className="text-black hover:text-blue-700 text-xs font-medium"
-            >
-              OK
-            </button>
-         
-        </div> )}
+            {Array.from({ length: 60 }, (_, i) => {
+              const disabled = isTimeDisabled(selectedHour, i, period);
+              return (
+                <option key={i} value={i} disabled={disabled}>
+                  {String(i).padStart(2, "0")}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
+        {/* AM/PM */}
+        <div className="flex flex-col items-center">
+          <label className="text-sm font-medium text-gray-600 mb-2">Period</label>
+          <select
+            value={period}
+            onChange={(e) => handlePeriodChange(e.target.value)}
+            className="w-20 h-12 text-center border border-gray-300 rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 
+                       text-lg font-semibold"
+          >
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="text-lg font-semibold text-gray-800 mb-2">
+        {String(selectedHour).padStart(2, "0")}:{String(selectedMinute).padStart(2, "0")} {period}
       </div>
     </div>
   );
-}
+};
+
+export default TimeInput;
