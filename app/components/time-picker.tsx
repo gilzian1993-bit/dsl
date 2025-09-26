@@ -81,9 +81,9 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
           >
             {Array.from({ length: 12 }, (_, i) => {
               const hour12 = i + 1;
-              const disabled = isTimeDisabled(hour12, selectedMinute, period);
+              
               return (
-                <option key={hour12} value={hour12} disabled={disabled}>
+                <option key={hour12} value={hour12} >
                   {String(hour12).padStart(2, "0")}
                 </option>
               );
@@ -102,9 +102,9 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
             className="w-16 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
           >
             {Array.from({ length: 60 }, (_, i) => {
-              const disabled = isTimeDisabled(selectedHour, i, period);
+              
               return (
-                <option key={i} value={i} disabled={disabled}>
+                <option key={i} value={i} >
                   {String(i).padStart(2, "0")}
                 </option>
               );
@@ -127,21 +127,20 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
       </div>
 
       {/* Display selected time */}
-      <div className="text-lg font-semibold text-gray-800 mb-2">
+      <div className="text-lg font-semibold text-gray-800 ">
         {String(selectedHour).padStart(2, "0")}:{String(selectedMinute).padStart(2, "0")} {period}
       </div>
 
       {/* OK and Cancel Buttons */}
-<div className="flex justify-end gap-4 mt-4">
-  <button
-    onClick={handleOK}
-    className="bg-[#008492] hover:bg-[#007472] text-white py-3 px-6 rounded-md font-semibold transition"
-  >
-    OK
-  </button>
-</div>
-
-
+      <div className="flex justify-center gap-4 mt-2 w-full">
+      
+        <button
+          onClick={handleOK}
+          className="bg-[#008492] hover:bg-[#007472] text-white py-3 px-6 rounded-md font-semibold transition"
+        >
+          OK
+        </button>
+      </div>
     </div>
   );
 };

@@ -234,17 +234,17 @@ export default function VehicleSelection({
         let basePrice = 0;
 
         // Adjust pricing based on tripType
-        if (tripType === "hourly") {
+        if (tripType === "hourlyRate") {
             basePrice = Number((hours * vehicle.hourly).toFixed(2));
         } else {
             // Adjust pricing for LaGuardia Airport (LGA) and John F. Kennedy International Airport (JFK)
             if (pickupLocation === "LaGuardia Airport (LGA)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 10 ? 85 : 210 + (distance - 10) * 3;
+                    basePrice = distance <= 10 ? 85 : 85 + (distance - 10) * 3;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 10 ? 95 : 220 + (distance - 10) * 3.25;
+                    basePrice = distance <= 10 ? 95 : 95 + (distance - 10) * 3.25;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 10 ? 105 : 240 + (distance - 10) * 3.50;
+                    basePrice = distance <= 10 ? 105 : 105 + (distance - 10) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 210 : 210 + (distance - 15) * 7;
                 }
@@ -286,7 +286,7 @@ export default function VehicleSelection({
                 if (vehicle.type === "SEDAN") {
                     basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.25;
+                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.40;
                 } else if (vehicle.type === "SUV") {
                     basePrice = distance <= 15 ? 130 : 130 + (distance - 15) * 3.75;
                 } else if (vehicle.type === "SPRINTER") {
@@ -335,18 +335,19 @@ export default function VehicleSelection({
 
         // Add airport fee only for airport rides
         const airportFee = tripType === "airport_ride" ? 5 : 0;
-        const countryCharges = tripType === "airport_ride" ? 10 : 0;
-        const total = basePrice + gratuity + tax + airportFee + countryCharges;
+
+        const total = basePrice + gratuity + tax + airportFee ;
 
         console.log("Base:", basePrice);
+        console.log("hours:", hours);
         console.log("Gratuity (20%):", gratuity);
         console.log("Tax (5%):", tax);
         console.log("Airport Fee:", airportFee);
         console.log("Total:", total);
         console.log("Distance:", distance);
-        console.log("Country charges:", countryCharges);
+        // console.log("Country charges:", countryCharges);
 
-        return { basePrice, gratuity, tax, airportFee, total, countryCharges };
+        return { basePrice, gratuity, tax, airportFee, total };
     }
 
 

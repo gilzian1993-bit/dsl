@@ -222,7 +222,7 @@ export default function PaymentCard({
                             base_price: Math.round(basePrice),
                             tax: 5,
                             airport_fee: 5,
-                            country_charges: 10,
+                            
                             gratuity: 20,
                             distance: Math.round(distance),
                             email,
