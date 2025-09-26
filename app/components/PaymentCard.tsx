@@ -271,7 +271,7 @@ export default function PaymentCard({
                 <div className="flex-1 space-y-4">
                     <div className="mb-6">
                         <h1 className="text-2xl md:block hidden font-bold text-gray-800 mb-3">PAYMENT INFORMATION</h1>
-                        <div className="flex md:block hidden flex-col-reverse md:flex-row items-center gap-2 text-sm text-gray-600">
+                        <div className="flex md:block hidden flex-col-reverse md:flex-row items-center gap-2 text-base text-gray-600">
                             <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                                 <Check className="w-3 h-3 text-white" />
                             </div>
@@ -282,7 +282,7 @@ export default function PaymentCard({
 
                     {/* Card Holder */}
                     <div>
-                        <label className="text-sm text-gray-700 block mb-1">
+                        <label className="text-base text-gray-700 block mb-1">
                             Card Holder Name
                         </label>
                         <input
@@ -295,7 +295,7 @@ export default function PaymentCard({
 
                     {/* Card Number */}
                     <div>
-                        <label className="text-sm text-gray-700 block mb-1">
+                        <label className="text-base text-gray-700 block mb-1">
                             Card Number
                         </label>
                         <div className="border rounded-md px-3 py-2">
@@ -306,7 +306,7 @@ export default function PaymentCard({
                     {/* Expiry + CVC */}
                     <div className="flex gap-3">
                         <div className="w-1/2">
-                            <label className="text-sm text-gray-700 block mb-1">
+                            <label className="text-base text-gray-700 block mb-1">
                                 Expiration Date
                             </label>
                             <div className="border rounded-md px-3 py-2">
@@ -314,7 +314,7 @@ export default function PaymentCard({
                             </div>
                         </div>
                         <div className="w-1/2">
-                            <label className="text-sm text-gray-700 block mb-1">CVC</label>
+                            <label className="text-base text-gray-700 block mb-1">CVC</label>
                             <div className="border rounded-md px-3 py-2">
                                 <CardCvcElement options={{ style: ElementStyles }} />
                             </div>
@@ -322,8 +322,8 @@ export default function PaymentCard({
                     </div>
 
                     {/* Billing */}
-                    <div>
-                        <label className="text-sm text-gray-700 block mb-1">
+                    {/* <div>
+                        <label className="text-base text-gray-700 block mb-1">
                             Enter Billing Information
                         </label>
                         <input
@@ -332,10 +332,10 @@ export default function PaymentCard({
                             placeholder="Billing address"
                             className="w-full border rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#008492]"
                         />
-                    </div>
+                    </div> */}
 
                     {/* Terms */}
-                    <div className="text-xs text-gray-500 space-y-2">
+                    {/* <div className="text-xs text-gray-500 space-y-2">
                         <div className="flex items-start gap-2">
                             <Info className="w-5 h-5 text-gray-400 cursor-pointer" />
                             <span>Please review our cancellation policy before proceeding.</span>
@@ -346,10 +346,10 @@ export default function PaymentCard({
                                 I agree to the terms and authorize the payment (optional).
                             </span>
                         </div>
-                    </div>
+                    </div> */}
 
                     {errorMessage && (
-                        <p className="text-red-600 text-sm">{errorMessage}</p>
+                        <p className="text-red-600 text-base">{errorMessage}</p>
                     )}
 
                     {/* Submit Button aligned right */}
@@ -387,7 +387,7 @@ export default function PaymentCard({
     {/* Card Holder & Expiry */}
     <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-xs">
       {/* <div className="text-gray-400 text-[10px] sm:text-xs">YOUR NAME HERE</div> */}
-      <div className="text-sm mt-1 text-gray-400">
+      <div className="text-base mt-1 text-gray-400">
         {cardHolder ? cardHolder.toUpperCase() : "YOUR NAME HERE"}
       </div>
 

@@ -175,8 +175,8 @@ export default function PassengerDetailsForm({
         boosterSeat: carSeats ? boosterSeat : 0,
         passengers,
         luggage,
-        airlineCode:airlineCode,
-        flightNumber:  flightNumber,
+        airlineCode: airlineCode,
+        flightNumber: flightNumber,
         returnDate: returnTrip && returnDate ? returnDate.toISOString() : undefined,
         returnTime: returnTrip ? returnTime ?? undefined : undefined,
       };
@@ -205,8 +205,15 @@ export default function PassengerDetailsForm({
 
     setIsReturnTimeOpen(false);
   };
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [boosterTooltipVisible, setboosterTooltipVisible] = useState(false);
 
-
+  const toggleTooltip = () => {
+    setTooltipVisible(!tooltipVisible);
+  };
+  const boosterToggleTooltip = () => {
+    setboosterTooltipVisible(!boosterTooltipVisible);
+  };
   return (
     <div className="md:p-6">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Passenger Details</h2>
@@ -463,7 +470,20 @@ export default function PassengerDetailsForm({
         <div className="mb-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-base text-gray-700 mb-2">Rear facing seat</label>
+              <div className="flex  items-center gap-2 relative group mt-0"><label className="block text-base text-gray-700 mb-2">Rear facing seat</label>
+              <div className="relative">
+                <Info
+                  className="w-4 h-4 text-gray-400 cursor-pointer"
+                  onClick={toggleTooltip} // Toggle tooltip on click
+                />
+                {/* Tooltip card */}
+                {tooltipVisible && (
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                    $10 will be added in total price for per rear and booster seats.
+                  </div>
+                )}
+              </div></div>
+              
               <select
                 value={rearFacingSeat}
                 onChange={(e) => setRearFacingSeat(Number(e.target.value))}
@@ -476,8 +496,23 @@ export default function PassengerDetailsForm({
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-base text-gray-700 mb-2">Booster seat</label>
+            <div >
+              <div className="flex  items-center gap-2 relative group mt-0">
+                <label className="block text-base text-gray-700 mb-2">Booster seat</label>
+                <div className="relative">
+                  <Info
+                    className="w-4 h-4 text-gray-400 cursor-pointer"
+                    onClick={boosterToggleTooltip} // Toggle tooltip on click
+                  />
+                  {/* Tooltip card */}
+                  {boosterTooltipVisible && (
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                      $10 will be added in total price for per rear and booster seats.
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <select
                 value={boosterSeat}
                 onChange={(e) => setBoosterSeat(Number(e.target.value))}

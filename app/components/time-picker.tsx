@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 
 interface TimeInputProps {
@@ -45,31 +46,38 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
 
   const handleHourChange = (newHour: number) => {
     setSelectedHour(newHour);
-    onChange(to24Hour(newHour, period), selectedMinute);
   };
 
   const handleMinuteChange = (newMinute: number) => {
     setSelectedMinute(newMinute);
-    onChange(to24Hour(selectedHour, period), newMinute);
   };
 
   const handlePeriodChange = (newPeriod: string) => {
     setPeriod(newPeriod);
-    onChange(to24Hour(selectedHour, newPeriod), selectedMinute);
+  };
+
+  const handleOK = () => {
+    // Update parent with selected time
+    onChange(to24Hour(selectedHour, period), selectedMinute);
+  };
+
+  const handleCancel = () => {
+    // Reset the time selection to initial values
+    setSelectedHour(initialHour % 12 || 12);
+    setSelectedMinute(initialMinute);
+    setPeriod(initialHour >= 12 ? "PM" : "AM");
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex items-center justify-center gap-4 mb-6">
+    <div className="flex flex-col items-center p-4">
+      <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
         {/* Hours */}
         <div className="flex flex-col items-center">
           <label className="text-sm font-medium text-gray-600 mb-2">Hour</label>
           <select
             value={selectedHour}
             onChange={(e) => handleHourChange(parseInt(e.target.value))}
-            className="w-16 h-12 text-center border border-gray-300 rounded-lg 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 
-                       text-lg font-semibold"
+            className="w-16 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
           >
             {Array.from({ length: 12 }, (_, i) => {
               const hour12 = i + 1;
@@ -91,9 +99,7 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
           <select
             value={selectedMinute}
             onChange={(e) => handleMinuteChange(parseInt(e.target.value))}
-            className="w-16 h-12 text-center border border-gray-300 rounded-lg 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 
-                       text-lg font-semibold"
+            className="w-16 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
           >
             {Array.from({ length: 60 }, (_, i) => {
               const disabled = isTimeDisabled(selectedHour, i, period);
@@ -112,9 +118,7 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
           <select
             value={period}
             onChange={(e) => handlePeriodChange(e.target.value)}
-            className="w-20 h-12 text-center border border-gray-300 rounded-lg 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 
-                       text-lg font-semibold"
+            className="w-20 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
           >
             <option value="AM">AM</option>
             <option value="PM">PM</option>
@@ -122,8 +126,25 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
         </div>
       </div>
 
+      {/* Display selected time */}
       <div className="text-lg font-semibold text-gray-800 mb-2">
         {String(selectedHour).padStart(2, "0")}:{String(selectedMinute).padStart(2, "0")} {period}
+      </div>
+
+      {/* OK and Cancel Buttons */}
+      <div className="flex gap-4 mt-4">
+        <button
+          onClick={handleOK}
+          className="bg-[#008492] hover:bg-[#007472] text-white py-3 px-6 rounded-md font-semibold transition"
+        >
+          OK
+        </button>
+        <button
+          onClick={handleCancel}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-900 py-3 px-6 rounded-md font-semibold transition"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
