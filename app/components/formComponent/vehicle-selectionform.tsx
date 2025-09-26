@@ -64,7 +64,7 @@ const vehicles: VehicleOption[] = [
         type: "SEDAN",
         image: "/images/sedan/cadilac-xts.png",
         price: 85,
-        hourly: 85,
+        hourly: 80,
         passengers: 3,
         bags: 3,
         features: ["WiFi", "Leather Seats", "Climate Control"],
@@ -75,7 +75,7 @@ const vehicles: VehicleOption[] = [
         type: "SEDAN",
         image: "/images/sedan/lincoln.png",
         price: 85,
-        hourly: 85,
+        hourly: 80,
         passengers: 3,
         bags: 3,
         features: ["WiFi", "Premium Audio", "Leather Seats"],
@@ -86,7 +86,7 @@ const vehicles: VehicleOption[] = [
         type: "SEDAN",
         image: "/images/sedan/cadilac.cts.png",
         price: 85,
-        hourly: 85,
+        hourly: 80,
         passengers: 3,
         bags: 3,
         features: ["WiFi", "USB Charging", "Tinted Windows"],
@@ -97,7 +97,7 @@ const vehicles: VehicleOption[] = [
         type: "SEDAN",
         image: "/images/sedan/cadilac.png",
         price: 85,
-        hourly: 85,
+        hourly: 80,
         passengers: 3,
         bags: 3,
         features: ["WiFi", "Heated Seats", "Panoramic Roof"],
@@ -110,7 +110,7 @@ const vehicles: VehicleOption[] = [
         type: "MID SUV",
         image: "/images/SUV/lincoln-aviator.png",
         price: 110,
-        hourly: 110,
+        hourly: 90,
         passengers: 4,
         bags: 4,
         features: ["WiFi", "Leather Seats", "Rear Climate Control"],
@@ -121,7 +121,7 @@ const vehicles: VehicleOption[] = [
         type: "MID SUV",
         image: "/images/SUV/cadilac-xt6.png",
         price: 110,
-        hourly: 110,
+        hourly: 90,
         passengers: 4,
         bags: 4,
         features: ["WiFi", "Premium Audio", "All-Wheel Drive"],
@@ -134,7 +134,7 @@ const vehicles: VehicleOption[] = [
         type: "SUV",
         image: "/images/SUV/chevrolet.png",
         price: 110,
-        hourly: 110,
+        hourly: 100,
         passengers: 7,
         bags: 6,
         features: ["WiFi", "Rear Entertainment", "Large Cargo Space"],
@@ -145,7 +145,7 @@ const vehicles: VehicleOption[] = [
         type: "SUV",
         image: "/images/SUV/cadilac-escalate.png",
         price: 110,
-        hourly: 110,
+        hourly: 100,
         passengers: 7,
         bags: 6,
         features: ["WiFi", "Premium Leather", "Panoramic Roof"],
@@ -156,7 +156,7 @@ const vehicles: VehicleOption[] = [
         type: "SUV",
         image: "/images/SUV/GMC.png",
         price: 110,
-        hourly: 110,
+        hourly: 100,
         passengers: 7,
         bags: 6,
         features: ["WiFi", "USB Charging", "Heated Seats"],
@@ -167,7 +167,7 @@ const vehicles: VehicleOption[] = [
         type: "SUV",
         image: "/images/SUV/lincol-navigator.png",
         price: 110,
-        hourly: 110,
+        hourly: 100,
         passengers: 7,
         bags: 6,
         features: ["WiFi", "Premium Audio", "Massage Seats"],
@@ -240,21 +240,43 @@ export default function VehicleSelection({
             // Adjust pricing for LaGuardia Airport (LGA) and John F. Kennedy International Airport (JFK)
             if (pickupLocation === "LaGuardia Airport (LGA)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 13 ? 210 : 210 + (distance - 13) * 3;
+                    basePrice = distance <= 10 ? 85 : 210 + (distance - 10) * 3;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 13 ? 220 : 220 + (distance - 13) * 3.25;
+                    basePrice = distance <= 10 ? 95 : 220 + (distance - 10) * 3.25;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 13 ? 240 : 240 + (distance - 13) * 3.50;
+                    basePrice = distance <= 10 ? 105 : 240 + (distance - 10) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 210 : 210 + (distance - 15) * 7;
                 }
             } else if (pickupLocation === "John F. Kennedy International Airport (JFK)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 13 ? 270 : 270 + (distance - 13) * 3;
+                    basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 13 ? 280 : 280 + (distance - 13) * 3.25;
+                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.25;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 13 ? 300 : 300 + (distance - 13) * 3.50;
+                    basePrice = distance <= 15 ? 125 : 125 + (distance - 15) * 3.50;
+                } else if (vehicle.type === "SPRINTER") {
+                    basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
+                }
+            }
+            else if (pickupLocation === "Westchester County Airport (HPN)") {
+                if (vehicle.type === "SEDAN") {
+                    basePrice = distance <= 30 ? 135 : 135 + (distance - 30) * 3;
+                } else if (vehicle.type === "MID SUV") {
+                    basePrice = distance <= 30 ? 145 : 145 + (distance - 13) * 3.25;
+                } else if (vehicle.type === "SUV") {
+                    basePrice = distance <= 30 ? 165 : 165 + (distance - 13) * 3.50;
+                } else if (vehicle.type === "SPRINTER") {
+                    basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
+                }
+            }
+            else if (pickupLocation === "Teterboro Airport (TEB)") {
+                if (vehicle.type === "SEDAN") {
+                    basePrice = distance <= 30 ? 100 : 100 + (distance - 30) * 3;
+                } else if (vehicle.type === "MID SUV") {
+                    basePrice = distance <= 30 ? 120 : 120 + (distance - 13) * 3.25;
+                } else if (vehicle.type === "SUV") {
+                    basePrice = distance <= 30 ? 150 : 150 + (distance - 13) * 3.75;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
                 }
@@ -262,11 +284,11 @@ export default function VehicleSelection({
             // Adjust pricing for other locations...
             else if (pickupLocation === "Newark Liberty International Airport (EWR)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 13 ? 100 : 100 + (distance - 13) * 3;
+                    basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 13 ? 120 : 120 + (distance - 13) * 3.25;
+                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.25;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 13 ? 150 : 150 + (distance - 13) * 3.75;
+                    basePrice = distance <= 15 ? 130 : 130 + (distance - 15) * 3.75;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 260 : 260 + (distance - 15) * 7;
                 }
@@ -630,7 +652,7 @@ export default function VehicleSelection({
                                         <span>{current.passengers}</span>
                                     </div>
 
-                                   {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
                                         <div className="text-gray-900 font-bold text-xl mt-4">
                                             ${breakdown.total.toFixed(2)}
 

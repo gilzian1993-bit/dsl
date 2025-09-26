@@ -220,7 +220,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [showTripDetailsMobile, setShowTripDetailsMobile] = useState(false);
     const [meetGreetYes, setMeetGreetYes] = useState(false);
     // const [airportPickup, setAirportPickup] = useState(false);
-    const meetGreetCost = meetGreetYes ? 25 : 0;
+    const meetGreetCost = meetGreetYes ? 50 : 0;
     // const airportPickupCost = airportPickup ? 5 : 0;
 
 
@@ -647,7 +647,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                             </div>
                         </div>
 
-                        <div className="w-full mx-auto space-y-4 mt-4 px-4">  
+                        <div className="w-full mx-auto space-y-4 mt-4 px-4">
                             <PassengerDetailsForm
                                 onBack={onBack}
                                 onNext={(data) => {
