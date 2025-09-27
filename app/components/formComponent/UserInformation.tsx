@@ -219,8 +219,10 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [showModal, setShowModal] = useState(false);
     const [showTripDetailsMobile, setShowTripDetailsMobile] = useState(false);
     const [meetGreetYes, setMeetGreetYes] = useState(false);
+    const [returnTripYes, setReturnTripYes] = useState(false);
     // const [airportPickup, setAirportPickup] = useState(false);
     const meetGreetCost = meetGreetYes ? 50 : 0;
+    const returnDiscount = returnTripYes ? 0.07 : 0;
     // const airportPickupCost = airportPickup ? 5 : 0;
 
 
@@ -234,7 +236,13 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
     const basePrice = getVehiclePrice(vehicle);
 
-    const totalPrice = basePrice + meetGreetCost;
+    const totalPriceBeforeDiscount = basePrice + meetGreetCost;
+
+    // Apply return trip discount if applicable (7% of base price)
+    const discountAmount = returnDiscount * basePrice;
+    const totalPrice = totalPriceBeforeDiscount - discountAmount;
+
+    // Update the final total price
     const [finalTotal, setFinalTotal] = useState(totalPrice);
 
 
@@ -662,6 +670,9 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                 tripType={tripType}
                                 finalTotal={finalTotal}
                                 meetGreetYes={meetGreetYes}
+                                returnTrip={returnTripYes}
+                                setReturnTrip={setReturnTripYes}
+
                                 onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)}
                                 setMeetGreetYes={setMeetGreetYes}
                                 vehicle={vehicle}

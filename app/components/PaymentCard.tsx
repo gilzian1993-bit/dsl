@@ -218,11 +218,12 @@ export default function PaymentCard({
                             pickup_time: pickupTime,
                             return_date: formatIsoDate(returnDate),
                             return_time: returnTime,
+                            returnTrip: returnTrip,
                             price: Math.round(finalTotal),
                             base_price: Math.round(basePrice),
                             tax: 5,
                             airport_fee: 5,
-                            
+
                             gratuity: 20,
                             distance: Math.round(distance),
                             email,

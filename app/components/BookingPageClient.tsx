@@ -93,6 +93,7 @@ export default function BookingPageClient() {
           pickupDate={pickupDate}
           pickupTime={pickupTime}
           tripType={tripType}
+         
           onNext={(data) => {
             console.log("✅ User Info Captured:", data);
             setUserInfo(data);   // 🔹 save to state

@@ -6,7 +6,7 @@ const airports = [
   { name: "NEWARK AIRPORT (EWR)", image: "/image 3.png", href: "#" },
   { name: "TETERBORO AIRPORT (TEB)", image: "/image 4.png", href: "#" },
   { name: "WESTCHESTER COUNTY (HPN)", image: "/image 6.png", href: "#" },
-  { name: "JOHN F. KENNEDY AIRPORT (JFK)", image: "/image 1.png", href: "#" },
+  { name: "JOHN F. KENNEDY AIRPORT (JFK)", image: "/image--.jpg", href: "#" },
   { name: "LAGUARDIA AIRPORT (LGA)", image: "/image2.png", href: "#" },
 ];
 

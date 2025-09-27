@@ -56,6 +56,8 @@ interface PassengerDetailsFormProps {
   tripType: string;
   meetGreetYes: boolean;
   setMeetGreetYes: React.Dispatch<React.SetStateAction<boolean>>;
+  returnTrip: boolean;
+  setReturnTrip: React.Dispatch<React.SetStateAction<boolean>>;
   finalTotal: number;
   vehicle: VehicleOption;
   totalPrice: number;
@@ -70,6 +72,8 @@ export default function PassengerDetailsForm({
   meetGreetYes,
   setMeetGreetYes,
   pickupDate,
+  returnTrip,
+  setReturnTrip,
   vehicle,
   totalPrice,
   onPriceChange,
@@ -82,7 +86,7 @@ export default function PassengerDetailsForm({
   const [flightNumber, setFlightNumber] = useState("");
 
   const [carSeats, setCarSeats] = useState(false);
-  const [returnTrip, setReturnTrip] = useState(false);
+
   const [rearFacingSeat, setRearFacingSeat] = useState(0);
   const [boosterSeat, setBoosterSeat] = useState(0);
   const [returnDate, setReturnDate] = useState<Date | null>(null);
@@ -424,31 +428,35 @@ export default function PassengerDetailsForm({
 
         {/* Return Trip Toggle */}
         {tripType !== "hourlyRate" && (
-          <div className="flex items-center gap-2">
-            <label className="relative items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={returnTrip}
-                onChange={() => {
-                  setReturnTrip(!returnTrip);
-                  setShowReturnTrip(!showReturnTrip);
+  <div className="flex items-center gap-2">
+    <label className="relative items-center cursor-pointer">
+      <input
+        type="checkbox"
+        checked={returnTrip}
+        onChange={() => {
+          setReturnTrip(!returnTrip);
+          setShowReturnTrip(!showReturnTrip);
+        }}
+        className="sr-only"
+      />
+      <div
+        className={`w-11 h-6 rounded-full ${returnTrip ? "bg-[#008492]" : "bg-gray-300"
+          } relative transition-colors`}
+      >
+        <div
+          className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${returnTrip ? "translate-x-5" : "translate-x-0.5"
+            }`}
+        ></div>
+      </div>
+    </label>
+    <span className="text-base text-gray-900">Return Trip?</span>
+    {returnTrip && (
+      <span className="text-xs bg-[#008492] rounded-full py-2 text-white px-2">7% return discount</span>
+    )}
+    {/* <Info className="w-4 h-4 text-gray-400" /> */}
+  </div>
+)}
 
-                }}
-                className="sr-only"
-              />
-              <div
-                className={`w-11 h-6 rounded-full ${returnTrip ? "bg-[#008492]" : "bg-gray-300"
-                  } relative transition-colors`}
-              >
-                <div
-                  className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${returnTrip ? "translate-x-5" : "translate-x-0.5"
-                    }`}
-                ></div>
-              </div>
-            </label>
-            <span className="text-base text-gray-900">Return Trip?</span>
-            {/* <Info className="w-4 h-4 text-gray-400" /> */}
-          </div>)}
 
       </div>
 
@@ -471,19 +479,19 @@ export default function PassengerDetailsForm({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
               <div className="flex  items-center gap-2 relative group mt-0"><label className="block text-base text-gray-700 mb-2">Rear facing seat</label>
-              <div className="relative">
-                <Info
-                  className="w-4 h-4 text-gray-400 cursor-pointer"
-                  onClick={toggleTooltip} // Toggle tooltip on click
-                />
-                {/* Tooltip card */}
-                {tooltipVisible && (
-                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
-                    $10 will be added in total price for per rear and booster seats.
-                  </div>
-                )}
-              </div></div>
-              
+                <div className="relative">
+                  <Info
+                    className="w-4 h-4 text-gray-400 cursor-pointer"
+                    onClick={toggleTooltip} // Toggle tooltip on click
+                  />
+                  {/* Tooltip card */}
+                  {tooltipVisible && (
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                      $10 will be added in total price for per rear and booster seats.
+                    </div>
+                  )}
+                </div></div>
+
               <select
                 value={rearFacingSeat}
                 onChange={(e) => setRearFacingSeat(Number(e.target.value))}

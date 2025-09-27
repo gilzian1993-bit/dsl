@@ -14,8 +14,8 @@ const fleetCategories = [
 ]
 
 const vehicles = [
-    { id: 1, name: "CADILLAC XTS - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac-xts5.png" },
-    { id: 2, name: "LINCOLN CONTINENTAL - SEDAN", type: "SEDAN", image: "/images/sedan/lincoln4.png" },
+    { id: 1, name: "CADILLAC XTS - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac-xts.png" },
+    { id: 2, name: "LINCOLN CONTINENTAL - SEDAN", type: "SEDAN", image: "/images/sedan/lincoln.png" },
     { id: 3, name: "CADILLAC CTS - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac.cts.png" },
     { id: 4, name: "CADILLAC LYRIQ - SEDAN", type: "SEDAN", image: "/images/sedan/cadilac.png" },
     { id: 5, name: "Lincoln Aviator - MID SIZE SUV", type: "MID SUV", image: "/images/SUV/lincoln-aviator.png" },
@@ -98,8 +98,8 @@ export default function OurFleet() {
                                 <button
                                     onClick={() => handleCategoryChange(category.name)}
                                     className={`px-2 py-1 transition-colors ${activeCategory === category.name
-                                            ? "text-teal-500 font-medium"
-                                            : "text-gray-400 hover:text-gray-600"
+                                        ? "text-teal-500 font-medium"
+                                        : "text-gray-400 hover:text-gray-600"
                                         }`}
                                 >
                                     {category.name}
@@ -132,11 +132,11 @@ export default function OurFleet() {
                             <div
                                 key={vehicle.id}
                                 className="text-center  overflow-hidden  opacity-0"
-                  style={{
-    animation: inView
-        ? `fadeInUp 1s ease-out forwards ${index * 1.5}s` // 👈 1.5s delay per car
-        : "none",
-}}
+                                style={{
+                                    animation: inView
+                                        ? `fadeInUp 1s ease-out forwards ${index * 1.5}s` // 👈 1.5s delay per car
+                                        : "none",
+                                }}
 
                             >
                                 <div className="relative h-60 w-full">

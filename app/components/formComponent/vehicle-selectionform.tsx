@@ -687,6 +687,7 @@ export default function VehicleSelection({
                                                     ...current,
                                                     price: breakdown.total,
                                                     vehicleTitle: getVehicleTitle(current.type),
+                                                    
                                                     tripType: tripType,
                                                 };
                                                 setTimeout(() => {
