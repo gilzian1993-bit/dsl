@@ -56,6 +56,8 @@ interface PassengerDetailsFormProps {
   tripType: string;
   meetGreetYes: boolean;
   setMeetGreetYes: React.Dispatch<React.SetStateAction<boolean>>;
+  ReturnMeetGreetYes: boolean;
+  setReturnMeetGreetYes: React.Dispatch<React.SetStateAction<boolean>>;
   returnTrip: boolean;
   setReturnTrip: React.Dispatch<React.SetStateAction<boolean>>;
   finalTotal: number;
@@ -63,6 +65,7 @@ interface PassengerDetailsFormProps {
   totalPrice: number;
   pickupDate: string;
   onPriceChange: (updatedTotal: number) => void;
+  basePrice?: number;
 }
 
 export default function PassengerDetailsForm({
@@ -71,14 +74,18 @@ export default function PassengerDetailsForm({
   tripType,
   meetGreetYes,
   setMeetGreetYes,
+  setReturnMeetGreetYes,
+  ReturnMeetGreetYes,
   pickupDate,
   returnTrip,
   setReturnTrip,
   vehicle,
   totalPrice,
   onPriceChange,
+  basePrice,
   finalTotal,
 }: PassengerDetailsFormProps) {
+  console.log("Base Price", basePrice);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -103,6 +110,7 @@ export default function PassengerDetailsForm({
   const [showMeetGreet, setShowMeetGreet] = useState(false);
   const [showCarSeats, setShowCarSeats] = useState(false);
   const [showReturnTrip, setShowReturnTrip] = useState(false);
+  const [showReturnMeetGreet, setShowReturnMeetGreet] = useState(false);
   const [airportPickup, setAirportPickup] = useState(false);
   // 🔹 Real-time price calculation
   useEffect(() => {
@@ -171,6 +179,7 @@ export default function PassengerDetailsForm({
         phone,
         tripType,
         meetGreetYes,
+        ReturnMeetGreetYes,
         airportPickup,
         carSeats,
         finalTotal,
@@ -428,34 +437,34 @@ export default function PassengerDetailsForm({
 
         {/* Return Trip Toggle */}
         {tripType !== "hourlyRate" && (
-  <div className="flex items-center gap-2">
-    <label className="relative items-center cursor-pointer">
-      <input
-        type="checkbox"
-        checked={returnTrip}
-        onChange={() => {
-          setReturnTrip(!returnTrip);
-          setShowReturnTrip(!showReturnTrip);
-        }}
-        className="sr-only"
-      />
-      <div
-        className={`w-11 h-6 rounded-full ${returnTrip ? "bg-[#008492]" : "bg-gray-300"
-          } relative transition-colors`}
-      >
-        <div
-          className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${returnTrip ? "translate-x-5" : "translate-x-0.5"
-            }`}
-        ></div>
-      </div>
-    </label>
-    <span className="text-base text-gray-900">Return Trip?</span>
-    {returnTrip && (
-      <span className="text-xs bg-[#008492] rounded-full py-2 text-white px-2">7% return discount</span>
-    )}
-    {/* <Info className="w-4 h-4 text-gray-400" /> */}
-  </div>
-)}
+          <div className="flex items-center gap-2">
+            <label className="relative items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={returnTrip}
+                onChange={() => {
+                  setReturnTrip(!returnTrip);
+                  setShowReturnTrip(!showReturnTrip);
+                }}
+                className="sr-only"
+              />
+              <div
+                className={`w-11 h-6 rounded-full ${returnTrip ? "bg-[#008492]" : "bg-gray-300"
+                  } relative transition-colors`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${returnTrip ? "translate-x-5" : "translate-x-0.5"
+                    }`}
+                ></div>
+              </div>
+            </label>
+            <span className="text-base text-gray-900">Return Trip?</span>
+            {returnTrip && (
+              <span className="text-xs bg-[#008492] rounded-full py-2 text-white px-2">10% return discount</span>
+            )}
+            {/* <Info className="w-4 h-4 text-gray-400" /> */}
+          </div>
+        )}
 
 
       </div>
@@ -464,6 +473,16 @@ export default function PassengerDetailsForm({
 
       {/* Meet & Greet Info */}
       {showMeetGreet && (
+        <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mt-2 mb-5">
+          <p className="text-gray-600 text-md">
+            We&apos;ll arrange a personal assistant to meet you at the airport.
+          </p>
+          <p className="text-gray-800 font-medium mt-2">
+            Note: An additional $25 will be added to your total price.
+          </p>
+        </div>
+      )}
+       {showReturnMeetGreet && (
         <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mt-2 mb-5">
           <p className="text-gray-600 text-md">
             We&apos;ll arrange a personal assistant to meet you at the airport.
@@ -600,6 +619,29 @@ export default function PassengerDetailsForm({
               {errors.returnTime && (
                 <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
               )}
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="relative items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={meetGreetYes}
+                  onChange={() => {
+                    setReturnMeetGreetYes(!ReturnMeetGreetYes);
+                    setShowReturnMeetGreet(!showReturnMeetGreet);
+                  }}
+                  className="sr-only"
+                />
+                <div
+                  className={`w-11 h-6 rounded-full ${showReturnMeetGreet ? "bg-[#008492]" : "bg-gray-300"
+                    } relative transition-colors`}
+                >
+                  <div
+                    className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${showReturnMeetGreet ? "translate-x-5" : "translate-x-0.5"
+                      }`}
+                  ></div>
+                </div>
+              </label>
+              <span className="text-base text-gray-700">Meet & Greet</span>
             </div>
           </div>
         </div>

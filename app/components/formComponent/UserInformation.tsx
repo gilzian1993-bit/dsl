@@ -27,6 +27,7 @@ interface UserInfo {
 }
 interface UserInformationProps {
     vehicle: VehicleOption;
+    selectedVehicle: VehicleOption; 
     pickupLocation: string;
     dropLocation: string;
     pickupDate: string;
@@ -54,6 +55,7 @@ interface UserInformationProps {
     onBack: () => void;
     step: number;
     tripType: string;
+   
 }
 
 interface Price {
@@ -77,6 +79,7 @@ interface VehicleOption {
     price: number | Price;   // 👈 can be number OR object
     tripType?: string;
     vehicleTitle?: string;
+    basePrice?: number;
 }
 
 interface Props {
@@ -213,17 +216,22 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     pickupDate,
     pickupTime,
     tripType,
+    selectedVehicle,
 }: UserInformationProps) {
-    console.log("Selected Vehicle:", vehicle);
+    console.log("Selected Vehicle:", selectedVehicle);
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const [showModal, setShowModal] = useState(false);
     const [showTripDetailsMobile, setShowTripDetailsMobile] = useState(false);
     const [meetGreetYes, setMeetGreetYes] = useState(false);
+    const [ReturnMeetGreetYes, setReturnMeetGreetYes] = useState(false);
     const [returnTripYes, setReturnTripYes] = useState(false);
     // const [airportPickup, setAirportPickup] = useState(false);
-    const meetGreetCost = meetGreetYes ? 50 : 0;
-    const returnDiscount = returnTripYes ? 0.07 : 0;
-    // const airportPickupCost = airportPickup ? 5 : 0;
+    // $50 for pickup, $50 for return (if return trip)
+    const meetGreetCost = (meetGreetYes ? 50 : 0) + (ReturnMeetGreetYes ? 50 : 0);
+
+
+    const returnDiscount = returnTripYes ? 0.10 : 0;
+
 
 
     // helper to normalize vehicle.price
@@ -672,10 +680,13 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                 meetGreetYes={meetGreetYes}
                                 returnTrip={returnTripYes}
                                 setReturnTrip={setReturnTripYes}
-
+                                setReturnMeetGreetYes={setReturnMeetGreetYes}
+                                ReturnMeetGreetYes={ReturnMeetGreetYes}
                                 onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)}
                                 setMeetGreetYes={setMeetGreetYes}
                                 vehicle={vehicle}
+                               
+                                
                             /></div>
                     </div>
 

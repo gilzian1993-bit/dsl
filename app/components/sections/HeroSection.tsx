@@ -19,6 +19,11 @@ export default function HeroSection() {
   const [loading, setLoading] = useState(false);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [stopsCount, setStopsCount] = useState(0);
+  const [stop1, setStop1] = useState("");
+  const [stop2, setStop2] = useState("");
+  const [stop3, setStop3] = useState("");
+  const [stop4, setStop4] = useState("");
 
   // ✅ Parent component
   const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
@@ -46,59 +51,68 @@ export default function HeroSection() {
   const handleTripTypeChange = (type: string) => setTripType(type);
 
   const handleBookNow = async () => {
-  setLoading(true);
-  let distance = 0;
+    setLoading(true);
+    let distance = 0;
 
-  if (tripType === "pointToPoint") {
-    // ✅ Point-to-Point distance
-    const result = await calculateDistance({
-      from: pickupLocation,
-      to: dropLocation,
-    });
+    if (tripType === "pointToPoint") {
+      // ✅ Point-to-Point distance
+      const result = await calculateDistance({
+        from: pickupLocation,
+        to: dropLocation,
+        stop1: stop1,
+        stop2: stop2,
+        stop3: stop3,
+        stop4: stop4,
+      });
 
-    if (result.error || !result.distance) {
-      alert(result.error || "Could not calculate distance");
-      setLoading(false);
-      return;
+      if (result.error || !result.distance) {
+        alert(result.error || "Could not calculate distance");
+        setLoading(false);
+        return;
+      }
+
+      distance = result.distance;
+    }
+    else if (tripType === "airportRide") {
+      // ✅ Airport Ride distance (pickup -> airport)
+      const result = await calculateDistance({
+        from: pickupLocation,
+        to: dropLocation || pickupLocation, // fallback if drop isn't used
+      });
+
+      if (result.error || !result.distance) {
+        alert(result.error || "Could not calculate distance");
+        setLoading(false);
+        return;
+      }
+
+      distance = result.distance;
     }
 
-    distance = result.distance;
-  } 
-  else if (tripType === "airportRide") {
-    // ✅ Airport Ride distance (pickup -> airport)
-    const result = await calculateDistance({
-      from: pickupLocation,
-      to: dropLocation || pickupLocation, // fallback if drop isn't used
+    const params = new URLSearchParams({
+      pickupLocation,
+      dropLocation,
+      pickupDate: pickupDate ? pickupDate.toISOString() : "",
+      pickupTime: selectedTime,
+      pickupLat: pickupCoords?.lat.toString() || "",
+      pickupLng: pickupCoords?.lng.toString() || "",
+      dropLat: dropCoords?.lat.toString() || "",
+      dropLng: dropCoords?.lng.toString() || "",
+      distance: distance.toFixed(2),
+      tripType,
+      stop1: stop1,
+      stop2: stop2,
+      stop3: stop3,
+      stop4: stop4,
+      stopsCount: stopsCount.toString(),
+      hours: hours.toString(),
     });
 
-    if (result.error || !result.distance) {
-      alert(result.error || "Could not calculate distance");
+    setTimeout(() => {
       setLoading(false);
-      return;
-    }
-
-    distance = result.distance;
-  }
-
-  const params = new URLSearchParams({
-    pickupLocation,
-    dropLocation,
-    pickupDate: pickupDate ? pickupDate.toISOString() : "",
-    pickupTime: selectedTime,
-    pickupLat: pickupCoords?.lat.toString() || "",
-    pickupLng: pickupCoords?.lng.toString() || "",
-    dropLat: dropCoords?.lat.toString() || "",
-    dropLng: dropCoords?.lng.toString() || "",
-    distance: distance.toFixed(2),
-    tripType,
-    hours: hours.toString(),
-  });
-
-  setTimeout(() => {
-    setLoading(false);
-    router.push(`/booking?${params.toString()}`);
-  }, 1500);
-};
+      router.push(`/booking?${params.toString()}`);
+    }, 1500);
+  };
 
 
 
@@ -201,6 +215,18 @@ export default function HeroSection() {
           setHours={setHours}
           handleBookNow={handleBookNow}
           loading={loading}
+          stopsCount={stopsCount}
+          setStopsCount={setStopsCount}
+          stop1={stop1}
+          stop2={stop2}
+          stop3={stop3}
+          stop4={stop4}
+          setStop1={setStop1}
+          setStop2={setStop2}
+          setStop3={setStop3}
+          setStop4={setStop4}
+
+
         />
       </div>
 

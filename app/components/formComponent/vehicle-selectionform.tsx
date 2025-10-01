@@ -36,7 +36,7 @@ interface VehicleOption {
     name: string;
     type: string;
     image: string;
-    price: number;     // still the final price
+    price: number;       // final selected price
     hourly: number;
     passengers: number;
     bags: number;
@@ -44,15 +44,19 @@ interface VehicleOption {
     vehicleTitle?: string;
     tripType?: string;
 
-    // 👇 New optional fields
+    // Breakdown
     basePrice?: number;
+    base?: number;
     gratuity?: number;
-    tollFee?: number;
-    airportFee?: number;
     tax?: number;
+    airportFee?: number;
     total?: number;
+    discountAmount?: number;
+    finalPrice?: number;
     hours?: number;
+
 }
+
 
 
 
@@ -219,7 +223,7 @@ export default function VehicleSelection({
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const [openVehicleModalId, setOpenVehicleModalId] = useState<number | null>(null);
     const [showTripDetailsMobile, setShowTripDetailsMobile] = useState(false);
-
+    const stopsCount = Number(searchParams.get("stopsCount") || 0);
     const router = useRouter();
 
     const mapCenter =
@@ -229,7 +233,8 @@ export default function VehicleSelection({
         vehicle: VehicleOption,
         distance: number,
         hours: number,
-        tripType: string
+        tripType: string,
+
     ) {
         let basePrice = 0;
 
@@ -333,21 +338,36 @@ export default function VehicleSelection({
         const gratuity = basePrice * 0.20;
         const tax = basePrice * 0.05;
 
-        // Add airport fee only for airport rides
-        const airportFee = tripType === "airport_ride" ? 5 : 0;
 
-        const total = basePrice + gratuity + tax + airportFee ;
+        const airportFee = tripType === "airportRide" ? 5 : 0;
+
+
+        let total = basePrice + gratuity + tax + airportFee;
+        if (stopsCount > 0) {
+            total += 20 * stopsCount;
+        }
+        const discountPercentage = 5;
+        const discountAmount = total * (discountPercentage / 100);
+        const finalPrice = total - discountAmount;
 
         console.log("Base:", basePrice);
         console.log("hours:", hours);
         console.log("Gratuity (20%):", gratuity);
         console.log("Tax (5%):", tax);
         console.log("Airport Fee:", airportFee);
-        console.log("Total:", total);
-        console.log("Distance:", distance);
-        // console.log("Country charges:", countryCharges);
+        console.log("Total with Stops Fee:", total);
+        console.log("Stops:", stopsCount);
 
-        return { basePrice, gratuity, tax, airportFee, total };
+
+        return {
+            basePrice,
+            gratuity,
+            tax,
+            airportFee,
+            total,
+            discountAmount,
+            finalPrice
+        };
     }
 
 
@@ -654,13 +674,38 @@ export default function VehicleSelection({
                                     </div>
 
                                     {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
-                                        <div className="text-gray-900 font-bold text-xl mt-4">
-                                            ${breakdown.total.toFixed(2)}
+                                        <div className="relative text-white bg-black mt-4 px-6 py-2 rounded-md font-medium text-sm">
+                                            {/* Discount Badge Top-Right */}
+                                            {tripType !== "hourlyRate" && (
+                                                <span className="absolute -top-2 -right-2 bg-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                                                    5% OFF
+                                                </span>
+                                            )}
 
+                                            {/* Pricing */}
+                                            <div className="flex flex-col items-center">
+                                                {tripType !== "hourlyRate" ? (
+                                                    <>
+                                                        {/* Original Price */}
+                                                        <span className="text-white line-through text-sm">
+                                                            ${breakdown.total.toFixed(2)}
+                                                        </span>
 
+                                                        {/* Final Price */}
+                                                        <span className="text-2xl text-center font-bold text-white">
+                                                            ${breakdown.finalPrice.toFixed(2)}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    // Hourly → Show only final price (no discount, no strikethrough)
+                                                    <span className="text-2xl text-center font-bold text-white">
+                                                        ${breakdown.total.toFixed(2)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
 
-
-                                        </div>)}
+                                    )}
 
                                     {/* Bags */}
                                     <div className="flex items-center bg-[#F6F6F6] border border-[#008492] px-3 py-2 rounded-full gap-1">
@@ -685,11 +730,19 @@ export default function VehicleSelection({
                                                 setLoadingVehicleId(current.id); // Set the vehicle as loading
                                                 const selectedVehicle: VehicleOption = {
                                                     ...current,
-                                                    price: breakdown.total,
+                                                    price: breakdown.finalPrice,       // discounted price
+                                                    base: breakdown.basePrice,
+                                                    gratuity: breakdown.gratuity,
+                                                    tax: breakdown.tax,
+                                                    airportFee: breakdown.airportFee,
+                                                    total: breakdown.total,            // original total before discount
+                                                    discountAmount: breakdown.discountAmount,
+                                                    finalPrice: breakdown.finalPrice,
                                                     vehicleTitle: getVehicleTitle(current.type),
-                                                    
                                                     tripType: tripType,
+                                                    hours: tripType === "hourly" ? hours : undefined,
                                                 };
+                                                console.log("Sending to next:", selectedVehicle);
                                                 setTimeout(() => {
                                                     onNext(selectedVehicle);  // Proceed with the selected vehicle
                                                 }, 500);
@@ -796,18 +849,21 @@ export default function VehicleSelection({
                                                 setLoadingVehicleId(current.id);
                                                 const selectedVehicle: VehicleOption = {
                                                     ...current,
-                                                    price: breakdown.total,
+                                                    price: breakdown.finalPrice,       // discounted price
+                                                    base: breakdown.basePrice,
+                                                    gratuity: breakdown.gratuity,
+                                                    tax: breakdown.tax,
+                                                    airportFee: breakdown.airportFee,
+                                                    total: breakdown.total,            // original total before discount
+                                                    discountAmount: breakdown.discountAmount,
+                                                    finalPrice: breakdown.finalPrice,
                                                     vehicleTitle: getVehicleTitle(current.type),
                                                     tripType: tripType,
-                                                    basePrice: breakdown.basePrice,
-                                                    gratuity: 20,
-                                                    airportFee: 5,
-                                                    tax: 5,
-                                                    total: breakdown.total,
                                                     hours: tripType === "hourly" ? hours : undefined,
                                                 };
+                                                console.log("Sending to next:", selectedVehicle); // ✅ log before sending
                                                 setTimeout(() => {
-                                                    onNext(selectedVehicle);
+                                                    onNext(selectedVehicle);  // send entire object including basePrice
                                                 }, 500);
                                             }}
                                             disabled={loadingVehicleId === current.id}
@@ -823,15 +879,41 @@ export default function VehicleSelection({
                                             )}
                                         </button>
 
+
                                     )}
                                     {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
-                                        <div className="text-gray-900 font-bold text-xl mt-4">
-                                            ${breakdown.total.toFixed(2)}
+                                        <div className="relative text-white bg-black mt-4 rounded-md font-medium text-sm">
+                                            {/* Discount Badge Top-Right */}
+                                            {tripType !== "hourlyRate" && (
+                                                <span className="absolute -top-2 -right-2 bg-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                                                    5% OFF
+                                                </span>
+                                            )}
 
+                                            {/* Pricing */}
+                                            <div className="flex flex-col items-center">
+                                                {tripType !== "hourlyRate" ? (
+                                                    <>
+                                                        {/* Original Price */}
+                                                        <span className="text-white line-through text-sm">
+                                                            ${breakdown.total.toFixed(2)}
+                                                        </span>
 
+                                                        {/* Final Price */}
+                                                        <span className="text-xl text-center font-bold text-white">
+                                                            ${breakdown.finalPrice.toFixed(2)}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    // Hourly → Show only final price (no discount, no strikethrough)
+                                                    <span className="text-2xl text-center font-bold text-white">
+                                                        ${breakdown.total.toFixed(2)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
 
-
-                                        </div>)}
+                                    )}
 
                                     <div className="flex items-center gap-1 text-black mt-4   text-sm">
                                         <svg

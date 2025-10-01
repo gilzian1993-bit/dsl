@@ -28,6 +28,9 @@ interface VehicleOption {
   price: number | Price;   // 👈 can be number OR object
   tripType?: string;
   vehicleTitle?: string;
+  basePrice?: number;
+
+
 }
 
 interface UserInfo {
@@ -40,6 +43,7 @@ interface UserInfo {
   rearFacingSeat: number;
   boosterSeat: number;
   meetGreetYes?: boolean;
+ ReturnMeetGreetYes?: boolean;
   airportPickup?: boolean;
   carSeats?: boolean;
   returnTrip?: boolean;
@@ -64,6 +68,7 @@ export default function BookingPageClient() {
   const tripType = searchParams.get("tripType") || "";
   const hours = Number(searchParams.get("hours") || 0);
   const distance = Number(searchParams.get("distance") || 0);
+
   // Compute finalTotal once vehicle is selected
   const finalTotal =
     selectedVehicle &&
@@ -87,13 +92,14 @@ export default function BookingPageClient() {
       {/* Step 2: User Information */}
       {step === 2 && selectedVehicle && (
         <UserInformation
+          selectedVehicle={selectedVehicle}
           vehicle={selectedVehicle}
           pickupLocation={pickupLocation}
           dropLocation={dropLocation}
           pickupDate={pickupDate}
           pickupTime={pickupTime}
           tripType={tripType}
-         
+
           onNext={(data) => {
             console.log("✅ User Info Captured:", data);
             setUserInfo(data);   // 🔹 save to state
@@ -107,6 +113,7 @@ export default function BookingPageClient() {
       {/* Step 3: Payment */}
       {step === 3 && selectedVehicle && userInfo && (
         <PaymentSection
+          selectedVehicle={selectedVehicle}
           step={step}
           fullName={userInfo.fullName}
           email={userInfo.email}
@@ -121,6 +128,7 @@ export default function BookingPageClient() {
           onBack={() => setStep(2)}
           onNext={() => setStep(4)}
           // 🔹 Use userInfo instead of defaults
+           ReturnMeetGreetYes={userInfo.ReturnMeetGreetYes ?? false}
           meetGreetYes={userInfo.meetGreetYes ?? false}
           passengers={userInfo.passengers}
           luggage={userInfo.luggage}

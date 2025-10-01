@@ -11,6 +11,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { v4 as uuidv4 } from "uuid";
 import { Check, Info } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 interface Price {
     basePrice: number;
@@ -33,6 +34,10 @@ interface VehicleOption {
     price: number | Price;
     tripType?: string;
     vehicleTitle?: string;
+    basePrice?: number;
+    base?: number;
+    gratuity?: number;
+    tax?: number;
 }
 
 interface PaymentCardProps {
@@ -61,6 +66,9 @@ interface PaymentCardProps {
     hours: number;
     distance: number;
     finalTotal: number;
+    ReturnMeetGreetYes: boolean;
+    basePrice?: number;
+    selectedVehicle: VehicleOption;
 }
 
 const ElementStyles = {
@@ -88,6 +96,8 @@ export default function PaymentCard({
     email,
     phone,
     tripType,
+    ReturnMeetGreetYes,
+    
     rearFacingSeat,
     boosterSeat,
     meetGreetYes,
@@ -100,27 +110,34 @@ export default function PaymentCard({
     hours,
     distance,
     returnTime,
-    finalTotal
+    finalTotal,
+    selectedVehicle
 }: PaymentCardProps) {
-
-    const basePrice = typeof vehicle.price === "object" ? vehicle.price.basePrice : vehicle.price;
-    const tollFee = typeof vehicle.price === "object" ? vehicle.price.tollFee : 0;
-    const airportFee = typeof vehicle.price === "object" ? vehicle.price.airportFee : 0;
-    const gratuity = typeof vehicle.price === "object" ? vehicle.price.gratuity : 0;
-    const total = typeof vehicle.price === "object" ? vehicle.price.total : vehicle.price;
+    console.log("finalTotal", finalTotal);
+    const searchParams = useSearchParams();
+    // const basePrice = typeof vehicle.price === "object" ? selectedVehicle.base ?? 0 : vehicle.price;
+    const tollFee = typeof vehicle.price === "object" ? vehicle.price.tollFee ?? 0 : 0;
+    const airportFee = typeof vehicle.price === "object" ? vehicle.price.airportFee ?? 0 : 0;
+    const gratuity = typeof vehicle.price === "object" ? vehicle.price.gratuity ?? 0 : 0;
+    const total = typeof vehicle.price === "object" ? vehicle.price.total ?? 0 : vehicle.price;
+    const stop1 = searchParams.get("stop1");
+    const stop2 = searchParams.get("stop2");
+    const stop3 = searchParams.get("stop3");
+    const stop4 = searchParams.get("stop4");
+    const stopsCount = searchParams.get("stopsCount");
     const stripe = useStripe();
     const elements = useElements();
 
     // 🔥 Debug log
-    console.log("💰 Pricing Breakdown:", {
-        basePrice,
-        tollFee,
-        airportFee,
-        gratuity,
-        vehicle,
-        total,
-        vehiclePrice: vehicle.price
-    });
+    // console.log("💰 Pricing Breakdown:", {
+    //     basePrice,
+    //     tollFee,
+    //     airportFee,
+    //     gratuity,
+    //     vehicle,
+    //     total,
+    //     vehiclePrice: vehicle.price
+    // });
 
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -188,7 +205,60 @@ export default function PaymentCard({
             if (!cardElement) throw new Error("Card element not found");
 
             const bookingId = uuidv4();
+            const base = selectedVehicle.base ?? 0;
+            const vehicleData = {
+                ...selectedVehicle,
 
+                base: base,
+                gratuity: selectedVehicle.gratuity,
+                tax: selectedVehicle.tax, // Assuming tax is 5% of the total
+                airportFee: airportFee,
+                total: total,
+                discountAmount: total * 0.05, // Assuming a 5% discount
+                finalPrice: total - (total * 0.05), // Subtracting discount
+            };
+
+            console.log("Sending vehicle data to the API:", vehicleData);
+
+            const bookingData = {
+                id: bookingId,
+                from_location: pickupLocation,
+                to_location: dropLocation,
+                pickup_date: formatIsoDate(pickupDate),
+                pickup_time: pickupTime,
+                return_date: formatIsoDate(returnDate),
+                return_time: returnTime,
+                returnTrip: returnTrip,
+                price: Math.round(finalTotal),
+                base_price: Math.round(vehicleData.base),
+                airport_fee: 5,
+                gratuity: vehicleData.gratuity,
+                tax: vehicleData.tax,
+                distance: Math.round(distance),
+                email,
+                stop1: stop1,
+                stop2: stop2,
+                stop3: stop3,
+                stop4: stop4,
+                stopsCount: stopsCount,
+                hours: tripType === "hourly" ? hours : 0,
+                name: fullName,
+                car_type: selectedVehicle.type,
+                phone_number: phone,
+                Passengers: passengers,
+                luggage,
+                flight_number: flightNumber,
+                airline_code: airlineCode,
+                tripType,
+                rear_seats: rearFacingSeat,
+                booster_seats: boosterSeat,
+                meetGreet: meetGreetYes,
+                returnMeetGreet: ReturnMeetGreetYes,
+                airportPickup: airportPickup,
+                carSeats: carSeats,
+            };
+
+            console.log("Booking data being sent to API:", bookingData);
             const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
                     card: cardElement,
@@ -207,6 +277,21 @@ export default function PaymentCard({
             if (paymentIntent?.status === "succeeded") {
                 // ✅ FIXED: Make booking API call but don't block redirect on errors
                 try {
+                    const vehicleData = {
+                        ...selectedVehicle,
+
+                        base: base,
+                        gratuity: selectedVehicle.gratuity,
+                        tax: selectedVehicle.tax, // Assuming tax is 5% of the total
+                        airportFee: airportFee,
+                        total: total,
+                        discountAmount: total * 0.05, // Assuming a 5% discount
+                        finalPrice: total - (total * 0.05), // Subtracting discount
+                    };
+
+
+                    console.log("Sending vehicle data to the API:", vehicleData);
+
                     await fetch("https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -220,16 +305,20 @@ export default function PaymentCard({
                             return_time: returnTime,
                             returnTrip: returnTrip,
                             price: Math.round(finalTotal),
-                            base_price: Math.round(basePrice),
-                            tax: 5,
+                            base_price: Math.round(vehicleData.base),
                             airport_fee: 5,
-
-                            gratuity: 20,
+                            gratuity: Math.round(vehicle.gratuity ?? 0),
+                            tax: Math.round(vehicleData.tax ?? 0),
                             distance: Math.round(distance),
                             email,
+                            stop1: stop1,
+                            stop2: stop2,
+                            stop3: stop3,
+                            stop4: stop4,
+                            stopsCount: stopsCount,
                             hours: tripType === "hourly" ? hours : 0,
                             name: fullName,
-                            car_type: vehicle.type,
+                            car_type: selectedVehicle.type,
                             phone_number: phone,
                             Passengers: passengers,
                             luggage,
@@ -239,15 +328,14 @@ export default function PaymentCard({
                             rear_seats: rearFacingSeat,
                             booster_seats: boosterSeat,
                             meetGreet: meetGreetYes,
+                            returnMeetGreet: ReturnMeetGreetYes,
                             airportPickup: airportPickup,
                             carSeats: carSeats,
                         }),
                     });
                 } catch (bookingError) {
                     console.error("⚠️ Booking API error (proceeding anyway):", bookingError);
-                    // Continue to success page even if booking API fails
                 }
-
 
                 window.location.href = "/payment-success";
             } else {

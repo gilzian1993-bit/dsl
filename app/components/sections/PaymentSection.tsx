@@ -25,6 +25,8 @@ interface PaymentSectionProps {
     email: string;
     phone: string;
     tripType: string;
+    selectedVehicle: VehicleOption;
+    ReturnMeetGreetYes: boolean;
     // Toggles
     meetGreetYes: boolean;
     airportPickup: boolean;
@@ -70,6 +72,8 @@ interface VehicleOption {
     price: number | Price;   // 👈 can be number OR object
     tripType?: string;
     vehicleTitle?: string;
+    basePrice?: number;
+    //  base: number;
 }
 interface UserInformationProps {
     vehicle: VehicleOption;
@@ -99,6 +103,7 @@ interface PaymentSectionProps {
     email: string;
     phone: string;
     tripType: string;
+    ReturnMeetGreetYes: boolean,
     // Toggles
     meetGreetYes: boolean;
     airportPickup: boolean;
@@ -150,10 +155,13 @@ export default function PaymentSection({
     finalTotal,
     returnDate,
     returnTime,
+    selectedVehicle,
+    ReturnMeetGreetYes,
 }: PaymentSectionProps) {
-   useEffect(() => {
+    useEffect(() => {
         console.log("=== PAYMENT SECTION PROPS ===");
         console.log("Step:", step);
+        console.log("Selected:", selectedVehicle);
         console.log("Vehicle:", vehicle);
         console.log("Pickup Location:", pickupLocation);
         console.log("Drop Location:", dropLocation);
@@ -495,8 +503,10 @@ export default function PaymentSection({
 
                             <PaymentCard
                                 amount={Math.round(totalPrice * 100)}
+                                selectedVehicle={selectedVehicle}
                                 vehicle={vehicle}
                                 hours={hours}
+                                
                                 finalTotal={finalTotal}
                                 pickupLocation={pickupLocation}
                                 dropLocation={dropLocation}
@@ -515,10 +525,12 @@ export default function PaymentSection({
                                 phone={phone}
                                 distance={distance}
                                 returnTrip={returnTrip}
+                                ReturnMeetGreetYes={ReturnMeetGreetYes}
                                 airlineCode={airlineCode}   // ✅ now uses props
                                 flightNumber={flightNumber} // ✅ now uses props
                                 returnDate={returnDate}
                                 returnTime={returnTime}
+
                             />
 
 

@@ -9,7 +9,7 @@ export default function WhatWeOfferSection() {
           {/* Vehicle Image */}
           <div className="flex justify-center lg:justify-start">
             <Image
-              src="/about-car.png"
+              src="/about.png"
               alt="Luxury Black Lincoln Navigator SUV"
               width={500}
               height={300}

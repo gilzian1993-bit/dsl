@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 interface TimeInputProps {
   hour?: number;
@@ -10,7 +11,6 @@ interface TimeInputProps {
 }
 
 const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }) => {
-  // Convert given hour into 12-hour format with AM/PM
   const initialHour = hour ?? new Date().getHours();
   const initialMinute = minute ?? 0;
 
@@ -35,13 +35,6 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
     } else {
       return h === 12 ? 12 : h + 12;
     }
-  };
-
-  const isTimeDisabled = (h: number, m: number, p: string) => {
-    if (!minTime) return false;
-    const [minHour, minMinute] = minTime.split(":").map(Number);
-    const candidate = to24Hour(h, p);
-    return candidate < minHour || (candidate === minHour && m < minMinute);
   };
 
   const handleHourChange = (newHour: number) => {
@@ -71,72 +64,109 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
   return (
     <div className="flex flex-col items-center p-4">
       <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
-        {/* Hours */}
+        {/* Hour Selector */}
         <div className="flex flex-col items-center">
-          <label className="text-sm font-medium text-gray-600 mb-2">Hour</label>
-          <select
-            value={selectedHour}
-            onChange={(e) => handleHourChange(parseInt(e.target.value))}
-            className="w-16 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
-          >
-            {Array.from({ length: 12 }, (_, i) => {
-              const hour12 = i + 1;
-              
-              return (
-                <option key={hour12} value={hour12} >
-                  {String(hour12).padStart(2, "0")}
-                </option>
-              );
-            })}
-          </select>
+          <label className="text-sm font-medium text-gray-400 mb-2">Hour</label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => handleHourChange(selectedHour === 12 ? 1 : selectedHour + 1)}
+              className="w-8 h-8 bg-[#008492] hover:bg-[#008492] rounded-xl flex items-center justify-center transition-all duration-200 mb-2 shadow-lg hover:scale-110 active:scale-95"
+            >
+              <ChevronUp className="text-white" />
+            </button>
+
+            <div className="text-xl font-bold text-white mb-2 cursor-grab active:cursor-grabbing select-none bg-gray-800 px-2 py-1 rounded-lg border border-gray-600 hover:border-[#F4910B] transition-colors">
+              {String(selectedHour).padStart(2, "0")}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handleHourChange(selectedHour === 1 ? 12 : selectedHour - 1)}
+              className="w-8 h-8 bg-[#008492] hover:bg-[#008492] rounded-xl flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-110 active:scale-95"
+            >
+              <ChevronDown className="text-white" />
+            </button>
+          </div>
         </div>
 
+        {/* Minute Selector */}
         <span className="text-2xl font-bold text-gray-400 mt-6">:</span>
 
-        {/* Minutes */}
         <div className="flex flex-col items-center">
-          <label className="text-sm font-medium text-gray-600 mb-2">Minute</label>
-          <select
-            value={selectedMinute}
-            onChange={(e) => handleMinuteChange(parseInt(e.target.value))}
-            className="w-16 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
-          >
-            {Array.from({ length: 60 }, (_, i) => {
-              
-              return (
-                <option key={i} value={i} >
-                  {String(i).padStart(2, "0")}
-                </option>
-              );
-            })}
-          </select>
+          <label className="text-sm font-medium text-gray-400 mb-2">Minute</label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => handleMinuteChange((selectedMinute + 5) % 60)}
+              className="w-8 h-8 bg-[#008492] hover:bg-[#008492] rounded-xl flex items-center justify-center transition-all duration-200 mb-2 shadow-lg hover:scale-110 active:scale-95"
+            >
+              <ChevronUp className="text-white" />
+            </button>
+
+            <div className="text-xl font-bold text-white mb-2 cursor-grab active:cursor-grabbing select-none bg-gray-800 px-2 py-1 rounded-lg border border-gray-600 hover:border-[#F4910B] transition-colors">
+              {String(selectedMinute).padStart(2, "0")}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handleMinuteChange((selectedMinute - 5 + 60) % 60)}
+              className="w-8 h-8 bg-[#008492] hover:bg-[#008492] rounded-xl flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-110 active:scale-95"
+            >
+              <ChevronDown className="text-white" />
+            </button>
+          </div>
         </div>
 
-        {/* AM/PM */}
+        {/* AM/PM Selector */}
         <div className="flex flex-col justify-end items-center">
-          <label className="text-sm font-medium text-gray-600 mb-2">Period</label>
-          <select
-            value={period}
-            onChange={(e) => handlePeriodChange(e.target.value)}
-            className="w-20 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
-          >
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-          </select>
+          <label className="text-sm font-medium text-gray-400 mb-2">Period</label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => handlePeriodChange(period === "AM" ? "PM" : "AM")}
+              className="w-8 h-8 bg-[#008492] hover:bg-[#008492] rounded-xl flex items-center justify-center transition-all duration-200 mb-2 shadow-lg hover:scale-110 active:scale-95"
+            >
+              <ChevronUp className="text-white" />
+            </button>
+
+            <div className="text-xl font-bold text-white mb-2 cursor-grab active:cursor-grabbing select-none bg-gray-800 px-2 py-1 rounded-lg border border-gray-600 hover:border-[#F4910B] transition-colors">
+              {period}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handlePeriodChange(period === "AM" ? "PM" : "AM")}
+                className="w-8 h-8 bg-[#008492] hover:bg-[#008492] rounded-xl flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-110 active:scale-95"
+            >
+              <ChevronDown className="text-white" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Display selected time */}
-      <div className="text-lg font-semibold text-gray-800 ">
-        {String(selectedHour).padStart(2, "0")}:{String(selectedMinute).padStart(2, "0")} {period}
+      <div className="text-lg  font-semibold text-gray-800">
+        {selectedHour ? (
+          <>
+          <div ><span className="text-black ">{String(selectedHour).padStart(2, "0")}</span>
+            <span className="text-black mx-2 animate-pulse">:</span>
+            <span className="text-black">{String(selectedMinute).padStart(2, "0")}</span>
+            <span className="ml-3 text-black">
+              {period}
+            </span></div>
+            
+          </>
+        ) : (
+          <span className="text-gray-500">00:00 --</span>
+        )}
       </div>
 
       {/* OK and Cancel Buttons */}
-      <div className="flex justify-center gap-4 mt-2 w-full">
-      
+      <div className="flex justify-end gap-4 mt-4 w-full">
         <button
           onClick={handleOK}
-          className="bg-[#008492] hover:bg-[#007472] text-white py-3 px-6 rounded-md font-semibold transition"
+          className="bg-[#008492] hover:bg-[#007472] text-white py-2 px-3 rounded-md font-semibold transition"
         >
           OK
         </button>
