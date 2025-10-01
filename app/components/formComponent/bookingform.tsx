@@ -49,14 +49,17 @@ interface BookingFormProps {
   setHours: Dispatch<SetStateAction<number>>;
   handleBookNow: () => void;
   loading: boolean;
-
-  // Replace stop1..stop4 with:
-  stopsCount: number;
-  setStopsCount: React.Dispatch<React.SetStateAction<number>>;
-  stops: string[];
-  setStops: Dispatch<SetStateAction<string[]>>;
+  stopsCount: number; // Add stopsCount to the interface
+  setStopsCount: Dispatch<SetStateAction<number>>; // Add setStopsCount to the interface
+  stop1: string;
+  stop2: string;
+  stop3: string;
+  stop4: string;
+  setStop1: Dispatch<SetStateAction<string>>;
+  setStop2: Dispatch<SetStateAction<string>>;
+  setStop3: Dispatch<SetStateAction<string>>;
+  setStop4: Dispatch<SetStateAction<string>>;
 }
-
 
 
 const airports = [
@@ -108,8 +111,14 @@ export default function BookingForm(props: BookingFormProps) {
     loading,
     stopsCount,
     setStopsCount,
-    stops,
-    setStops,
+    stop1,
+    stop2,
+    stop3,
+    stop4,
+    setStop1,
+    setStop2,
+    setStop3,
+    setStop4
   } = props;
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -147,22 +156,45 @@ export default function BookingForm(props: BookingFormProps) {
   };
 
   const addStop = () => {
-    if (stops.length < 4) {
-      setStops([...stops, ""]);
+    if (stopsCount < 4) {
+      setStopsCount(prev => prev + 1);
+      // Do not reset stop1, stop2, etc.
     }
   };
+  const stops = [stop1, stop2, stop3, stop4]; // Always 4 items
 
   const removeStop = (index: number) => {
-    const updatedStops = stops.filter((_, i) => i !== index);
-    setStops(updatedStops);
+    switch (index) {
+      case 0:
+        setStop1(stop2);
+        setStop2(stop3);
+        setStop3(stop4);
+        setStop4("");
+        break;
+      case 1:
+        setStop2(stop3);
+        setStop3(stop4);
+        setStop4("");
+        break;
+      case 2:
+        setStop3(stop4);
+        setStop4("");
+        break;
+      case 3:
+        setStop4("");
+        break;
+    }
+    setStopsCount(prev => prev - 1);
   };
 
   const updateStop = (index: number, value: string) => {
-    const updatedStops = [...stops];
-    updatedStops[index] = value;
-    setStops(updatedStops);
+    switch (index) {
+      case 0: setStop1(value); break;
+      case 1: setStop2(value); break;
+      case 2: setStop3(value); break;
+      case 3: setStop4(value); break;
+    }
   };
-
 
 
   const validateForm = () => {
@@ -200,11 +232,11 @@ export default function BookingForm(props: BookingFormProps) {
   const StopsSection = () => {
     return (
       <div className="w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col mb-6 md:mb-0 sm:flex-row sm:items-center sm:justify-between">
           {stopsCount < 5 && (
             <span
               onClick={addStop}
-              className="absolute right-3 cursor-pointer rounded-sm border text-white border-gray-300 bg-black px-2 py-0.5 text-[10px] font-medium text-gray-600"
+              className="absolute right-3 cursor-pointer rounded-sm border text-white border-gray-300 bg-black md:px-2 md:py-0.5 px-4 py-2 text-[10px] font-medium text-gray-600"
               aria-hidden="true"
             >
               + Add Stop
@@ -329,7 +361,7 @@ export default function BookingForm(props: BookingFormProps) {
             <p className="text-red-500 text-sm mt-1">{errors.pickupLocation}</p>
           )}
         </div>
-        <div className="mt-4 md:hidden block flex justify-center items-center">
+        <div className="mt-2 md:hidden block flex justify-center items-center">
           <h3 className="rounded-sm border text-white border-gray-300 bg-black px-2 py-2 text-[10px] whitespace-nowrap font-medium text-gray-600">
 
             Additional Stops
@@ -338,11 +370,20 @@ export default function BookingForm(props: BookingFormProps) {
 
         </div>
         {stopsCount > 0 && (
-          <div className="space-y-2 md:hidden block md:space-y-3 mt-5 w-full">
-            {Array.from({ length: stopsCount }, (_, index) => {
+
+          <div className="space-y-2 md:hidden block md:space-y-3 w-full mt-5">
+            {[0, 1, 2, 3].map((index) => {
+              if (index >= stopsCount) return null; // only show active stops
+
+              const stopValue =
+                index === 0 ? stop1 :
+                  index === 1 ? stop2 :
+                    index === 2 ? stop3 :
+                      stop4;
+
               return (
                 <div
-                  key={index}
+                  key={index} // stable key prevents remount
                   className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
                 >
                   <div className="flex items-center gap-2 md:gap-3 w-full">
@@ -355,31 +396,24 @@ export default function BookingForm(props: BookingFormProps) {
                         <div className="text-center text-sm">Loading...</div>
                       ) : (
                         <Autocomplete
-                          options={{ componentRestrictions: { country: "us" } }}
-                          onLoad={(autocomplete) => {
-                            stopsRefs.current[index] = autocomplete;
-                          }}
-                          onPlaceChanged={() => {
-                            const autocomplete = stopsRefs.current[index];
-                            if (autocomplete) {
-                              const place = autocomplete.getPlace();
-                              if (place.formatted_address && place.geometry?.location) {
-                                updateStop(index, place.formatted_address);
-                              }
-                            }
-                          }}
-                        >
-                          <div className="relative w-full">
-                            <SlLocationPin className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
-                            <input
-                              value={stops[index] || ""}
-                              onChange={(e) => updateStop(index, e.target.value)}
-                              placeholder={`Enter stop ${index + 1} location`}
-                              className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
-                            />
-                          </div>
-                        </Autocomplete>
-
+  options={{ componentRestrictions: { country: "us" } }}
+  onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
+  onPlaceChanged={() => {
+    const place = stopsRefs.current[index]?.getPlace();
+    if (place?.formatted_address) {
+      updateStop(index, place.formatted_address);
+    }
+  }}
+>
+  <div className="relative w-full">
+    <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
+    <input
+      onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
+      placeholder={`Enter stop ${index + 1} location`}
+      className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+    />
+  </div>
+</Autocomplete>
 
                       )}
                     </div>
@@ -387,7 +421,7 @@ export default function BookingForm(props: BookingFormProps) {
                     {index === stopsCount - 1 && (
                       <button
                         type="button"
-                      onClick={() => removeStop(index)}
+                        onClick={() => removeStop(index)}
                         className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
                       >
                         <X className="w-3 h-3 md:w-4 md:h-4" />
@@ -395,18 +429,23 @@ export default function BookingForm(props: BookingFormProps) {
                     )}
                   </div>
 
+                  {/* Progress Bar */}
                   <div className="mt-2 md:mt-2 flex items-center gap-1 w-full">
                     {[0, 1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"}`}
+                        className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"
+                          }`}
                       />
                     ))}
                   </div>
                 </div>
               );
             })}
+
+
           </div>
+
         )}
 
         {/* Drop Location OR Duration */}
@@ -563,7 +602,7 @@ export default function BookingForm(props: BookingFormProps) {
             <PopoverContent side="top" align="center" className="w-auto p-0 z-[9999]">
               <div className="bg-white rounded-md shadow-lg p-4">
                 <TimeInput minTime="09:30" onChange={handleTimeChange} />
-              </div>Q
+              </div>
             </PopoverContent>
           </Popover>
           {errors.selectedTime && (
@@ -588,77 +627,84 @@ export default function BookingForm(props: BookingFormProps) {
 
 
       </div>
-      {stopsCount > 0 && (
-        <div className="space-y-2 md:block hidden md:space-y-3 mt-5 w-full">
-          {Array.from({ length: stopsCount }, (_, index) => {
-            return (
-              <div
-                key={index}
-                className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
-              >
-                <div className="flex items-center gap-2 md:gap-3 w-full">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
-                    {index + 1}
-                  </div>
+     {stopsCount > 0 && (
 
-                  <div className="flex-1 min-w-0 w-full">
-                    {!isLoaded ? (
-                      <div className="text-center text-sm">Loading...</div>
-                    ) : (
-                      <Autocomplete
-                        options={{ componentRestrictions: { country: "us" } }}
-                        onLoad={(autocomplete) => {
-                          stopsRefs.current[index] = autocomplete;
-                        }}
-                        onPlaceChanged={() => {
-                          const autocomplete = stopsRefs.current[index];
-                          if (autocomplete) {
-                            const place = autocomplete.getPlace();
-                            if (place.formatted_address && place.geometry?.location) {
-                              updateStop(index, place.formatted_address);
-                            }
-                          }
-                        }}
+          <div className="space-y-2 md:block hidden md:space-y-3 w-full mt-5">
+            {[0, 1, 2, 3].map((index) => {
+              if (index >= stopsCount) return null; // only show active stops
+
+              const stopValue =
+                index === 0 ? stop1 :
+                  index === 1 ? stop2 :
+                    index === 2 ? stop3 :
+                      stop4;
+
+              return (
+                <div
+                  key={index} // stable key prevents remount
+                  className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
+                >
+                  <div className="flex items-center gap-2 md:gap-3 w-full">
+                    <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                      {index + 1}
+                    </div>
+
+                    <div className="flex-1 min-w-0 w-full">
+                      {!isLoaded ? (
+                        <div className="text-center text-sm">Loading...</div>
+                      ) : (
+                        <Autocomplete
+  options={{ componentRestrictions: { country: "us" } }}
+  onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
+  onPlaceChanged={() => {
+    const place = stopsRefs.current[index]?.getPlace();
+    if (place?.formatted_address) {
+      updateStop(index, place.formatted_address);
+    }
+  }}
+>
+  <div className="relative w-full">
+    <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
+    <input
+      onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
+      placeholder={`Enter stop ${index + 1} location`}
+      className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+    />
+  </div>
+</Autocomplete>
+
+                      )}
+                    </div>
+
+                    {index === stopsCount - 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeStop(index)}
+                        className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
                       >
-                        <div className="relative w-full">
-                          <SlLocationPin className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
-                          <input
-                            value={stops[index] || ""}
-                            onChange={(e) => updateStop(index, e.target.value)}
-                            placeholder={`Enter stop ${index + 1} location`}
-                            className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
-                          />
-                        </div>
-                      </Autocomplete>
-
+                        <X className="w-3 h-3 md:w-4 md:h-4" />
+                      </button>
                     )}
                   </div>
 
-                  {index === stopsCount - 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeStop(index)}
-
-                      className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
-                    >
-                      <X className="w-3 h-3 md:w-4 md:h-4" />
-                    </button>
-                  )}
+                  {/* Progress Bar */}
+                  <div className="mt-2 md:mt-2 flex items-center gap-1 w-full">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"
+                          }`}
+                      />
+                    ))}
+                  </div>
                 </div>
+              );
+            })}
 
-                <div className="mt-2 md:mt-2 flex items-center gap-1 w-full">
-                  {[0, 1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+
+          </div>
+
+        )}
     </div>
   );
-}
+}  

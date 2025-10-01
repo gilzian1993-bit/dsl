@@ -19,8 +19,11 @@ export default function HeroSection() {
   const [loading, setLoading] = useState(false);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [stops, setStops] = useState<string[]>([]);
-
+  const [stopsCount, setStopsCount] = useState(0);
+  const [stop1, setStop1] = useState("");
+  const [stop2, setStop2] = useState("");
+  const [stop3, setStop3] = useState("");
+  const [stop4, setStop4] = useState("");
 
   // ✅ Parent component
   const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
@@ -29,7 +32,7 @@ export default function HeroSection() {
   const [dropCoords, setDropCoords] = useState<{ lat: number; lng: number } | null>(null);
   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
   const dropRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const [stopsCount, setStopsCount] = useState(0);
+
   const [hours, setHours] = useState<number>(0);
 
   const router = useRouter();
@@ -56,7 +59,10 @@ export default function HeroSection() {
       const result = await calculateDistance({
         from: pickupLocation,
         to: dropLocation,
-        stops,
+        stop1: stop1,
+        stop2: stop2,
+        stop3: stop3,
+        stop4: stop4,
       });
 
       if (result.error || !result.distance) {
@@ -86,7 +92,6 @@ export default function HeroSection() {
     const params = new URLSearchParams({
       pickupLocation,
       dropLocation,
-
       pickupDate: pickupDate ? pickupDate.toISOString() : "",
       pickupTime: selectedTime,
       pickupLat: pickupCoords?.lat.toString() || "",
@@ -95,10 +100,13 @@ export default function HeroSection() {
       dropLng: dropCoords?.lng.toString() || "",
       distance: distance.toFixed(2),
       tripType,
-      stops: JSON.stringify(stops), // ✅ send all stops
+      stop1: stop1,
+      stop2: stop2,
+      stop3: stop3,
+      stop4: stop4,
+      stopsCount: stopsCount.toString(),
       hours: hours.toString(),
     });
-
 
     setTimeout(() => {
       setLoading(false);
@@ -184,7 +192,6 @@ export default function HeroSection() {
       {/* Booking Box */}
       <div ref={formRef} className="w-full flex md:mt-5 mt-47 justify-center">
 
-
         <BookingForm
           tripType={tripType}
           setTripType={setTripType}
@@ -210,15 +217,20 @@ export default function HeroSection() {
           loading={loading}
           stopsCount={stopsCount}
           setStopsCount={setStopsCount}
-          stops={stops}
-          setStops={setStops}
+          stop1={stop1}
+          stop2={stop2}
+          stop3={stop3}
+          stop4={stop4}
+          setStop1={setStop1}
+          setStop2={setStop2}
+          setStop3={setStop3}
+          setStop4={setStop4}
 
 
         />
-
       </div>
 
 
     </section>
   );
-}
+}  

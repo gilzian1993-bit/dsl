@@ -677,7 +677,7 @@ export default function VehicleSelection({
                                         <div className="relative text-white bg-black mt-4 px-6 py-2 rounded-md font-medium text-sm">
                                             {/* Discount Badge Top-Right */}
                                             {tripType !== "hourlyRate" && (
-                                                <span className="absolute -top-2 -right-2 bg-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                                                <span className="absolute -top-2 md:-right-2 -right-4 bg-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-md">
                                                     5% OFF
                                                 </span>
                                             )}
@@ -885,7 +885,7 @@ export default function VehicleSelection({
                                         <div className="relative text-white bg-black mt-4 rounded-md font-medium text-sm">
                                             {/* Discount Badge Top-Right */}
                                             {tripType !== "hourlyRate" && (
-                                                <span className="absolute -top-2 -right-2 bg-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                                                <span className="absolute -top-2 md:-right-2 -right-5 bg-teal-600 text-white text-xs font-semibold md:px-2 md:py-1  px-4 py-2 rounded-md">
                                                     5% OFF
                                                 </span>
                                             )}
