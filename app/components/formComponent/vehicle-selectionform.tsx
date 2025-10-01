@@ -673,7 +673,7 @@ export default function VehicleSelection({
                                         <span>{current.passengers}</span>
                                     </div>
 
-                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate" || tripType === "airportRide") ? "" : (
                                         <div className="relative text-white bg-black mt-4 px-6 py-2 rounded-md font-medium text-sm">
                                             {/* Discount Badge Top-Right */}
                                             {tripType !== "hourlyRate" && (
@@ -717,7 +717,7 @@ export default function VehicleSelection({
 
                                 <div className="flex flex-col justify-end">
                                     {/* Show the Request button for Sprinter on Mobile (when tripType is pointToPoint or hourlyRate) */}
-                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? (
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate" || tripType === "airportRide") ? (
                                         <button
                                             onClick={() => router.push("/contact")}  // Navigate to the contact page
                                             className="flex items-center justify-center  gap-2 bg-[#008492] hover:bg-[#008492] text-white px-5 py-2 rounded-md font-medium text-sm md:hidden block"
@@ -836,7 +836,7 @@ export default function VehicleSelection({
                                 {/* Action */}
                                 {/* Right section (button + price) */}
                                 <div className="flex md:block hidden flex-col items-end gap-2 min-w-[150px]">
-                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? (
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate" || tripType === "airportRide" ) ? (
                                         <button
                                             onClick={() => router.push("/contact")}
                                             className="flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md font-medium text-sm"
@@ -881,7 +881,7 @@ export default function VehicleSelection({
 
 
                                     )}
-                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate") ? "" : (
+                                    {current.type === "SPRINTER" && (tripType === "pointToPoint" || tripType === "hourlyRate" || tripType === "airportRide") ? "" : (
                                         <div className="relative text-white bg-black mt-4 rounded-md font-medium text-sm">
                                             {/* Discount Badge Top-Right */}
                                             {tripType !== "hourlyRate" && (

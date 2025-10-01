@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 
 export default function CallActionSection() {
   return (
@@ -25,11 +26,15 @@ export default function CallActionSection() {
         </p>
 
         {/* Call Now */}
-        <div className="mb-6 sm:mb-8">
-          <p className="text-white font-[var(--font-montserrat)] text-base sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6">
-            CALL NOW (1)-000-333-4343
-          </p>
-        </div>
+        <a href="https://wa.me/18006793415"
+          target="_blank"
+          rel="noopener noreferrer">
+          <div className="mb-6 sm:mb-8">
+            <p className="text-white font-[var(--font-montserrat)] text-base sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6">
+              CALL NOW +1 800 679 3415
+            </p>
+          </div></a>
+
 
         {/* Divider with OR */}
         <div className="flex items-center justify-center mb-6 sm:mb-8">

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 
 const airports = [
-  { name: "NEWARK AIRPORT (EWR)", image: "/image 3.png", href: "#" },
+  { name: "NEWARK AIRPORT (EWR)", image: "/image 6--.PNG", href: "#" },
   { name: "TETERBORO AIRPORT (TEB)", image: "/Teterboro.jpg", href: "#" },
   { name: "WESTCHESTER COUNTY (HPN)", image: "/image 6--.PNG", href: "#" },
   { name: "JOHN F. KENNEDY AIRPORT (JFK)", image: "/image---.JPG", href: "#" },

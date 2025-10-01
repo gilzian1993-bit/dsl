@@ -361,14 +361,20 @@ export default function BookingForm(props: BookingFormProps) {
             <p className="text-red-500 text-sm mt-1">{errors.pickupLocation}</p>
           )}
         </div>
-        <div className="mt-2 md:hidden block flex justify-center items-center">
-          <h3 className="rounded-sm border text-white border-gray-300 bg-black px-2 py-2 text-[10px] whitespace-nowrap font-medium text-gray-600">
+        {tripType !== "hourlyRate" && (
 
-            Additional Stops
-          </h3>
-          <StopsSection />
+          <div className="mt-2 md:hidden block flex justify-center items-center">
+            <h3 className="rounded-sm border text-white border-gray-300 bg-black px-2 py-2 text-[10px] whitespace-nowrap font-medium text-gray-600">
 
-        </div>
+              Additional Stops
+            </h3>
+
+
+            <StopsSection />
+
+          </div>
+        )}
+
         {stopsCount > 0 && (
 
           <div className="space-y-2 md:hidden block md:space-y-3 w-full mt-5">
@@ -396,24 +402,24 @@ export default function BookingForm(props: BookingFormProps) {
                         <div className="text-center text-sm">Loading...</div>
                       ) : (
                         <Autocomplete
-  options={{ componentRestrictions: { country: "us" } }}
-  onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
-  onPlaceChanged={() => {
-    const place = stopsRefs.current[index]?.getPlace();
-    if (place?.formatted_address) {
-      updateStop(index, place.formatted_address);
-    }
-  }}
->
-  <div className="relative w-full">
-    <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
-    <input
-      onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
-      placeholder={`Enter stop ${index + 1} location`}
-      className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
-    />
-  </div>
-</Autocomplete>
+                          options={{ componentRestrictions: { country: "us" } }}
+                          onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
+                          onPlaceChanged={() => {
+                            const place = stopsRefs.current[index]?.getPlace();
+                            if (place?.formatted_address) {
+                              updateStop(index, place.formatted_address);
+                            }
+                          }}
+                        >
+                          <div className="relative w-full">
+                            <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
+                            <input
+                              onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
+                              placeholder={`Enter stop ${index + 1} location`}
+                              className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+                            />
+                          </div>
+                        </Autocomplete>
 
                       )}
                     </div>
@@ -627,84 +633,84 @@ export default function BookingForm(props: BookingFormProps) {
 
 
       </div>
-     {stopsCount > 0 && (
+      {stopsCount > 0 && (
 
-          <div className="space-y-2 md:block hidden md:space-y-3 w-full mt-5">
-            {[0, 1, 2, 3].map((index) => {
-              if (index >= stopsCount) return null; // only show active stops
+        <div className="space-y-2 md:block hidden md:space-y-3 w-full mt-5">
+          {[0, 1, 2, 3].map((index) => {
+            if (index >= stopsCount) return null; // only show active stops
 
-              const stopValue =
-                index === 0 ? stop1 :
-                  index === 1 ? stop2 :
-                    index === 2 ? stop3 :
-                      stop4;
+            const stopValue =
+              index === 0 ? stop1 :
+                index === 1 ? stop2 :
+                  index === 2 ? stop3 :
+                    stop4;
 
-              return (
-                <div
-                  key={index} // stable key prevents remount
-                  className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
-                >
-                  <div className="flex items-center gap-2 md:gap-3 w-full">
-                    <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
-                      {index + 1}
-                    </div>
+            return (
+              <div
+                key={index} // stable key prevents remount
+                className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
+              >
+                <div className="flex items-center gap-2 md:gap-3 w-full">
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                    {index + 1}
+                  </div>
 
-                    <div className="flex-1 min-w-0 w-full">
-                      {!isLoaded ? (
-                        <div className="text-center text-sm">Loading...</div>
-                      ) : (
-                        <Autocomplete
-  options={{ componentRestrictions: { country: "us" } }}
-  onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
-  onPlaceChanged={() => {
-    const place = stopsRefs.current[index]?.getPlace();
-    if (place?.formatted_address) {
-      updateStop(index, place.formatted_address);
-    }
-  }}
->
-  <div className="relative w-full">
-    <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
-    <input
-      onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
-      placeholder={`Enter stop ${index + 1} location`}
-      className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
-    />
-  </div>
-</Autocomplete>
-
-                      )}
-                    </div>
-
-                    {index === stopsCount - 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeStop(index)}
-                        className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
+                  <div className="flex-1 min-w-0 w-full">
+                    {!isLoaded ? (
+                      <div className="text-center text-sm">Loading...</div>
+                    ) : (
+                      <Autocomplete
+                        options={{ componentRestrictions: { country: "us" } }}
+                        onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
+                        onPlaceChanged={() => {
+                          const place = stopsRefs.current[index]?.getPlace();
+                          if (place?.formatted_address) {
+                            updateStop(index, place.formatted_address);
+                          }
+                        }}
                       >
-                        <X className="w-3 h-3 md:w-4 md:h-4" />
-                      </button>
+                        <div className="relative w-full">
+                          <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
+                          <input
+                            onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
+                            placeholder={`Enter stop ${index + 1} location`}
+                            className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+                          />
+                        </div>
+                      </Autocomplete>
+
                     )}
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="mt-2 md:mt-2 flex items-center gap-1 w-full">
-                    {[0, 1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"
-                          }`}
-                      />
-                    ))}
-                  </div>
+                  {index === stopsCount - 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeStop(index)}
+                      className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
+                    >
+                      <X className="w-3 h-3 md:w-4 md:h-4" />
+                    </button>
+                  )}
                 </div>
-              );
-            })}
+
+                {/* Progress Bar */}
+                <div className="mt-2 md:mt-2 flex items-center gap-1 w-full">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"
+                        }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
 
 
-          </div>
+        </div>
 
-        )}
+      )}
     </div>
   );
 }  
