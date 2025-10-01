@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 const airports = [
   { name: "NEWARK AIRPORT (EWR)", image: "/image 3.png", href: "#" },
   { name: "TETERBORO AIRPORT (TEB)", image: "/Teterboro.jpg", href: "#" },
-  { name: "WESTCHESTER COUNTY (HPN)", image: "/image 6--.png", href: "#" },
+  { name: "WESTCHESTER COUNTY (HPN)", image: "/image 6--.PNG", href: "#" },
   { name: "JOHN F. KENNEDY AIRPORT (JFK)", image: "/image---.JPG", href: "#" },
   { name: "LAGUARDIA AIRPORT (LGA)", image: "/image2.WEBP", href: "#" },
 ];
