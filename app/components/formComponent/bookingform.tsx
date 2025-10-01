@@ -49,17 +49,14 @@ interface BookingFormProps {
   setHours: Dispatch<SetStateAction<number>>;
   handleBookNow: () => void;
   loading: boolean;
-  stopsCount: number; // Add stopsCount to the interface
-  setStopsCount: Dispatch<SetStateAction<number>>; // Add setStopsCount to the interface
-  stop1: string;
-  stop2: string;
-  stop3: string;
-  stop4: string;
-  setStop1: Dispatch<SetStateAction<string>>;
-  setStop2: Dispatch<SetStateAction<string>>;
-  setStop3: Dispatch<SetStateAction<string>>;
-  setStop4: Dispatch<SetStateAction<string>>;
+
+  // Replace stop1..stop4 with:
+  stopsCount: number;
+  setStopsCount: React.Dispatch<React.SetStateAction<number>>;
+  stops: string[];
+  setStops: Dispatch<SetStateAction<string[]>>;
 }
+
 
 
 const airports = [
@@ -111,19 +108,13 @@ export default function BookingForm(props: BookingFormProps) {
     loading,
     stopsCount,
     setStopsCount,
-    stop1,
-    stop2,
-    stop3,
-    stop4,
-    setStop1,
-    setStop2,
-    setStop3,
-    setStop4
+    stops,
+    setStops,
   } = props;
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  
+
 
   const [errors, setErrors] = useState<FormErrors>({});
   // Toggle dropdown visibility
@@ -156,35 +147,23 @@ export default function BookingForm(props: BookingFormProps) {
   };
 
   const addStop = () => {
-    if (stopsCount < 4) {
-      setStopsCount(stopsCount + 1);
+    if (stops.length < 4) {
+      setStops([...stops, ""]);
     }
   };
 
-  const removeStop = () => {
-    if (stopsCount > 0) {
-      if (stopsCount === 3) {
-        setStop3("");
-      } else if (stopsCount === 2) {
-        setStop2("");
-      } else if (stopsCount === 1) {
-        setStop1("");
-      }
-      setStopsCount(stopsCount - 1);
-    }
+  const removeStop = (index: number) => {
+    const updatedStops = stops.filter((_, i) => i !== index);
+    setStops(updatedStops);
   };
 
-const updateStop = (index: number, value: string, coords: string) => {
-    if (index === 0) {
-        setStop1(value);
-    } else if (index === 1) {
-        setStop2(value);
-    } else if (index === 2) {
-        setStop3(value);
-    } else if (index === 3) {
-        setStop4(value);
-    }
-};
+  const updateStop = (index: number, value: string) => {
+    const updatedStops = [...stops];
+    updatedStops[index] = value;
+    setStops(updatedStops);
+  };
+
+
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
@@ -218,23 +197,23 @@ const updateStop = (index: number, value: string, coords: string) => {
     }
   };
 
- const StopsSection = () => {
+  const StopsSection = () => {
     return (
-        <div className="w-full">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                {stopsCount < 5 && (
-                    <span
-                        onClick={addStop}
-                        className="absolute right-3 cursor-pointer rounded-sm border text-white border-gray-300 bg-black px-2 py-0.5 text-[10px] font-medium text-gray-600"
-                        aria-hidden="true"
-                    >
-                        + Add Stop
-                    </span>
-                )}
-            </div>
+      <div className="w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          {stopsCount < 5 && (
+            <span
+              onClick={addStop}
+              className="absolute right-3 cursor-pointer rounded-sm border text-white border-gray-300 bg-black px-2 py-0.5 text-[10px] font-medium text-gray-600"
+              aria-hidden="true"
+            >
+              + Add Stop
+            </span>
+          )}
         </div>
+      </div>
     );
-};
+  };
 
 
   return (
@@ -385,8 +364,7 @@ const updateStop = (index: number, value: string, coords: string) => {
                             if (autocomplete) {
                               const place = autocomplete.getPlace();
                               if (place.formatted_address && place.geometry?.location) {
-                                const coords = `${place.geometry.location.lat()},${place.geometry?.location.lng()}`;
-                                updateStop(index, place.formatted_address, coords);
+                                updateStop(index, place.formatted_address);
                               }
                             }
                           }}
@@ -394,20 +372,22 @@ const updateStop = (index: number, value: string, coords: string) => {
                           <div className="relative w-full">
                             <SlLocationPin className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
                             <input
-                              value={index === 0 ? stop1 : index === 1 ? stop2 : stop3}
-                              onChange={(e) => updateStop(index, e.target.value, "")}
+                              value={stops[index] || ""}
+                              onChange={(e) => updateStop(index, e.target.value)}
                               placeholder={`Enter stop ${index + 1} location`}
                               className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
                             />
                           </div>
                         </Autocomplete>
+
+
                       )}
                     </div>
 
                     {index === stopsCount - 1 && (
                       <button
                         type="button"
-                        onClick={removeStop}
+                      onClick={() => removeStop(index)}
                         className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
                       >
                         <X className="w-3 h-3 md:w-4 md:h-4" />
@@ -428,7 +408,6 @@ const updateStop = (index: number, value: string, coords: string) => {
             })}
           </div>
         )}
-
 
         {/* Drop Location OR Duration */}
         {tripType === "hourlyRate" ? (
@@ -610,7 +589,7 @@ const updateStop = (index: number, value: string, coords: string) => {
 
       </div>
       {stopsCount > 0 && (
-        <div className="space-y-2 md:block hidden md:space-y-3 mt-5 w-[80%]">
+        <div className="space-y-2 md:block hidden md:space-y-3 mt-5 w-full">
           {Array.from({ length: stopsCount }, (_, index) => {
             return (
               <div
@@ -636,8 +615,7 @@ const updateStop = (index: number, value: string, coords: string) => {
                           if (autocomplete) {
                             const place = autocomplete.getPlace();
                             if (place.formatted_address && place.geometry?.location) {
-                              const coords = `${place.geometry.location.lat()},${place.geometry?.location.lng()}`;
-                              updateStop(index, place.formatted_address, coords);
+                              updateStop(index, place.formatted_address);
                             }
                           }
                         }}
@@ -645,20 +623,22 @@ const updateStop = (index: number, value: string, coords: string) => {
                         <div className="relative w-full">
                           <SlLocationPin className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
                           <input
-                            value={index === 0 ? stop1 : index === 1 ? stop2 : stop3}
-                            onChange={(e) => updateStop(index, e.target.value, "")}
+                            value={stops[index] || ""}
+                            onChange={(e) => updateStop(index, e.target.value)}
                             placeholder={`Enter stop ${index + 1} location`}
                             className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
                           />
                         </div>
                       </Autocomplete>
+
                     )}
                   </div>
 
                   {index === stopsCount - 1 && (
                     <button
                       type="button"
-                      onClick={removeStop}
+                      onClick={() => removeStop(index)}
+
                       className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
                     >
                       <X className="w-3 h-3 md:w-4 md:h-4" />
