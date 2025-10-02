@@ -27,7 +27,7 @@ interface UserInfo {
 }
 interface UserInformationProps {
     vehicle: VehicleOption;
-    selectedVehicle: VehicleOption; 
+    selectedVehicle: VehicleOption;
     pickupLocation: string;
     dropLocation: string;
     pickupDate: string;
@@ -55,7 +55,7 @@ interface UserInformationProps {
     onBack: () => void;
     step: number;
     tripType: string;
-   
+
 }
 
 interface Price {
@@ -80,6 +80,7 @@ interface VehicleOption {
     tripType?: string;
     vehicleTitle?: string;
     basePrice?: number;
+    total?: number;
 }
 
 interface Props {
@@ -217,6 +218,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     pickupTime,
     tripType,
     selectedVehicle,
+
 }: UserInformationProps) {
     console.log("Selected Vehicle:", selectedVehicle);
     const [indexes, setIndexes] = useState<Record<string, number>>({});
@@ -225,16 +227,9 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [meetGreetYes, setMeetGreetYes] = useState(false);
     const [ReturnMeetGreetYes, setReturnMeetGreetYes] = useState(false);
     const [returnTripYes, setReturnTripYes] = useState(false);
-    // const [airportPickup, setAirportPickup] = useState(false);
-    // $50 for pickup, $50 for return (if return trip)
-    const meetGreetCost = (meetGreetYes ? 50 : 0) + (ReturnMeetGreetYes ? 50 : 0);
 
-
+    const meetGreetCost = (meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0);
     const returnDiscount = returnTripYes ? 0.10 : 0;
-
-
-
-    // helper to normalize vehicle.price
     const getVehiclePrice = (vehicle: VehicleOption): number => {
         if (typeof vehicle.price === "number") {
             return vehicle.price;
@@ -254,6 +249,10 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [finalTotal, setFinalTotal] = useState(totalPrice);
 
 
+    const total = selectedVehicle?.total ?? getVehiclePrice(selectedVehicle);
+    const calculatedPrice = returnTripYes
+        ? (total * 2) - discountAmount
+        : finalTotal;
 
 
     return (
@@ -450,8 +449,15 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                 {/* Date & Time */}
                                 <div className="ml-3 pt-3">
                                     <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
-                                        <img src="/calendar.svg" alt="Calendar" className="w-4 h-4" />
-                                        <span className="font-medium">{pickupDate}</span>
+                                        <Image src="/calendar.svg" alt="Calendar" width={16} height={16} />
+                                        <span className="font-medium">  {pickupDate
+                                            ? new Date(pickupDate).toLocaleDateString("en-US", {
+                                                weekday: "short",   // e.g. Mon
+                                                month: "short",     // e.g. Sep
+                                                day: "numeric",     // e.g. 12
+                                                year: "numeric",    // e.g. 2025
+                                            })
+                                            : ""}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
                                         <img src="/clock--.svg" alt="Clock" className="w-4 h-4" />
@@ -507,7 +513,10 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                             <div className="flex items-center gap-2 mb-3">
                                 <h2 className="font-light text-gray-800">Total Price</h2>
                                 <span className="ml-auto text-base font-bold text-gray-600">
-                                    ${finalTotal.toFixed(2)}
+                                    <span className="ml-auto text-base font-bold text-gray-600">
+                                        ${calculatedPrice.toFixed(2)}
+                                    </span>
+
                                 </span>
                             </div>
 
@@ -657,7 +666,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
                                     </button>
                                     <div className="text-gray-900 font-bold mt-4 text-xl">
-                                        ${getVehiclePrice(vehicle).toFixed(2)}
+                                        ${calculatedPrice.toFixed(2)}
                                     </div>
                                 </div>
                             </div>
@@ -670,7 +679,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                     // Include the finalTotal in the data passed to onNext
                                     onNext({
                                         ...data,
-                                        finalTotal: finalTotal // This is the updated total from state
+                                        finalTotal: calculatedPrice // This is the updated total from state
                                     });
                                 }}
                                 pickupDate={pickupDate}
@@ -685,8 +694,10 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                 onPriceChange={(updatedTotal) => setFinalTotal(updatedTotal)}
                                 setMeetGreetYes={setMeetGreetYes}
                                 vehicle={vehicle}
-                               
-                                
+                                total={total}
+
+
+
                             /></div>
                     </div>
 

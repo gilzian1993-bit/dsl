@@ -16,9 +16,9 @@ export async function calculateDistance({
   stop4?: string;
 }) {
   try {
-    if (!from || !to) {
-      return { error: 'Both "from" and "to" parameters are required.' };
-    }
+    // if (!from || !to) {
+    //   return { error: 'Both "from" and "to" parameters are required.' };
+    // }
 
     // Combine stops into the destinations string (if there are any stops)
     const destinations = [to, stop1, stop2, stop3, stop4].filter(Boolean).join('|');

@@ -59,6 +59,8 @@ interface PaymentCardProps {
     airportPickup: boolean;
     carSeats: boolean;
     returnTrip: boolean;
+    returnAirlineCode?: string;
+    returnflightNumber?: string;
     airlineCode?: string;
     flightNumber?: string;
     returnDate?: string;
@@ -97,13 +99,15 @@ export default function PaymentCard({
     phone,
     tripType,
     ReturnMeetGreetYes,
-    
+
     rearFacingSeat,
     boosterSeat,
     meetGreetYes,
     airportPickup,
     carSeats,
     returnTrip,
+    returnAirlineCode,
+    returnflightNumber,
     airlineCode,
     flightNumber,
     returnDate,
@@ -113,7 +117,7 @@ export default function PaymentCard({
     finalTotal,
     selectedVehicle
 }: PaymentCardProps) {
-    console.log("finalTotal", finalTotal);
+    console.log("graduity", selectedVehicle?.gratuity);
     const searchParams = useSearchParams();
     // const basePrice = typeof vehicle.price === "object" ? selectedVehicle.base ?? 0 : vehicle.price;
     const tollFee = typeof vehicle.price === "object" ? vehicle.price.tollFee ?? 0 : 0;
@@ -229,12 +233,13 @@ export default function PaymentCard({
                 return_date: formatIsoDate(returnDate),
                 return_time: returnTime,
                 returnTrip: returnTrip,
-                price: Math.round(finalTotal),
-                base_price: Math.round(vehicleData.base),
+                price: parseFloat(finalTotal.toFixed(2)),
+                base_price: parseFloat(vehicleData.base.toFixed(2)),
+
                 airport_fee: 5,
                 gratuity: vehicleData.gratuity,
                 tax: vehicleData.tax,
-                distance: Math.round(distance),
+                distance: parseFloat(distance.toFixed(2)),
                 email,
                 stop1: stop1,
                 stop2: stop2,
@@ -247,6 +252,8 @@ export default function PaymentCard({
                 phone_number: phone,
                 Passengers: passengers,
                 luggage,
+                return_flight_Number: returnflightNumber,
+                return_airline_code: returnAirlineCode,
                 flight_number: flightNumber,
                 airline_code: airlineCode,
                 tripType,
@@ -292,7 +299,7 @@ export default function PaymentCard({
 
                     console.log("Sending vehicle data to the API:", vehicleData);
 
-                    await fetch("https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
+                    await fetch("http://localhost:3001/api/dslLimoService/booking", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -322,6 +329,8 @@ export default function PaymentCard({
                             phone_number: phone,
                             Passengers: passengers,
                             luggage,
+                            return_airline_code: returnAirlineCode,
+                            return_flight_number: returnflightNumber,
                             flight_number: flightNumber,
                             airline_code: airlineCode,
                             tripType,
@@ -337,7 +346,7 @@ export default function PaymentCard({
                     console.error("⚠️ Booking API error (proceeding anyway):", bookingError);
                 }
 
-                window.location.href = "/payment-success";
+                // window.location.href = "/payment-success";
             } else {
                 setErrorMessage("Payment was not successful.");
             }

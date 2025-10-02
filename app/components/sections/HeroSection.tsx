@@ -4,13 +4,28 @@ import { useEffect, useRef, useState } from "react";
 import { Clock, MapPin, Calendar } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Autocomplete, Libraries, useJsApiLoader, useLoadScript } from "@react-google-maps/api";
 import TimePicker from "../time-picker";
 import { calculateDistance } from "@/app/actions/getDistance";
 import BookingForm from "../formComponent/bookingform";
 
 export default function HeroSection() {
+  const searchParams = useSearchParams();
+  const bookingDetails = {
+    pickupLocation: searchParams.get("pickupLocation") || "",
+    dropLocation: searchParams.get("dropLocation") || "",
+    pickupDate: searchParams.get("pickupDate") || "",
+    pickupTime: searchParams.get("pickupTime") || "",
+
+    tripType: searchParams.get("tripType") || "",
+    stop1: searchParams.get("stop1") || "",
+    stop2: searchParams.get("stop2") || "",
+    stop3: searchParams.get(" stop3") || "",
+    stop4: searchParams.get("stop4") || "",
+
+    hours: searchParams.get("hours") || "",
+  };
   const [tripType, setTripType] = useState("airportRide");
   const [pickupDate, setPickupDate] = useState<Date | null>(null);
 
@@ -57,12 +72,12 @@ export default function HeroSection() {
     if (tripType === "pointToPoint") {
       // ✅ Point-to-Point distance
       const result = await calculateDistance({
-        from: pickupLocation,
-        to: dropLocation,
-        stop1: stop1,
-        stop2: stop2,
-        stop3: stop3,
-        stop4: stop4,
+        from: pickupLocation || bookingDetails.pickupLocation,
+        to: dropLocation  || bookingDetails.dropLocation,
+        stop1: stop1  || bookingDetails.stop1,
+        stop2: stop2  || bookingDetails.stop2 ,
+        stop3: stop3  || bookingDetails.stop3 ,
+        stop4: stop4  || bookingDetails.stop4,
       });
 
       if (result.error || !result.distance) {
@@ -76,8 +91,8 @@ export default function HeroSection() {
     else if (tripType === "airportRide") {
       // ✅ Airport Ride distance (pickup -> airport)
       const result = await calculateDistance({
-        from: pickupLocation,
-        to: dropLocation || pickupLocation, // fallback if drop isn't used
+        from: pickupLocation  || bookingDetails.pickupLocation,
+        to: dropLocation || bookingDetails.dropLocation, // fallback if drop isn't used
       });
 
       if (result.error || !result.distance) {
@@ -193,6 +208,7 @@ export default function HeroSection() {
       <div ref={formRef} className="w-full flex md:mt-5 mt-47 justify-center">
 
         <BookingForm
+          defaultValues={bookingDetails}
           tripType={tripType}
           setTripType={setTripType}
           pickupDate={pickupDate}

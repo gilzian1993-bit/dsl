@@ -78,7 +78,7 @@ export default function BookingPageClient() {
 
   return (
     <PriceProvider> <div>
-      {/* Step 1: Vehicle Selection */}
+      
       {step === 1 && (
         <VehicleSelection
           step={step}

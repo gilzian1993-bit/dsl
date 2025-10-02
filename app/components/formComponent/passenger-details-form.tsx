@@ -66,6 +66,7 @@ interface PassengerDetailsFormProps {
   pickupDate: string;
   onPriceChange: (updatedTotal: number) => void;
   basePrice?: number;
+   total?: number;
 }
 
 export default function PassengerDetailsForm({
@@ -84,6 +85,7 @@ export default function PassengerDetailsForm({
   onPriceChange,
   basePrice,
   finalTotal,
+  total
 }: PassengerDetailsFormProps) {
   console.log("Base Price", basePrice);
   const [fullName, setFullName] = useState("");
@@ -91,7 +93,8 @@ export default function PassengerDetailsForm({
   const [phone, setPhone] = useState("");
   const [airlineCode, setAirlineCode] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
-
+  const [returnAirlineCode, setReturnAirlineCode] = useState("");
+  const [returnflightNumber, setReturnFlightNumber] = useState("");
   const [carSeats, setCarSeats] = useState(false);
 
   const [rearFacingSeat, setRearFacingSeat] = useState(0);
@@ -154,6 +157,10 @@ export default function PassengerDetailsForm({
       if (!airlineCode.trim()) newErrors.airlineCode = "Airline name or code is required";
       if (!flightNumber.trim()) newErrors.flightNumber = "Flight number is required";
     }
+    if (tripType === "airportRide" && returnTrip) {
+      if (!returnAirlineCode.trim()) newErrors.returnAirlineCode = "Airline name or code is required";
+      if (!returnflightNumber.trim()) newErrors.returnflightNumber = "Flight number is required";
+    }
 
     // Return Trip Required Fields
     if (tripType !== "hourlyRate" && returnTrip) {
@@ -188,6 +195,9 @@ export default function PassengerDetailsForm({
         boosterSeat: carSeats ? boosterSeat : 0,
         passengers,
         luggage,
+        total,
+        returnAirlineCode: returnAirlineCode,
+        returnflightNumber: returnflightNumber,
         airlineCode: airlineCode,
         flightNumber: flightNumber,
         returnDate: returnTrip && returnDate ? returnDate.toISOString() : undefined,
@@ -482,16 +492,7 @@ export default function PassengerDetailsForm({
           </p>
         </div>
       )}
-       {showReturnMeetGreet && (
-        <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mt-2 mb-5">
-          <p className="text-gray-600 text-md">
-            We&apos;ll arrange a personal assistant to meet you at the airport.
-          </p>
-          <p className="text-gray-800 font-medium mt-2">
-            Note: An additional $25 will be added to your total price.
-          </p>
-        </div>
-      )}
+
       {/* Car Seats Details */}
       {showCarSeats && (
         <div className="mb-4">
@@ -620,33 +621,58 @@ export default function PassengerDetailsForm({
                 <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <label className="relative items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={meetGreetYes}
-                  onChange={() => {
-                    setReturnMeetGreetYes(!ReturnMeetGreetYes);
-                    setShowReturnMeetGreet(!showReturnMeetGreet);
-                  }}
-                  className="sr-only"
-                />
-                <div
-                  className={`w-11 h-6 rounded-full ${showReturnMeetGreet ? "bg-[#008492]" : "bg-gray-300"
-                    } relative transition-colors`}
-                >
-                  <div
-                    className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${showReturnMeetGreet ? "translate-x-5" : "translate-x-0.5"
-                      }`}
-                  ></div>
+            {tripType === "airportRide" && (
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <label className="relative items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={meetGreetYes}
+                      onChange={() => {
+                        setReturnMeetGreetYes(!ReturnMeetGreetYes);
+                        setShowReturnMeetGreet(!showReturnMeetGreet);
+                      }}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`w-11 h-6 rounded-full ${showReturnMeetGreet ? "bg-[#008492]" : "bg-gray-300"
+                        } relative transition-colors`}
+                    >
+                      <div
+                        className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${showReturnMeetGreet ? "translate-x-5" : "translate-x-0.5"
+                          }`}
+                      ></div>
+                    </div>
+                  </label>
+                  <span className="text-base text-gray-700">Meet & Greet</span>
                 </div>
-              </label>
-              <span className="text-base text-gray-700">Meet & Greet</span>
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Airline Name or Code"
+                      value={returnAirlineCode}
+                      onChange={(e) => setReturnAirlineCode(e.target.value)}
+                      className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    {errors.returnAirlineCode && <p className="text-red-500 text-sm mt-1">{errors.returnAirlineCode}</p>}
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Flight No #"
+                      value={returnflightNumber}
+                      onChange={(e) => setReturnFlightNumber(e.target.value)}
+                      className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    {errors.returnflightNumber && <p className="text-red-500 text-sm mt-1">{errors.returnflightNumber}</p>}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
-
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row sm:justify-end mb-4 gap-4">
@@ -673,5 +699,5 @@ export default function PassengerDetailsForm({
         </button>
       </div>
     </div>
-  );
-}
+  )
+};

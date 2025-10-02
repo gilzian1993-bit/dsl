@@ -12,6 +12,7 @@ import { CardElement, useStripe, useElements, PaymentElement, Elements } from "@
 import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentCard from "../PaymentCard";
+import Image from "next/image";
 interface PaymentSectionProps {
     step: number;
     vehicle: VehicleOption;
@@ -114,6 +115,8 @@ interface PaymentSectionProps {
     // Extra fields
     rearFacingSeat: number;
     boosterSeat: number;
+    returnflightNumber?: string;
+    returnAirlineCode?: string;
     airlineCode?: string;
     flightNumber?: string;
     returnDate?: string;
@@ -149,6 +152,9 @@ export default function PaymentSection({
     totalPrice,
     hours,
     distance,
+    returnflightNumber,
+    returnAirlineCode,
+
     // 👇 add these missing ones
     airlineCode,
     flightNumber,
@@ -195,7 +201,7 @@ export default function PaymentSection({
         airlineCode, flightNumber, returnDate, returnTime, totalPrice,
         finalTotal, hours, distance
     ]);
-
+    console.log("finalTotal:", finalTotal);
     const meetGreetCost = meetGreetYes ? 25 : 0;
 
     const getVehiclePrice = (vehicle: VehicleOption): number => {
@@ -404,12 +410,87 @@ export default function PaymentSection({
                                 {/* Date & Time */}
                                 <div className="ml-3 pt-3">
                                     <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
-                                        <img src="/calendar.svg" alt="Calendar" className="w-4 h-4" />
-                                        <span className="font-medium">{pickupDate}</span>
+                                         <span className="font-medium">  {pickupDate
+                                            ? new Date(pickupDate).toLocaleDateString("en-US", {
+                                                weekday: "short",   // e.g. Mon
+                                                month: "short",     // e.g. Sep
+                                                day: "numeric",     // e.g. 12
+                                                year: "numeric",    // e.g. 2025
+                                            })
+                                            : ""}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
                                         <img src="/clock--.svg" alt="Clock" className="w-4 h-4" />
                                         <span className="font-medium">{pickupTime}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
+                                        <img src="/passengers.svg" alt="Clock" className="w-4 h-4" />
+                                        <span className="font-medium">{vehicle.passengers} Passengers</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
+                                        <img src="/luggage.svg" alt="Clock" className="w-4 h-4" />
+                                        <span className="font-medium">{vehicle.bags} Lugagge</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="rounded-2xl mt-6 md:block hidden bg-white shadow-[0_6px_12px_0_rgba(0,0,0,0.1)] p-5 w-full max-w-md">
+                            {/* Header */}
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="bg-[#008492] p-1.5 rounded-md flex items-center justify-center">
+                                    <ArrowRight className="w-4 h-4 text-white" />
+                                </div>
+                                <h2 className="font-semibold text-gray-800">Return Trip Details</h2>
+                            </div>
+
+                            <hr className="border-black mb-4" />
+
+                            <div className="space-y-4">
+                                {/* From Location */}
+                                <div className="relative flex flex-col space-y-6">
+                                    <div className="flex items-start gap-3 relative">
+                                        <div className="bg-black rounded-full p-2 flex items-center justify-center z-10">
+                                            <MapPin className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-gray-800">
+                                                {dropLocation}
+                                            </p>
+
+                                        </div>
+                                        <div className="absolute left-[14px] top-8 w-0.5 h-16 bg-gray-300"></div>
+                                    </div>
+                                </div>
+
+                                {/* To Location */}
+                                <div className="flex items-start gap-3">
+                                    <div className="bg-[#008492] rounded-full p-2 flex items-center justify-center">
+                                        <MapPin className="w-4 h-4 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-gray-800">
+                                            {pickupLocation}
+                                        </p>
+
+                                    </div>
+                                </div>
+
+                                {/* Date & Time */}
+                                <div className="ml-3 pt-3">
+                                    <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
+                                        <Image src="/calendar.svg" alt="Calendar" width={16} height={16} />
+                                        <span className="font-medium">  {returnDate
+                                            ? new Date(returnDate).toLocaleDateString("en-US", {
+                                                weekday: "short",   // e.g. Mon
+                                                month: "short",     // e.g. Sep
+                                                day: "numeric",     // e.g. 12
+                                                year: "numeric",    // e.g. 2025
+                                            })
+                                            : ""}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
+                                        <img src="/clock--.svg" alt="Clock" className="w-4 h-4" />
+                                        <span className="font-medium">{returnTime}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
                                         <img src="/passengers.svg" alt="Clock" className="w-4 h-4" />
@@ -461,7 +542,7 @@ export default function PaymentSection({
                             <div className="flex items-center gap-2 mb-3">
                                 <h2 className="font-light text-gray-800">Total Price</h2>
                                 <span className="ml-auto text-base font-bold text-gray-600">
-                                    ${(finalTotal ?? totalPrice).toFixed(2)}
+                                    ${(finalTotal).toFixed(2)}
                                 </span>
                             </div>
 
@@ -506,7 +587,7 @@ export default function PaymentSection({
                                 selectedVehicle={selectedVehicle}
                                 vehicle={vehicle}
                                 hours={hours}
-                                
+
                                 finalTotal={finalTotal}
                                 pickupLocation={pickupLocation}
                                 dropLocation={dropLocation}
@@ -526,6 +607,8 @@ export default function PaymentSection({
                                 distance={distance}
                                 returnTrip={returnTrip}
                                 ReturnMeetGreetYes={ReturnMeetGreetYes}
+                                returnAirlineCode={returnAirlineCode}
+                                returnflightNumber={returnflightNumber}
                                 airlineCode={airlineCode}   // ✅ now uses props
                                 flightNumber={flightNumber} // ✅ now uses props
                                 returnDate={returnDate}

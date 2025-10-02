@@ -55,6 +55,18 @@ interface BookingFormProps {
   stop2: string;
   stop3: string;
   stop4: string;
+  defaultValues: {
+    pickupLocation: string;
+    dropLocation: string;
+    pickupDate: string;
+    pickupTime: string;
+    tripType: string;
+    stop1: string;
+    stop2: string;
+    stop3: string;
+    stop4: string;
+    hours: string;
+  };
   setStop1: Dispatch<SetStateAction<string>>;
   setStop2: Dispatch<SetStateAction<string>>;
   setStop3: Dispatch<SetStateAction<string>>;
@@ -87,6 +99,7 @@ const airports = [
 
 export default function BookingForm(props: BookingFormProps) {
   const {
+
     tripType,
     setTripType,
     pickupDate,
@@ -106,6 +119,7 @@ export default function BookingForm(props: BookingFormProps) {
     isTimePickerOpen,
     setIsTimePickerOpen,
     hours,
+    defaultValues,
     setHours,
     handleBookNow,
     loading,
@@ -196,38 +210,72 @@ export default function BookingForm(props: BookingFormProps) {
     }
   };
 
-
   const validateForm = () => {
     const newErrors: FormErrors = {};
 
-    if (!pickupLocation) newErrors.pickupLocation = "Pickup location is required";
-    if (!pickupDate) newErrors.pickupDate = "Date is required";
-    if (!selectedTime) newErrors.selectedTime = "Time is required";
+    // Use actual values or defaults
+    const pickupVal = pickupLocation || defaultValues.pickupLocation || "";
+    const dropVal = dropLocation || defaultValues.dropLocation || "";
+    const dateVal =
+      pickupDate ??
+      (defaultValues.pickupDate ? new Date(defaultValues.pickupDate) : null);
+    const timeVal = selectedTime || defaultValues.pickupTime || "";
+    const hoursVal = hours || (defaultValues.hours ? parseInt(defaultValues.hours) : 0);
 
+    // Validate Pickup Location
+    if (!pickupVal.trim()) {
+      newErrors.pickupLocation = "Pickup location is required";
+    }
+
+    // Validate Drop Location if pointToPoint
     if (tripType === "pointToPoint") {
-      if (!dropLocation) {
+      if (!dropVal.trim()) {
         newErrors.dropLocation = "Drop location is required";
-      } else if (
-        pickupLocation.trim().toLowerCase() === dropLocation.trim().toLowerCase()
-      ) {
+      } else if (pickupVal.trim().toLowerCase() === dropVal.trim().toLowerCase()) {
         toast.error("Pickup and Drop location cannot be the same. Please select different locations.");
         return false;
       }
     }
 
+    // Validate Date
+    if (!dateVal || isNaN(dateVal.getTime())) {
+      newErrors.pickupDate = "Date is required";
+    }
+
+    // Validate Time
+    if (!timeVal.trim()) {
+      newErrors.selectedTime = "Time is required";
+    }
+
+    // Validate Hours if hourlyRate
     if (tripType === "hourlyRate") {
-      if (!hours) newErrors.hours = "Duration is required";
+      if (!hoursVal || hoursVal <= 0) {
+        newErrors.hours = "Duration is required";
+      }
     }
 
     setErrors(newErrors);
+
+    // Return true if no errors
     return Object.keys(newErrors).length === 0;
   };
 
+  // Book Now function
   const onBookNow = () => {
+    // Ensure defaults are set for date & time if empty
+    if (!pickupDate && defaultValues.pickupDate) {
+      const d = new Date(defaultValues.pickupDate);
+      if (!isNaN(d.getTime())) setPickupDate(d);
+    }
+    if (!selectedTime && defaultValues.pickupTime) {
+      setSelectedTime(defaultValues.pickupTime);
+    }
+
     if (validateForm()) {
       handleBookNow();
     }
   };
+
 
   const StopsSection = () => {
     return (
@@ -286,8 +334,8 @@ export default function BookingForm(props: BookingFormProps) {
             <label className="text-sm font-medium text-gray-600 whitespace-nowrap">
               Pickup Location
             </label>
-            {tripType === "hourlyRate" ? "" :
-              <div className="lg:block hidden"><StopsSection /></div>}
+
+            <div className="lg:block hidden"><StopsSection /></div>
           </div>
 
 
@@ -303,7 +351,10 @@ export default function BookingForm(props: BookingFormProps) {
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-left text-base flex justify-between items-center"
                   onClick={toggleDropdown} // Toggle dropdown visibility
                 >
-                  <span className="text-sm font-medium text-gray-600 ">{pickupLocation || "Select Airport"}</span>
+                  <span className="text-sm font-medium text-gray-600 ">
+                    {pickupLocation || defaultValues.pickupLocation || "Select Airport"}
+                  </span>
+
                   <ChevronDown
                     className={`w-5 h-5 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} // Rotate icon on open
                   />
@@ -318,12 +369,12 @@ export default function BookingForm(props: BookingFormProps) {
                           key={airport.name}
                           className="cursor-pointer px-3 py-2 hover:bg-gray-100"
                           onClick={() => {
-                            setPickupLocation(airport.name); // Set the selected airport name
+                            setPickupLocation(airport.name || defaultValues.pickupLocation); // Set the selected airport name
                             setPickupCoords(airport.coords); // Set the coordinates for the selected airport
                             setOpen(false); // Close dropdown
                           }}
                         >
-                          {airport.name}
+                          {airport.name || defaultValues.pickupLocation}
                         </li>
                       ))}
                     </ul>
@@ -349,7 +400,7 @@ export default function BookingForm(props: BookingFormProps) {
                   <input
                     placeholder="Enter pickup location"
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
-                    value={pickupLocation}
+                    value={pickupLocation || defaultValues.pickupLocation}
                     onChange={(e) => setPickupLocation(e.target.value)}
                   />
                 </Autocomplete>
@@ -361,19 +412,19 @@ export default function BookingForm(props: BookingFormProps) {
             <p className="text-red-500 text-sm mt-1">{errors.pickupLocation}</p>
           )}
         </div>
-        {tripType !== "hourlyRate" && (
-
-          <div className="mt-2 md:hidden block flex justify-center items-center">
-            <h3 className="rounded-sm border text-white border-gray-300 bg-black px-2 py-2 text-[10px] whitespace-nowrap font-medium text-gray-600">
-
-              Additional Stops
-            </h3>
 
 
-            <StopsSection />
+        <div className="mt-2 md:hidden block flex justify-center items-center">
+          <h3 className="rounded-sm border text-white border-gray-300 bg-black px-2 py-2 text-[10px] whitespace-nowrap font-medium text-gray-600">
 
-          </div>
-        )}
+            Additional Stops
+          </h3>
+
+
+          <StopsSection />
+
+        </div>
+
 
         {stopsCount > 0 && (
 
@@ -477,7 +528,7 @@ export default function BookingForm(props: BookingFormProps) {
                     className={`w-full text-left px-3 py-2 rounded-md text-sm hover:bg-gray-100 ${hours === hour ? "bg-gray-200 font-medium" : ""
                       }`}
                   >
-                    {hour} Hour
+                    {hour || defaultValues.hours} Hour
                   </button>
                 ))}
               </PopoverContent>
@@ -511,7 +562,7 @@ export default function BookingForm(props: BookingFormProps) {
                     <input
                       placeholder="Enter dropoff location"
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
-                      value={dropLocation}
+                      value={dropLocation || defaultValues.dropLocation}
                       onChange={(e) => setDropLocation(e.target.value)}
                     />
                   </Autocomplete>
@@ -548,7 +599,7 @@ export default function BookingForm(props: BookingFormProps) {
                   <input
                     placeholder="Enter dropoff location"
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
-                    value={dropLocation}
+                    value={dropLocation || defaultValues.dropLocation}
                     onChange={(e) => setDropLocation(e.target.value)}
                   />
                 </Autocomplete>
@@ -570,7 +621,12 @@ export default function BookingForm(props: BookingFormProps) {
                 className="relative w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-left"
               >
                 <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                {pickupDate ? format(pickupDate, "EEE dd MMM yyyy") : "Select Date"}
+                {pickupDate
+                  ? format(pickupDate, "EEE dd MMM yyyy")
+                  : defaultValues.pickupDate
+                    ? format(new Date(defaultValues.pickupDate), "EEE dd MMM yyyy")
+                    : "Select Date"}
+
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 z-[9999]" align="start" side="bottom">
@@ -601,7 +657,7 @@ export default function BookingForm(props: BookingFormProps) {
                 onClick={() => setIsTimePickerOpen(true)}
               >
                 <ClockIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                {selectedTime || "Select Time"}
+                {selectedTime || defaultValues.pickupTime || "Select Time"}
               </button>
             </PopoverTrigger>
 
