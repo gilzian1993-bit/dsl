@@ -5,16 +5,25 @@ import { Clock, MapPin, Calendar } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Autocomplete, Libraries, useLoadScript } from "@react-google-maps/api";
-import TimePicker from "../time-picker";
-import { calculateDistance } from "@/app/actions/getDistance";
 import dynamic from "next/dynamic";
+import { calculateDistance } from "@/app/actions/getDistance";
 
 // Dynamic import for BookingForm to avoid SSR issues
 const BookingForm = dynamic(() => import("../formComponent/bookingform"), { ssr: false });
 
 export default function HeroSection() {
+  const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Run only on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null; // prevents SSR from executing browser-only code
+
+  // Booking details
   const bookingDetails = {
     pickupLocation: searchParams.get("pickupLocation") || "",
     dropLocation: searchParams.get("dropLocation") || "",
@@ -28,6 +37,7 @@ export default function HeroSection() {
     hours: searchParams.get("hours") || "",
   };
 
+  // State
   const [tripType, setTripType] = useState("airportRide");
   const [pickupDate, setPickupDate] = useState<Date | null>(null);
   const [pickupLocation, setPickupLocation] = useState("");
@@ -40,30 +50,12 @@ export default function HeroSection() {
   const [stop3, setStop3] = useState("");
   const [stop4, setStop4] = useState("");
   const [hours, setHours] = useState<number>(0);
-
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [dropCoords, setDropCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const dropRef = useRef<google.maps.places.Autocomplete | null>(null);
-
   const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
 
-  const router = useRouter();
-  const libraries: Libraries = ["places"];
-
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries,
-  });
-
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time);
-    setIsTimePickerOpen(false);
-  };
-
+  // Booking handler
   const handleBookNow = async () => {
     setLoading(true);
     let distance = 0;
@@ -110,15 +102,10 @@ export default function HeroSection() {
 
       router.push(`/booking?${params.toString()}`);
     } catch (err: unknown) {
-      
-      if (err instanceof Error) {
-        console.error("Error deleting booking:", err);
-
-      } else {
-        
-        console.error("Unexpected error:", err);
-
-      }
+      if (err instanceof Error) console.error("Error calculating distance:", err.message);
+      else console.error("Unexpected error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -132,9 +119,7 @@ export default function HeroSection() {
   const [currentBg, setCurrentBg] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBg((prev) => (prev + 1) % backgrounds.length);
-    }, 5000);
+    const interval = setInterval(() => setCurrentBg((prev) => (prev + 1) % backgrounds.length), 5000);
     return () => clearInterval(interval);
   }, [backgrounds.length]);
 
@@ -178,45 +163,41 @@ export default function HeroSection() {
       </div>
 
       <div ref={formRef} className="w-full flex md:mt-5 mt-47 justify-center">
-        {isLoaded && (
-          <BookingForm
-            defaultValues={bookingDetails}
-            tripType={tripType}
-            setTripType={setTripType}
-            pickupDate={pickupDate}
-            setPickupDate={setPickupDate}
-            pickupLocation={pickupLocation}
-            setPickupLocation={setPickupLocation}
-            dropLocation={dropLocation}
-            setDropLocation={setDropLocation}
-            pickupCoords={pickupCoords}
-            setPickupCoords={setPickupCoords}
-            dropCoords={dropCoords}
-            setDropCoords={setDropCoords}
-            selectedTime={selectedTime}
-            setSelectedTime={setSelectedTime}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            isTimePickerOpen={isTimePickerOpen}
-            setIsTimePickerOpen={setIsTimePickerOpen}
-            hours={hours}
-            setHours={setHours}
-            handleBookNow={handleBookNow}
-            loading={loading}
-            stopsCount={stopsCount}
-            setStopsCount={setStopsCount}
-            stop1={stop1}
-            stop2={stop2}
-            stop3={stop3}
-            stop4={stop4}
-            setStop1={setStop1}
-            setStop2={setStop2}
-            setStop3={setStop3}
-            setStop4={setStop4}
-
-
-          />
-        )}
+        <BookingForm
+          defaultValues={bookingDetails}
+          tripType={tripType}
+          setTripType={setTripType}
+          pickupDate={pickupDate}
+          setPickupDate={setPickupDate}
+          pickupLocation={pickupLocation}
+          setPickupLocation={setPickupLocation}
+          dropLocation={dropLocation}
+          setDropLocation={setDropLocation}
+          pickupCoords={pickupCoords}
+          setPickupCoords={setPickupCoords}
+          dropCoords={dropCoords}
+          setDropCoords={setDropCoords}
+          selectedTime={selectedTime}
+          setSelectedTime={setSelectedTime}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          isTimePickerOpen={isTimePickerOpen}
+          setIsTimePickerOpen={setIsTimePickerOpen}
+          hours={hours}
+          setHours={setHours}
+          handleBookNow={handleBookNow}
+          loading={loading}
+          stopsCount={stopsCount}
+          setStopsCount={setStopsCount}
+          stop1={stop1}
+          stop2={stop2}
+          stop3={stop3}
+          stop4={stop4}
+          setStop1={setStop1}
+          setStop2={setStop2}
+          setStop3={setStop3}
+          setStop4={setStop4}
+        />
       </div>
     </section>
   );
