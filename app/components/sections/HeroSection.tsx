@@ -40,9 +40,9 @@ export default function HeroSection() {
   const [stop3, setStop3] = useState("");
   const [stop4, setStop4] = useState("");
   const [hours, setHours] = useState<number>(0);
-  
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
- 
+
 
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [dropCoords, setDropCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -109,10 +109,16 @@ export default function HeroSection() {
       });
 
       router.push(`/booking?${params.toString()}`);
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setLoading(false);
+    } catch (err: unknown) {
+      
+      if (err instanceof Error) {
+        console.error("Error deleting booking:", err);
+
+      } else {
+        
+        console.error("Unexpected error:", err);
+
+      }
     }
   };
 
