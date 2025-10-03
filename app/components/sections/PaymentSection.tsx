@@ -33,7 +33,7 @@ interface PaymentSectionProps {
     airportPickup: boolean;
     carSeats: boolean;
     returnTrip: boolean;
-
+    returnPickupLocation: string,
     // Extra fields
     rearFacingSeat: number;
     boosterSeat: number;
@@ -105,6 +105,7 @@ interface PaymentSectionProps {
     phone: string;
     tripType: string;
     ReturnMeetGreetYes: boolean,
+    returnPickupLocation: string,
     // Toggles
     meetGreetYes: boolean;
     airportPickup: boolean;
@@ -163,6 +164,8 @@ export default function PaymentSection({
     returnTime,
     selectedVehicle,
     ReturnMeetGreetYes,
+    returnPickupLocation,
+   
 }: PaymentSectionProps) {
     useEffect(() => {
         console.log("=== PAYMENT SECTION PROPS ===");
@@ -410,7 +413,7 @@ export default function PaymentSection({
                                 {/* Date & Time */}
                                 <div className="ml-3 pt-3">
                                     <div className="flex items-center gap-3 text-sm text-gray-700 mb-3">
-                                         <span className="font-medium">  {pickupDate
+                                        <span className="font-medium">  {pickupDate
                                             ? new Date(pickupDate).toLocaleDateString("en-US", {
                                                 weekday: "short",   // e.g. Mon
                                                 month: "short",     // e.g. Sep
@@ -613,6 +616,7 @@ export default function PaymentSection({
                                 flightNumber={flightNumber} // ✅ now uses props
                                 returnDate={returnDate}
                                 returnTime={returnTime}
+                                returnPickupLocation={returnPickupLocation}
 
                             />
 

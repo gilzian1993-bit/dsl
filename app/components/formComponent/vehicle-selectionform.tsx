@@ -369,12 +369,6 @@ export default function VehicleSelection({
             finalPrice
         };
     }
-
-
-
-
-
-
     useEffect(() => {
         if (window.innerWidth < 768) {
             const interval = setInterval(() => {
@@ -403,28 +397,36 @@ export default function VehicleSelection({
     };
 
 
-  const handleBack = () => {
-  const pickupLocation = searchParams.get("pickupLocation") || "";
-  const dropLocation = searchParams.get("dropLocation") || "";
-  const pickupDate = searchParams.get("pickupDate") || "";
-  const pickupTime = searchParams.get("pickupTime") || "";
-  const hours = searchParams.get("hours") || "0";
-  const stopsCount = searchParams.get("stopsCount") || "0";
+    const handleBack = () => {
+        const pickupLocation = searchParams.get("pickupLocation") || "";
+        const dropLocation = searchParams.get("dropLocation") || "";
+        const pickupDate = searchParams.get("pickupDate") || "";
+        const pickupTime = searchParams.get("pickupTime") || "";
+        const hours = searchParams.get("hours") || "0";
+        const pickupLat = Number(searchParams.get("pickupLat") || "0");
+        const pickupLng = Number(searchParams.get("pickupLng") || "0");
+        const dropLat = Number(searchParams.get("dropLat") || "0");
+        const dropLng = Number(searchParams.get("dropLng") || "0");
+        const stopsCount = searchParams.get("stopsCount") || "0";
 
-  const formattedPickupDate = pickupDate ? new Date(pickupDate).toISOString() : "";
+        const formattedPickupDate = pickupDate ? new Date(pickupDate).toISOString() : "";
 
-  const params = new URLSearchParams({
-    pickupLocation,
-    dropLocation,
-    pickupDate: formattedPickupDate,
-    pickupTime,
-    hours,
-    stopsCount,
-  });
+        const params = new URLSearchParams({
+            pickupLocation,
+            dropLocation,
+            pickupDate: formattedPickupDate,
+            pickupTime,
+            hours,
+            pickupLat: pickupLat.toString(),   // ✅ convert number to string
+            pickupLng: pickupLng.toString(),   // ✅
+            dropLat: dropLat.toString(),       // ✅
+            dropLng: dropLng.toString(),       // ✅
+            stopsCount,
+        });
 
-  // ✅ Attach query params after `?`
-  router.push(`/?${params.toString()}`);
-};
+        // ✅ Attach query params after `?`
+        router.push(`/?${params.toString()}`);
+    };
 
 
 

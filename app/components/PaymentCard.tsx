@@ -71,6 +71,7 @@ interface PaymentCardProps {
     ReturnMeetGreetYes: boolean;
     basePrice?: number;
     selectedVehicle: VehicleOption;
+    returnPickupLocation: string;
 }
 
 const ElementStyles = {
@@ -115,7 +116,8 @@ export default function PaymentCard({
     distance,
     returnTime,
     finalTotal,
-    selectedVehicle
+    selectedVehicle,
+    returnPickupLocation
 }: PaymentCardProps) {
     console.log("graduity", selectedVehicle?.gratuity);
     const searchParams = useSearchParams();
@@ -233,7 +235,7 @@ export default function PaymentCard({
                 return_date: formatIsoDate(returnDate),
                 return_time: returnTime,
                 returnTrip: returnTrip,
-                price: parseFloat(finalTotal.toFixed(2)),
+                price: finalTotal.toFixed(2),
                 base_price: parseFloat(vehicleData.base.toFixed(2)),
 
                 airport_fee: 5,
@@ -257,6 +259,7 @@ export default function PaymentCard({
                 flight_number: flightNumber,
                 airline_code: airlineCode,
                 tripType,
+                return_pickup: returnPickupLocation,
                 rear_seats: rearFacingSeat,
                 booster_seats: boosterSeat,
                 meetGreet: meetGreetYes,
@@ -299,7 +302,7 @@ export default function PaymentCard({
 
                     console.log("Sending vehicle data to the API:", vehicleData);
 
-                    await fetch("https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
+                    await fetch(" https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -311,12 +314,12 @@ export default function PaymentCard({
                             return_date: formatIsoDate(returnDate),
                             return_time: returnTime,
                             returnTrip: returnTrip,
-                            price: Math.round(finalTotal),
-                            base_price: Math.round(vehicleData.base),
+                            price: finalTotal.toFixed(2),
+                            base_price: vehicleData.base.toFixed(2),
                             airport_fee: 5,
-                            gratuity: Math.round(vehicle.gratuity ?? 0),
-                            tax: Math.round(vehicleData.tax ?? 0),
-                            distance: Math.round(distance),
+                            gratuity: (vehicle.gratuity ?? 0).toFixed(2),
+                            tax: (vehicle.tax ?? 0).toFixed(2),
+                            distance: distance.toFixed(2),
                             email,
                             stop1: stop1,
                             stop2: stop2,
@@ -340,6 +343,7 @@ export default function PaymentCard({
                             returnMeetGreet: ReturnMeetGreetYes,
                             airportPickup: airportPickup,
                             carSeats: carSeats,
+                            return_pickup: returnPickupLocation,
                         }),
                     });
                 } catch (bookingError) {

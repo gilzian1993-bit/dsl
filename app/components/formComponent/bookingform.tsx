@@ -61,6 +61,10 @@ interface BookingFormProps {
     pickupDate: string;
     pickupTime: string;
     tripType: string;
+    pickupLat:string;
+    pickupLng:string;
+    dropLat:string;
+    dropLng:string;
     stop1: string;
     stop2: string;
     stop3: string;
@@ -200,6 +204,30 @@ export default function BookingForm(props: BookingFormProps) {
     }
     setStopsCount(prev => prev - 1);
   };
+useEffect(() => {
+  let count = 0;
+
+  if (defaultValues.stop1) {
+    count++;
+    setStop1(defaultValues.stop1);
+  }
+  if (defaultValues.stop2) {
+    count++;
+    setStop2(defaultValues.stop2);
+  }
+  if (defaultValues.stop3) {
+    count++;
+    setStop3(defaultValues.stop3);
+  }
+  if (defaultValues.stop4) {
+    count++;
+    setStop4(defaultValues.stop4);
+  }
+
+  if (count > 0) {
+    setStopsCount(count);
+  }
+}, [defaultValues, setStopsCount, setStop1, setStop2, setStop3, setStop4]);
 
   const updateStop = (index: number, value: string) => {
     switch (index) {

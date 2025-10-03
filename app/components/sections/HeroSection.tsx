@@ -17,7 +17,10 @@ export default function HeroSection() {
     dropLocation: searchParams.get("dropLocation") || "",
     pickupDate: searchParams.get("pickupDate") || "",
     pickupTime: searchParams.get("pickupTime") || "",
-
+    pickupLng: searchParams.get("pickupLng") || "",
+    pickupLat: searchParams.get("pickupLat") || "",
+     dropLng: searchParams.get("dropLng") || "",
+     dropLat: searchParams.get("dropLat") || "",
     tripType: searchParams.get("tripType") || "",
     stop1: searchParams.get("stop1") || "",
     stop2: searchParams.get("stop2") || "",
@@ -73,11 +76,11 @@ export default function HeroSection() {
       // ✅ Point-to-Point distance
       const result = await calculateDistance({
         from: pickupLocation || bookingDetails.pickupLocation,
-        to: dropLocation  || bookingDetails.dropLocation,
-        stop1: stop1  || bookingDetails.stop1,
-        stop2: stop2  || bookingDetails.stop2 ,
-        stop3: stop3  || bookingDetails.stop3 ,
-        stop4: stop4  || bookingDetails.stop4,
+        to: dropLocation || bookingDetails.dropLocation,
+        stop1: stop1 || bookingDetails.stop1,
+        stop2: stop2 || bookingDetails.stop2,
+        stop3: stop3 || bookingDetails.stop3,
+        stop4: stop4 || bookingDetails.stop4,
       });
 
       if (result.error || !result.distance) {
@@ -91,7 +94,7 @@ export default function HeroSection() {
     else if (tripType === "airportRide") {
       // ✅ Airport Ride distance (pickup -> airport)
       const result = await calculateDistance({
-        from: pickupLocation  || bookingDetails.pickupLocation,
+        from: pickupLocation || bookingDetails.pickupLocation,
         to: dropLocation || bookingDetails.dropLocation, // fallback if drop isn't used
       });
 
@@ -105,23 +108,24 @@ export default function HeroSection() {
     }
 
     const params = new URLSearchParams({
-      pickupLocation,
-      dropLocation,
-      pickupDate: pickupDate ? pickupDate.toISOString() : "",
-      pickupTime: selectedTime,
-      pickupLat: pickupCoords?.lat.toString() || "",
-      pickupLng: pickupCoords?.lng.toString() || "",
-      dropLat: dropCoords?.lat.toString() || "",
-      dropLng: dropCoords?.lng.toString() || "",
+      pickupLocation: pickupLocation || bookingDetails.pickupLocation,
+      dropLocation: dropLocation || bookingDetails.dropLocation,
+      pickupDate: pickupDate ? pickupDate.toISOString() : bookingDetails.pickupDate,
+      pickupTime: selectedTime || bookingDetails.pickupTime,
+      pickupLat: pickupCoords?.lat?.toString() || bookingDetails.pickupLat,
+      pickupLng: pickupCoords?.lng?.toString() || bookingDetails.pickupLng,
+      dropLat: dropCoords?.lat?.toString() || bookingDetails.dropLat,
+      dropLng: dropCoords?.lng?.toString() || bookingDetails.dropLng,
       distance: distance.toFixed(2),
-      tripType,
-      stop1: stop1,
-      stop2: stop2,
-      stop3: stop3,
-      stop4: stop4,
+      tripType: tripType || bookingDetails.tripType,
+      stop1: stop1 || bookingDetails.stop1,
+      stop2: stop2 || bookingDetails.stop2,
+      stop3: stop3 || bookingDetails.stop3,
+      stop4: stop4 || bookingDetails.stop4,
       stopsCount: stopsCount.toString(),
-      hours: hours.toString(),
+      hours: hours ? hours.toString() : bookingDetails.hours,
     });
+
 
     setTimeout(() => {
       setLoading(false);

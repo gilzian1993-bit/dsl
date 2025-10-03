@@ -251,7 +251,7 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
     const total = selectedVehicle?.total ?? getVehiclePrice(selectedVehicle);
     const calculatedPrice = returnTripYes
-        ? (total * 2) - discountAmount
+        ? (total * 2 - (total * (10 / 100))+  (ReturnMeetGreetYes ? 25 : 0))     // total*2 minus 10%
         : finalTotal;
 
 

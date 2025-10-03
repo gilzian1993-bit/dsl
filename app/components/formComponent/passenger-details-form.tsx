@@ -1,12 +1,13 @@
 "use client";
 
-import { Info, Minus, Plus, CalendarIcon, ClockIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Info, Minus, Plus, CalendarIcon, ClockIcon, MapPin } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { format } from "date-fns";
 import TimePicker from "../time-picker";
 import Calendar from "../../../components/ui/calendar";
 import TimeInput from "../time-picker";
+import { Autocomplete, Libraries, useLoadScript } from "@react-google-maps/api";
 
 interface Price {
   basePrice: number;
@@ -66,7 +67,7 @@ interface PassengerDetailsFormProps {
   pickupDate: string;
   onPriceChange: (updatedTotal: number) => void;
   basePrice?: number;
-   total?: number;
+  total?: number;
 }
 
 export default function PassengerDetailsForm({
@@ -96,7 +97,7 @@ export default function PassengerDetailsForm({
   const [returnAirlineCode, setReturnAirlineCode] = useState("");
   const [returnflightNumber, setReturnFlightNumber] = useState("");
   const [carSeats, setCarSeats] = useState(false);
-
+const [returnPickupLocation, setReturnPickupLocation] = useState("");
   const [rearFacingSeat, setRearFacingSeat] = useState(0);
   const [boosterSeat, setBoosterSeat] = useState(0);
   const [returnDate, setReturnDate] = useState<Date | null>(null);
@@ -115,6 +116,15 @@ export default function PassengerDetailsForm({
   const [showReturnTrip, setShowReturnTrip] = useState(false);
   const [showReturnMeetGreet, setShowReturnMeetGreet] = useState(false);
   const [airportPickup, setAirportPickup] = useState(false);
+  const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+  const libraries: Libraries = ["places"];
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey:
+      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+      "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
+    libraries,
+  });
   // 🔹 Real-time price calculation
   useEffect(() => {
     const seatCharge = carSeats ? (rearFacingSeat + boosterSeat) * 10 : 0;
@@ -153,10 +163,11 @@ export default function PassengerDetailsForm({
     }
 
     // 🔹 Airport Ride - Airport Pickup must be selected
-    if (tripType === "airportRide") {
-      if (!airlineCode.trim()) newErrors.airlineCode = "Airline name or code is required";
-      if (!flightNumber.trim()) newErrors.flightNumber = "Flight number is required";
-    }
+if (tripType === "airportRide" && !returnTrip) {
+  if (!airlineCode.trim()) newErrors.airlineCode = "Airline name or code is required";
+  if (!flightNumber.trim()) newErrors.flightNumber = "Flight number is required";
+}
+
     if (tripType === "airportRide" && returnTrip) {
       if (!returnAirlineCode.trim()) newErrors.returnAirlineCode = "Airline name or code is required";
       if (!returnflightNumber.trim()) newErrors.returnflightNumber = "Flight number is required";
@@ -188,6 +199,8 @@ export default function PassengerDetailsForm({
         meetGreetYes,
         ReturnMeetGreetYes,
         airportPickup,
+        setReturnPickupLocation,
+        returnPickupLocation,
         carSeats,
         finalTotal,
         returnTrip,
@@ -343,33 +356,39 @@ export default function PassengerDetailsForm({
             Luggage
           </span>
         </div>
-        {/* Airline and Flight Number (Required if Airport Ride) */}
-        {tripType === "airportRide" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Airline Name or Code"
-                value={airlineCode}
-                onChange={(e) => setAirlineCode(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-              {errors.airlineCode && <p className="text-red-500 text-sm mt-1">{errors.airlineCode}</p>}
-            </div>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Flight No #"
-                value={flightNumber}
-                onChange={(e) => setFlightNumber(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-              {errors.flightNumber && <p className="text-red-500 text-sm mt-1">{errors.flightNumber}</p>}
-            </div>
-          </div>
-        )}
+
+
 
       </div>
+
+      {tripType === "airportRide" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Airline Name or Code"
+              value={airlineCode}
+              onChange={(e) => setAirlineCode(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            {errors.airlineCode && <p className="text-red-500 text-sm mt-1">{errors.airlineCode}</p>}
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Flight No #"
+              value={flightNumber}
+              onChange={(e) => setFlightNumber(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            {errors.flightNumber && <p className="text-red-500 text-sm mt-1">{errors.flightNumber}</p>}
+          </div>
+        </div>
+      )}
+
+
+
+
 
       {/* Options */}
       <div className="mb-4 flex md:flex-row flex-col sm:items-center sm:gap-6 gap-4">
@@ -562,8 +581,41 @@ export default function PassengerDetailsForm({
       {tripType !== "hourlyRate" && showReturnTrip && (
         <div className="mb-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      
+      {/* Return Pickup */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-600 mb-1">
+          Return Pickup
+        </label>
+        <div className="relative w-full">
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+          {isLoaded && (
+            <Autocomplete
+              onLoad={(ref) => (pickupRef.current = ref)}
+              onPlaceChanged={() => {
+                const place = pickupRef.current?.getPlace();
+                if (place?.geometry?.location) {
+                  setReturnPickupLocation(place.formatted_address || "");
+                }
+              }}
+              options={{ componentRestrictions: { country: "us" } }}
+            >
+              <input
+                placeholder="Enter return pickup location"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
+                value={returnPickupLocation}
+                onChange={(e) => setReturnPickupLocation(e.target.value)}
+              />
+            </Autocomplete>
+          )}
+        </div>
+        {errors.returnPickupLocation && (
+          <p className="text-red-500 text-sm mt-1">{errors.returnPickupLocation}</p>
+        )}
+      </div>
             {/* Return Date */}
             <div className="flex flex-col">
+              
               <label className="text-sm font-medium text-gray-600 mb-1">Return Date</label>
               <Popover open={isReturnCalendarOpen} onOpenChange={setIsReturnCalendarOpen}>
                 <PopoverTrigger asChild>
@@ -621,8 +673,10 @@ export default function PassengerDetailsForm({
                 <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
               )}
             </div>
-            {tripType === "airportRide" && (
-              <div className="flex flex-col">
+           
+          </div>
+           {tripType === "airportRide" && (
+              <div className="flex mt-5  flex-col">
                 <div className="flex items-center gap-2">
                   <label className="relative items-center cursor-pointer">
                     <input
@@ -670,9 +724,9 @@ export default function PassengerDetailsForm({
                 </div>
               </div>
             )}
-          </div>
         </div>
-      )}
+      )
+      }
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row sm:justify-end mb-4 gap-4">
@@ -698,6 +752,6 @@ export default function PassengerDetailsForm({
           BACK TO VEHICLE SELECTION
         </button>
       </div>
-    </div>
+    </div >
   )
 };

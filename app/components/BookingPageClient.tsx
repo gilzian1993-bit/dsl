@@ -43,7 +43,7 @@ interface UserInfo {
   rearFacingSeat: number;
   boosterSeat: number;
   meetGreetYes?: boolean;
- ReturnMeetGreetYes?: boolean;
+  ReturnMeetGreetYes?: boolean;
   airportPickup?: boolean;
   carSeats?: boolean;
   returnTrip?: boolean;
@@ -52,6 +52,7 @@ interface UserInfo {
   airlineCode?: string;
   flightNumber?: string;
   finalTotal: number;
+  returnPickupLocation?: string;
 }
 
 export default function BookingPageClient() {
@@ -78,7 +79,7 @@ export default function BookingPageClient() {
 
   return (
     <PriceProvider> <div>
-      
+
       {step === 1 && (
         <VehicleSelection
           step={step}
@@ -128,7 +129,7 @@ export default function BookingPageClient() {
           onBack={() => setStep(2)}
           onNext={() => setStep(4)}
           // 🔹 Use userInfo instead of defaults
-           ReturnMeetGreetYes={userInfo.ReturnMeetGreetYes ?? false}
+          ReturnMeetGreetYes={userInfo.ReturnMeetGreetYes ?? false}
           meetGreetYes={userInfo.meetGreetYes ?? false}
           passengers={userInfo.passengers}
           luggage={userInfo.luggage}
@@ -148,6 +149,7 @@ export default function BookingPageClient() {
               : selectedVehicle.price.total
           }
           finalTotal={userInfo.finalTotal}
+          returnPickupLocation={userInfo.returnPickupLocation || ""}
 
 
         />
