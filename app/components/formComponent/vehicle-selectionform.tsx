@@ -298,7 +298,7 @@ export default function VehicleSelection({
                     basePrice = distance <= 15 ? 260 : 260 + (distance - 15) * 7;
                 }
             }
-            // Default pricing for other locations
+
             else {
                 switch (vehicle.type) {
                     case "SEDAN":
@@ -347,7 +347,7 @@ export default function VehicleSelection({
             total += 20 * stopsCount;
         }
         const discountPercentage = 5;
-        const discountAmount = tripType !== "hourlyRate" ? total * (discountPercentage / 100): 0;
+        const discountAmount = tripType !== "hourlyRate" ? total * (discountPercentage / 100) : 0;
         const finalPrice = total - discountAmount;
 
         console.log("Base:", basePrice);
@@ -433,7 +433,7 @@ export default function VehicleSelection({
 
     return (
         <>
-            <div className="bg-[#DDDDDD] md:block hidden px-6 py-4">
+            <div className="bg-[#DDDDDD] px-6 py-4">
                 <div className="max-w-5xl mx-auto flex items-center justify-between">
                     <button onClick={handleBack} className="flex items-center font-semibold text-gray-700 hover:text-black">
                         <ArrowLeft className="h-4 w-4" />
@@ -461,6 +461,13 @@ export default function VehicleSelection({
                         </div>
                         {/* Mobile: Trip Details */}
                         <div className="md:hidden block mb-3">
+                            <button
+                                onClick={handleBack}
+                                className="w-full bg-[#008492] p-5 mb-5 text-white rounded-md flex  items-center"
+                            >
+                                <ArrowLeft className="h-4 w-4" />
+                                BACK
+                            </button>
                             <button
                                 onClick={() => setShowTripDetailsMobile(!showTripDetailsMobile)}
                                 className="w-full bg-[#008492] p-5 text-white rounded-md flex justify-between items-center"
@@ -535,6 +542,7 @@ export default function VehicleSelection({
 
                         <div className="rounded-2xl  md:block hidden bg-white shadow-[0_6px_12px_0_rgba(0,0,0,0.1)] p-5 w-full max-w-md">
                             {/* Header */}
+
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="bg-[#008492] p-1.5 rounded-md flex items-center justify-center">
                                     <ArrowRight className="w-4 h-4 text-white" />

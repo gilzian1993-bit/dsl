@@ -53,10 +53,13 @@ interface PaymentCardProps {
     tripType: string;
     passengers: number;
     luggage: number;
+    returnBoosterSeat: number;
+    returnRearFacingSeat: number;
     rearFacingSeat: number;
     boosterSeat: number;
     meetGreetYes: boolean;
     airportPickup: boolean;
+    returnCarSeats:boolean;
     carSeats: boolean;
     returnTrip: boolean;
     returnAirlineCode?: string;
@@ -105,7 +108,9 @@ export default function PaymentCard({
     phone,
     tripType,
     ReturnMeetGreetYes,
-
+    returnBoosterSeat,
+    returnRearFacingSeat,
+    returnCarSeats,
     rearFacingSeat,
     boosterSeat,
     meetGreetYes,
@@ -270,6 +275,8 @@ export default function PaymentCard({
                     flight_number: flightNumber,
                     airline_code: airlineCode,
                     tripType,
+                    return_rear_seats:returnRearFacingSeat,
+                    return_booster_seats:returnBoosterSeat,
                     rear_seats: rearFacingSeat,
                     booster_seats: boosterSeat,
                     meetGreet: meetGreetYes,
@@ -366,6 +373,9 @@ export default function PaymentCard({
                             returnMeetGreet: ReturnMeetGreetYes,
                             airportPickup: airportPickup,
                             carSeats: carSeats,
+                            returnCarSeats:returnCarSeats,
+                            return_booster_seats:returnBoosterSeat,
+                            return_rear_seats:returnRearFacingSeat,
                             return_pickup: returnPickupLocation,
                         }),
                     });
@@ -373,7 +383,7 @@ export default function PaymentCard({
                     console.error("⚠️ Booking API error (proceeding anyway):", bookingError);
                 }
 
-                // window.location.href = "/payment-success";
+                window.location.href = "/payment-success";
             } else {
                 setErrorMessage("Payment was not successful.");
             }

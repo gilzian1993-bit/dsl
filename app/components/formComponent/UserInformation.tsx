@@ -225,7 +225,9 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const [showModal, setShowModal] = useState(false);
     const [rearFacingSeat, setRearFacingSeat] = useState(0);
-      const [boosterSeat, setBoosterSeat] = useState(0);
+    const [boosterSeat, setBoosterSeat] = useState(0);
+    const [returnRearFacingSeat, setReturnRearFacingSeat] = useState(0);
+    const [returnBoosterSeat, setReturnBoosterSeat] = useState(0);
     const [showTripDetailsMobile, setShowTripDetailsMobile] = useState(false);
     const [meetGreetYes, setMeetGreetYes] = useState(false);
     const [ReturnMeetGreetYes, setReturnMeetGreetYes] = useState(false);
@@ -256,15 +258,25 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const total = selectedVehicle?.total ?? getVehiclePrice(selectedVehicle);
     const base = Number(selectedVehicle?.base ?? 0);
     const seatCharge = (rearFacingSeat + boosterSeat) * 10;
+    const gratuity = (base * 2) * 0.20; // 20% of total base (for return trip)
+    const tax = (base * 2) * 0.05;      // 5% of total base (for return trip)
+      const airportFee = tripType === "airportRide" ? 5 : 0;
+console.log("Meet Greet:", meetGreetYes, "Return Meet Greet:", ReturnMeetGreetYes,"cost", meetGreetCost);
+
     const calculatedPrice =
-
         returnTripYes
-            ? ((base * 2) - (base * 2 * 0.10)
-
-                + ((meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0))
-                + (returnStopsCount > 0 ? 20 * returnStopsCount : 0))
-                 + seatCharge
+            ? (
+                (base * 2)                       
+                - (base * 2 * 0.10)            
+                + (meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0)
+                + (returnStopsCount > 0 ? 20 * returnStopsCount : 0)        
+                + seatCharge                     
+                + gratuity                      
+                + tax  
+                + airportFee                    
+            )
             : finalTotal;
+
 
 
 
@@ -697,6 +709,10 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                     });
                                 }}
                                 setReturnStopsCount={setReturnStopsCount}
+                                setReturnBoosterSeat={setReturnBoosterSeat}
+                                returnBoosterSeat={returnBoosterSeat}
+                                returnRearFacingSeat={returnRearFacingSeat}
+                                setReturnRearFacingSeat={setReturnRearFacingSeat}
                                 boosterSeat={boosterSeat}
                                 setBoosterSeat={setBoosterSeat}
                                 rearFacingSeat={rearFacingSeat}

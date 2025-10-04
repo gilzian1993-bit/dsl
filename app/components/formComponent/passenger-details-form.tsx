@@ -57,6 +57,10 @@ interface PassengerDetailsFormProps {
   onBack: () => void;
   tripType: string;
   meetGreetYes: boolean;
+  returnRearFacingSeat: number;
+  returnBoosterSeat: number;
+  setReturnRearFacingSeat: React.Dispatch<React.SetStateAction<number>>;
+  setReturnBoosterSeat: React.Dispatch<React.SetStateAction<number>>;
   rearFacingSeat: number;
   boosterSeat: number;
   setRearFacingSeat: React.Dispatch<React.SetStateAction<number>>;
@@ -92,6 +96,10 @@ export default function PassengerDetailsForm({
   setReturnTrip,
   vehicle,
   totalPrice,
+  returnBoosterSeat,
+  returnRearFacingSeat,
+  setReturnBoosterSeat,
+  setReturnRearFacingSeat,
   rearFacingSeat,
   boosterSeat,
 
@@ -111,6 +119,7 @@ export default function PassengerDetailsForm({
   const [returnAirlineCode, setReturnAirlineCode] = useState("");
   const [returnflightNumber, setReturnFlightNumber] = useState("");
   const [carSeats, setCarSeats] = useState(false);
+  const [returnCarSeats, setReturnCarSeats] = useState(false);
   const [returnPickupLocation, setReturnPickupLocation] = useState("");
 
   const [returnDate, setReturnDate] = useState<Date | null>(null);
@@ -126,6 +135,8 @@ export default function PassengerDetailsForm({
   const [showAirportPickup, setShowAirportPickup] = useState(false);
   const [showMeetGreet, setShowMeetGreet] = useState(false);
   const [showCarSeats, setShowCarSeats] = useState(false);
+
+  const [showReturnCarSeats, setReturnShowCarSeats] = useState(false);
   const [showReturnTrip, setShowReturnTrip] = useState(false);
   const [showReturnMeetGreet, setShowReturnMeetGreet] = useState(false);
   const [airportPickup, setAirportPickup] = useState(false);
@@ -146,14 +157,14 @@ export default function PassengerDetailsForm({
   // 🔹 Real-time price calculation
   useEffect(() => {
     const seatCharge = carSeats ? (rearFacingSeat + boosterSeat) * 10 : 0;
-    const meetGreetCharge = meetGreetYes ? 25 : 0;
+    // const meetGreetCharge = (meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0);
     const returnTripCharge = returnTrip
       ? (basePrice! * 2) - (basePrice! * 2 * 0.10) + (returnStopsCount > 0 ? 20 * returnStopsCount : 0)
       : 0;
 
     const updatedTotal = returnTrip
-      ? returnTripCharge + seatCharge + meetGreetCharge
-      : totalPrice + seatCharge + meetGreetCharge;
+      ? returnTripCharge + seatCharge 
+      : totalPrice + seatCharge;
 
     onPriceChange(updatedTotal);
   }, [
@@ -235,9 +246,12 @@ export default function PassengerDetailsForm({
         airportPickup,
         setReturnPickupLocation,
         returnPickupLocation,
+        returnCarSeats,
         carSeats,
         finalTotal,
         returnTrip,
+        returnRearFacingSeat: returnCarSeats ? returnRearFacingSeat : 0,
+        returnBoosterSeat: returnCarSeats ? returnBoosterSeat : 0,
         rearFacingSeat: carSeats ? rearFacingSeat : 0,
         boosterSeat: carSeats ? boosterSeat : 0,
         passengers,
@@ -931,14 +945,14 @@ export default function PassengerDetailsForm({
               <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
             )}
           </div>
-          <div className="flex mt-5 flex-col">
+          <div className="flex items-center mb-6 mt-5 gap-5">
             {/* Show Meet & Greet for both airportRide & pointToPoint */}
             {(tripType === "airportRide" || tripType === "pointToPoint") && (
               <div className="flex items-center gap-2">
                 <label className="relative items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={meetGreetYes}
+                    checked={ReturnMeetGreetYes}
                     onChange={() => {
                       setReturnMeetGreetYes(!ReturnMeetGreetYes);
                       setShowReturnMeetGreet(!showReturnMeetGreet);
@@ -958,37 +972,142 @@ export default function PassengerDetailsForm({
                 <span className="text-base text-gray-700">Meet & Greet</span>
               </div>
             )}
+            <div className="flex md:flex-row flex-col sm:items-center sm:gap-6 gap-4">
+              {/* Car Seats Toggle */}
+              <div className="flex  items-center gap-2 relative group">
+                <label className="relative items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={returnCarSeats}
+                    onChange={() => {
+                      setReturnCarSeats(!setCarSeats);
+                      setReturnShowCarSeats(!showReturnCarSeats);
+                    }}
+                    className="sr-only"
+                  />
+                  <div
+                    className={`w-11 h-6 rounded-full ${returnCarSeats ? "bg-[#008492]" : "bg-gray-300"
+                      } relative transition-colors`}
+                  >
+                    <div
+                      className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${returnCarSeats ? "translate-x-5" : "translate-x-0.5"
+                        }`}
+                    ></div>
+                  </div>
+                </label>
+                <span className="text-base text-gray-900">Car Seats?</span>
 
-            {/* Show airline & flight inputs ONLY for airportRide */}
-            {tripType === "airportRide" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Airline Name or Code"
-                    value={returnAirlineCode}
-                    onChange={(e) => setReturnAirlineCode(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  {errors.returnAirlineCode && (
-                    <p className="text-red-500 text-sm mt-1">{errors.returnAirlineCode}</p>
-                  )}
-                </div>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Flight No #"
-                    value={returnflightNumber}
-                    onChange={(e) => setReturnFlightNumber(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  {errors.returnflightNumber && (
-                    <p className="text-red-500 text-sm mt-1">{errors.returnflightNumber}</p>
-                  )}
+                {/* Info icon with tooltip */}
+                <div className="relative group">
+                  <Info className="w-4 h-4 text-gray-400 cursor-pointer" />
+                  {/* Tooltip card */}
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+                    $10 will be added in total price for per rear and booster seats.
+                  </div>
                 </div>
               </div>
-            )}
+              {errors.carSeats && (
+                <p className="text-red-500 text-sm mt-1">{errors.carSeats}</p>
+              )}
+
+
+
+
+            </div>
+
           </div>
+
+          {showReturnCarSeats && (
+            <div className="mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div>
+                  <div className="flex  items-center gap-2 relative group mt-0"><label className="block text-base text-gray-700 mb-2">Rear facing seat</label>
+                    <div className="relative">
+                      <Info
+                        className="w-4 h-4 text-gray-400 cursor-pointer"
+                        onClick={toggleTooltip} // Toggle tooltip on click
+                      />
+                      {/* Tooltip card */}
+                      {tooltipVisible && (
+                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                          $10 will be added in total price for per rear and booster seats.
+                        </div>
+                      )}
+                    </div></div>
+
+                  <select
+                    value={returnRearFacingSeat}
+                    onChange={(e) => setReturnRearFacingSeat(Number(e.target.value))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    {[...Array(7).keys()].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div >
+                  <div className="flex  items-center gap-2 relative group mt-0">
+                    <label className="block text-base text-gray-700 mb-2">Booster seat</label>
+                    <div className="relative">
+                      <Info
+                        className="w-4 h-4 text-gray-400 cursor-pointer"
+                        onClick={boosterToggleTooltip} // Toggle tooltip on click
+                      />
+                      {/* Tooltip card */}
+                      {boosterTooltipVisible && (
+                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                          $10 will be added in total price for per rear and booster seats.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <select
+                    value={returnBoosterSeat}
+                    onChange={(e) => setReturnBoosterSeat(Number(e.target.value))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    {[...Array(7).keys()].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* Show airline & flight inputs ONLY for airportRide */}
+          {tripType === "airportRide" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Airline Name or Code"
+                  value={returnAirlineCode}
+                  onChange={(e) => setReturnAirlineCode(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                {errors.returnAirlineCode && (
+                  <p className="text-red-500 text-sm mt-1">{errors.returnAirlineCode}</p>
+                )}
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Flight No #"
+                  value={returnflightNumber}
+                  onChange={(e) => setReturnFlightNumber(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                {errors.returnflightNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.returnflightNumber}</p>
+                )}
+              </div>
+            </div>
+          )}
 
 
         </div>

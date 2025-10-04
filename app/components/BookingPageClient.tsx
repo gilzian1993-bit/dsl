@@ -40,11 +40,15 @@ interface UserInfo {
   tripType: string;
   passengers: number;
   luggage: number;
+  returnBoosterSeat?: number;
+
+  returnRearFacingSeat?: number;
   rearFacingSeat: number;
   boosterSeat: number;
   meetGreetYes?: boolean;
   ReturnMeetGreetYes?: boolean;
   airportPickup?: boolean;
+  returnCarSeats?: boolean;
   carSeats?: boolean;
   returnTrip?: boolean;
   returnDate?: string;
@@ -138,7 +142,10 @@ export default function BookingPageClient() {
           meetGreetYes={userInfo.meetGreetYes ?? false}
           passengers={userInfo.passengers}
           luggage={userInfo.luggage}
+          returnRearFacingSeat={userInfo.returnRearFacingSeat ?? 0}
+          returnBoosterSeat={userInfo.returnBoosterSeat ?? 0}
           rearFacingSeat={userInfo.rearFacingSeat}
+
           boosterSeat={userInfo.boosterSeat}
           airlineCode={userInfo.airlineCode}
           flightNumber={userInfo.flightNumber}
@@ -146,6 +153,7 @@ export default function BookingPageClient() {
           returnTime={userInfo.returnTime}
           airportPickup={userInfo.airportPickup ?? false}
           carSeats={userInfo.carSeats ?? false}
+          returnCarSeats={userInfo.returnCarSeats ?? false}
           returnTrip={userInfo.returnTrip ?? false}
           hours={hours}
           totalPrice={

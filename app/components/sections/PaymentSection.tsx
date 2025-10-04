@@ -109,11 +109,14 @@ interface PaymentSectionProps {
     // Toggles
     meetGreetYes: boolean;
     airportPickup: boolean;
+    returnCarSeats:boolean;
     carSeats: boolean;
     returnTrip: boolean;
     hours: number;
     distance: number;
     // Extra fields
+    returnRearFacingSeat: number;
+    returnBoosterSeat: number;
     rearFacingSeat: number;
     boosterSeat: number;
     returnflightNumber?: string;
@@ -149,10 +152,13 @@ export default function PaymentSection({
     pickupTime,
     passengers,
     luggage,
+    returnBoosterSeat,
+    returnRearFacingSeat,
     rearFacingSeat,
     boosterSeat,
     meetGreetYes,
     airportPickup,
+    returnCarSeats,
     carSeats,
     returnTrip,
     totalPrice,
@@ -176,11 +182,11 @@ export default function PaymentSection({
 }: PaymentSectionProps) {
     useEffect(() => {
         console.log("=== PAYMENT SECTION PROPS ===");
-         console.log("returnStop1:", returnStop1);
-          console.log("returnStop2:", returnStop2);
-           console.log("returnStop3:", returnStop3);
-            console.log("returnStop4:", returnStop4);
-             console.log("returnStopsCount:", returnStopsCount);
+        console.log("returnStop1:", returnStop1);
+        console.log("returnStop2:", returnStop2);
+        console.log("returnStop3:", returnStop3);
+        console.log("returnStop4:", returnStop4);
+        console.log("returnStopsCount:", returnStopsCount);
         console.log("Step:", step);
         console.log("Selected:", selectedVehicle);
         console.log("Vehicle:", vehicle);
@@ -610,10 +616,13 @@ export default function PaymentSection({
                                 pickupTime={pickupTime}
                                 passengers={passengers}
                                 luggage={luggage}
+                                returnBoosterSeat={returnBoosterSeat}
+                                returnRearFacingSeat={returnRearFacingSeat}
                                 rearFacingSeat={rearFacingSeat}
                                 boosterSeat={boosterSeat}
                                 meetGreetYes={meetGreetYes}
                                 airportPickup={airportPickup}
+                                returnCarSeats={returnCarSeats}
                                 carSeats={carSeats}
                                 fullName={fullName}
                                 email={email}
@@ -634,7 +643,7 @@ export default function PaymentSection({
                                 returnStop3={returnStop3}
                                 returnStop4={returnStop4}
                                 returnStopsCount={returnStopsCount}
-                            
+
 
                             />
 
