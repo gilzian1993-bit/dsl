@@ -347,10 +347,11 @@ export default function VehicleSelection({
             total += 20 * stopsCount;
         }
         const discountPercentage = 5;
-        const discountAmount = total * (discountPercentage / 100);
+        const discountAmount = tripType !== "hourlyRate" ? total * (discountPercentage / 100): 0;
         const finalPrice = total - discountAmount;
 
         console.log("Base:", basePrice);
+        console.log("discountAmount:", discountAmount);
         console.log("hours:", hours);
         console.log("Gratuity (20%):", gratuity);
         console.log("Tax (5%):", tax);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, Minus, Plus, CalendarIcon, ClockIcon, MapPin } from "lucide-react";
+import { Info, Minus, Plus, CalendarIcon, ClockIcon, MapPin, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { format } from "date-fns";
@@ -8,6 +8,7 @@ import TimePicker from "../time-picker";
 import Calendar from "../../../components/ui/calendar";
 import TimeInput from "../time-picker";
 import { Autocomplete, Libraries, useLoadScript } from "@react-google-maps/api";
+import { SlLocationPin } from "react-icons/sl";
 
 interface Price {
   basePrice: number;
@@ -56,12 +57,18 @@ interface PassengerDetailsFormProps {
   onBack: () => void;
   tripType: string;
   meetGreetYes: boolean;
+  rearFacingSeat: number;
+  boosterSeat: number;
+  setRearFacingSeat: React.Dispatch<React.SetStateAction<number>>;
+  setBoosterSeat: React.Dispatch<React.SetStateAction<number>>;
   setMeetGreetYes: React.Dispatch<React.SetStateAction<boolean>>;
   ReturnMeetGreetYes: boolean;
   setReturnMeetGreetYes: React.Dispatch<React.SetStateAction<boolean>>;
   returnTrip: boolean;
   setReturnTrip: React.Dispatch<React.SetStateAction<boolean>>;
   finalTotal: number;
+  setReturnStopsCount: React.Dispatch<React.SetStateAction<number>>;
+  returnStopsCount: number;
   vehicle: VehicleOption;
   totalPrice: number;
   pickupDate: string;
@@ -80,9 +87,16 @@ export default function PassengerDetailsForm({
   ReturnMeetGreetYes,
   pickupDate,
   returnTrip,
+  returnStopsCount,
+  setReturnStopsCount,
   setReturnTrip,
   vehicle,
   totalPrice,
+  rearFacingSeat,
+  boosterSeat,
+
+  setRearFacingSeat,
+  setBoosterSeat,
   onPriceChange,
   basePrice,
   finalTotal,
@@ -97,9 +111,8 @@ export default function PassengerDetailsForm({
   const [returnAirlineCode, setReturnAirlineCode] = useState("");
   const [returnflightNumber, setReturnFlightNumber] = useState("");
   const [carSeats, setCarSeats] = useState(false);
-const [returnPickupLocation, setReturnPickupLocation] = useState("");
-  const [rearFacingSeat, setRearFacingSeat] = useState(0);
-  const [boosterSeat, setBoosterSeat] = useState(0);
+  const [returnPickupLocation, setReturnPickupLocation] = useState("");
+
   const [returnDate, setReturnDate] = useState<Date | null>(null);
   const [returnTime, setReturnTime] = useState<string | null>(null);
   const [isReturnCalendarOpen, setIsReturnCalendarOpen] = useState(false);
@@ -118,6 +131,11 @@ const [returnPickupLocation, setReturnPickupLocation] = useState("");
   const [airportPickup, setAirportPickup] = useState(false);
   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
 
+  const [returnStop1, setReturnStop1] = useState("");
+  const [returnStop2, setReturnStop2] = useState("");
+  const [returnStop3, setReturnStop3] = useState("");
+  const [returnStop4, setReturnStop4] = useState("");
+  const stopsRefs = useRef<(google.maps.places.Autocomplete | null)[]>([]);
   const libraries: Libraries = ["places"];
   const { isLoaded } = useLoadScript({
     googleMapsApiKey:
@@ -129,13 +147,29 @@ const [returnPickupLocation, setReturnPickupLocation] = useState("");
   useEffect(() => {
     const seatCharge = carSeats ? (rearFacingSeat + boosterSeat) * 10 : 0;
     const meetGreetCharge = meetGreetYes ? 25 : 0;
+    const returnTripCharge = returnTrip
+      ? (basePrice! * 2) - (basePrice! * 2 * 0.10) + (returnStopsCount > 0 ? 20 * returnStopsCount : 0)
+      : 0;
 
-    const updatedTotal = totalPrice + seatCharge + meetGreetCharge;
+    const updatedTotal = returnTrip
+      ? returnTripCharge + seatCharge + meetGreetCharge
+      : totalPrice + seatCharge + meetGreetCharge;
+
     onPriceChange(updatedTotal);
-  }, [rearFacingSeat, boosterSeat, carSeats, meetGreetYes, totalPrice, onPriceChange]);
+  }, [
+    rearFacingSeat,
+    boosterSeat,
+    carSeats,
+    meetGreetYes,
+    ReturnMeetGreetYes,
+    returnTrip,
+    returnStopsCount,
+    totalPrice,
+    basePrice,
+    onPriceChange
+  ]);
 
-  // 🔹 Validation + next
-  // 🔹 Validation + next
+
   const handleNext = async () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -163,10 +197,10 @@ const [returnPickupLocation, setReturnPickupLocation] = useState("");
     }
 
     // 🔹 Airport Ride - Airport Pickup must be selected
-if (tripType === "airportRide" && !returnTrip) {
-  if (!airlineCode.trim()) newErrors.airlineCode = "Airline name or code is required";
-  if (!flightNumber.trim()) newErrors.flightNumber = "Flight number is required";
-}
+    if (tripType === "airportRide") {
+      if (!airlineCode.trim()) newErrors.airlineCode = "Airline name or code is required";
+      if (!flightNumber.trim()) newErrors.flightNumber = "Flight number is required";
+    }
 
     if (tripType === "airportRide" && returnTrip) {
       if (!returnAirlineCode.trim()) newErrors.returnAirlineCode = "Airline name or code is required";
@@ -215,6 +249,8 @@ if (tripType === "airportRide" && !returnTrip) {
         flightNumber: flightNumber,
         returnDate: returnTrip && returnDate ? returnDate.toISOString() : undefined,
         returnTime: returnTrip ? returnTime ?? undefined : undefined,
+        returnStop1,
+        returnStop2, returnStop3, returnStop4, returnStopsCount
       };
 
       try {
@@ -228,7 +264,7 @@ if (tripType === "airportRide" && !returnTrip) {
       }
     }
   };
-
+  console.log("finalTotal:", finalTotal);
 
 
   const handleTimeChange = (hour: number, minute: number) => {
@@ -249,6 +285,64 @@ if (tripType === "airportRide" && !returnTrip) {
   };
   const boosterToggleTooltip = () => {
     setboosterTooltipVisible(!boosterTooltipVisible);
+  };
+  const addStop = () => {
+    if (returnStopsCount < 4) {
+      setReturnStopsCount(prev => prev + 1);
+
+    }
+  };
+  const stops = [returnStop1, returnStop2, returnStop3, returnStop4]; // Always 4 items
+
+  const removeStop = (index: number) => {
+    switch (index) {
+      case 0:
+        setReturnStop1(returnStop2);
+        setReturnStop2(returnStop3);
+        setReturnStop3(returnStop4);
+        setReturnStop4("");
+        break;
+      case 1:
+        setReturnStop2(returnStop3);
+        setReturnStop3(returnStop4);
+        setReturnStop4("");
+        break;
+      case 2:
+        setReturnStop3(returnStop4);
+        setReturnStop4("");
+        break;
+      case 3:
+        setReturnStop4("");
+        break;
+    }
+    setReturnStopsCount(prev => prev - 1);
+  };
+
+
+  const updateStop = (index: number, value: string) => {
+    switch (index) {
+      case 0: setReturnStop1(value); break;
+      case 1: setReturnStop2(value); break;
+      case 2: setReturnStop3(value); break;
+      case 3: setReturnStop4(value); break;
+    }
+  };
+  const StopsSection = () => {
+    return (
+      <div className="w-full">
+        <div className="flex  flex-col mb-6 md:mb-0 sm:flex-row sm:items-center sm:justify-between">
+          {returnStopsCount < 5 && (
+            <span
+              onClick={addStop}
+              className="cursor-pointer rounded-sm border text-white border-gray-300 bg-black md:px-2 md:py-0.5 px-4 py-2 text-[10px] font-medium text-gray-600"
+              aria-hidden="true"
+            >
+              + Add Stop
+            </span>
+          )}
+        </div>
+      </div>
+    );
   };
   return (
     <div className="md:p-6">
@@ -579,43 +673,131 @@ if (tripType === "airportRide" && !returnTrip) {
 
       {/* Return Trip Details */}
       {tripType !== "hourlyRate" && showReturnTrip && (
-        <div className="mb-4">
+        <div className="mb-4 mt-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      
-      {/* Return Pickup */}
-      <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">
-          Return Pickup
-        </label>
-        <div className="relative w-full">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-          {isLoaded && (
-            <Autocomplete
-              onLoad={(ref) => (pickupRef.current = ref)}
-              onPlaceChanged={() => {
-                const place = pickupRef.current?.getPlace();
-                if (place?.geometry?.location) {
-                  setReturnPickupLocation(place.formatted_address || "");
-                }
-              }}
-              options={{ componentRestrictions: { country: "us" } }}
-            >
-              <input
-                placeholder="Enter return pickup location"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
-                value={returnPickupLocation}
-                onChange={(e) => setReturnPickupLocation(e.target.value)}
-              />
-            </Autocomplete>
-          )}
-        </div>
-        {errors.returnPickupLocation && (
-          <p className="text-red-500 text-sm mt-1">{errors.returnPickupLocation}</p>
-        )}
-      </div>
+
+            {/* Return Pickup */}
+            <div className="flex flex-col ">
+              <div className="flex flex-row justify-between ">
+                <label className="text-sm font-medium items-center text-gray-600 whitespace-nowrap">
+                  Return Pickup
+                </label>
+
+
+
+                <div >
+                  <StopsSection />
+                </div>
+              </div>
+
+
+              <div className="relative w-full">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                {isLoaded && (
+                  <Autocomplete
+                    onLoad={(ref) => (pickupRef.current = ref)}
+                    onPlaceChanged={() => {
+                      const place = pickupRef.current?.getPlace();
+                      if (place?.geometry?.location) {
+                        setReturnPickupLocation(place.formatted_address || "");
+                      }
+                    }}
+                    options={{ componentRestrictions: { country: "us" } }}
+                  >
+                    <input
+                      placeholder="Enter return pickup location"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
+                      value={returnPickupLocation}
+                      onChange={(e) => setReturnPickupLocation(e.target.value)}
+                    />
+                  </Autocomplete>
+                )}
+              </div>
+              {errors.returnPickupLocation && (
+                <p className="text-red-500 text-sm mt-1">{errors.returnPickupLocation}</p>
+              )}
+            </div>
+            {returnStopsCount > 0 && (
+
+              <div className="space-y-2 md:hidden block md:space-y-3 w-full mt-5">
+                {[0, 1, 2, 3].map((index) => {
+                  if (index >= returnStopsCount) return null; // only show active stops
+
+                  const stopValue =
+                    index === 0 ? returnStop1 :
+                      index === 1 ? returnStop2 :
+                        index === 2 ? returnStop3 :
+                          returnStop4;
+
+                  return (
+                    <div
+                      key={index} // stable key prevents remount
+                      className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
+                    >
+                      <div className="flex items-center gap-2 md:gap-3 w-full">
+                        <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                          {index + 1}
+                        </div>
+
+                        <div className="flex-1 min-w-0 w-full">
+                          {!isLoaded ? (
+                            <div className="text-center text-sm">Loading...</div>
+                          ) : (
+                            <Autocomplete
+                              options={{ componentRestrictions: { country: "us" } }}
+                              onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
+                              onPlaceChanged={() => {
+                                const place = stopsRefs.current[index]?.getPlace();
+                                if (place?.formatted_address) {
+                                  updateStop(index, place.formatted_address);
+                                }
+                              }}
+                            >
+                              <div className="relative w-full">
+                                <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
+                                <input
+                                  onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
+                                  placeholder={`Enter stop ${index + 1} location`}
+                                  className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+                                />
+                              </div>
+                            </Autocomplete>
+
+                          )}
+                        </div>
+
+                        {index === returnStopsCount - 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeStop(index)}
+                            className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
+                          >
+                            <X className="w-3 h-3 md:w-4 md:h-4" />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="mt-2 md:mt-2 flex items-center gap-1 w-full">
+                        {[0, 1, 2, 3].map((i) => (
+                          <div
+                            key={i}
+                            className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-[#008492]" : "bg-gray-200"
+                              }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+
+
+              </div>
+
+            )}
             {/* Return Date */}
-            <div className="flex flex-col">
-              
+            <div className="flex flex-col mb-4">
+
               <label className="text-sm font-medium text-gray-600 mb-1">Return Date</label>
               <Popover open={isReturnCalendarOpen} onOpenChange={setIsReturnCalendarOpen}>
                 <PopoverTrigger asChild>
@@ -646,87 +828,173 @@ if (tripType === "airportRide" && !returnTrip) {
                 <p className="text-red-500 text-sm mt-1">{errors.returnDate}</p>
               )}
             </div>
+            {returnStopsCount > 0 && (
+              <div className="w-full mb-4 md:space-y-3 space-y-2 block">
+                {[0, 1, 2, 3].map((index) => {
+                  if (index >= returnStopsCount) return null;
 
-            {/* Return Time */}
-            <div className="flex flex-col relative">
-              <label className="text-sm font-medium text-gray-600 mb-1">Return Time</label>
-              <Popover open={isReturnTimeOpen} onOpenChange={setIsReturnTimeOpen}>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="relative w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-left"
-                    onClick={() => setIsReturnTimeOpen(true)}
-                  >
-                    <ClockIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    {returnTime || "Select Return Time"}
-                  </button>
-                </PopoverTrigger>
+                  const stopValue =
+                    index === 0 ? returnStop1 :
+                      index === 1 ? returnStop2 :
+                        index === 2 ? returnStop3 :
+                          returnStop4;
 
-                <PopoverContent side="top" align="center" className="w-auto p-0 z-[9999]">
-                  <div className="bg-white rounded-md shadow-lg p-4">
-                    <TimeInput minTime="09:30" onChange={handleTimeChange} />
-                  </div>
-                </PopoverContent>
-              </Popover>
-              {/* Error under time */}
-              {errors.returnTime && (
-                <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
-              )}
-            </div>
-           
-          </div>
-           {tripType === "airportRide" && (
-              <div className="flex mt-5  flex-col">
-                <div className="flex items-center gap-2">
-                  <label className="relative items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={meetGreetYes}
-                      onChange={() => {
-                        setReturnMeetGreetYes(!ReturnMeetGreetYes);
-                        setShowReturnMeetGreet(!showReturnMeetGreet);
-                      }}
-                      className="sr-only"
-                    />
+                  return (
                     <div
-                      className={`w-11 h-6 rounded-full ${showReturnMeetGreet ? "bg-[#008492]" : "bg-gray-300"
-                        } relative transition-colors`}
+                      key={index}
+                      className="relative md:block hidden w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
                     >
-                      <div
-                        className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${showReturnMeetGreet ? "translate-x-5" : "translate-x-0.5"
-                          }`}
-                      ></div>
+                      <div className="flex items-center gap-2 md:gap-3 w-full">
+                        <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                          {index + 1}
+                        </div>
+
+                        <div className="flex-1 w-full min-w-0">
+                          {!isLoaded ? (
+                            <div className="text-center text-sm">Loading...</div>
+                          ) : (
+                            <Autocomplete
+                              options={{ componentRestrictions: { country: "us" } }}
+                              onLoad={(autocomplete) => (stopsRefs.current[index] = autocomplete)}
+                              onPlaceChanged={() => {
+                                const place = stopsRefs.current[index]?.getPlace();
+                                if (place?.formatted_address) {
+                                  updateStop(index, place.formatted_address);
+                                }
+                              }}
+                            >
+                              <div className="relative w-full">
+                                <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
+                                <input
+                                  onChange={(e) => updateStop(index, e.target.value)}
+                                  placeholder={`Enter stop ${index + 1} location`}
+                                  className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+                                />
+                              </div>
+                            </Autocomplete>
+                          )}
+                        </div>
+
+                        {index === returnStopsCount - 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeStop(index)}
+                            className="w-5 h-5 md:w-6 md:h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110 flex-shrink-0"
+                          >
+                            <X className="w-3 h-3 md:w-4 md:h-4" />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="mt-2 md:mt-2 flex items-center gap-1 w-full">
+                        {[0, 1, 2, 3].map((i) => (
+                          <div
+                            key={i}
+                            className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-[#008492]" : "bg-gray-200"
+                              }`}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </label>
-                  <span className="text-base text-gray-700">Meet & Greet</span>
+                  );
+                })}
+              </div>
+            )}
+
+
+
+
+          </div>
+          <div className="flex flex-col relative">
+            <label className="text-sm font-medium text-gray-600 mb-1">Return Time</label>
+            <Popover open={isReturnTimeOpen} onOpenChange={setIsReturnTimeOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="relative w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-left"
+                  onClick={() => setIsReturnTimeOpen(true)}
+                >
+                  <ClockIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  {returnTime || "Select Return Time"}
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent side="top" align="center" className="w-auto p-0 z-[9999]">
+                <div className="bg-white rounded-md shadow-lg p-4">
+                  <TimeInput minTime="09:30" onChange={handleTimeChange} />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Airline Name or Code"
-                      value={returnAirlineCode}
-                      onChange={(e) => setReturnAirlineCode(e.target.value)}
-                      className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
-                    {errors.returnAirlineCode && <p className="text-red-500 text-sm mt-1">{errors.returnAirlineCode}</p>}
+              </PopoverContent>
+            </Popover>
+            {/* Error under time */}
+            {errors.returnTime && (
+              <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
+            )}
+          </div>
+          <div className="flex mt-5 flex-col">
+            {/* Show Meet & Greet for both airportRide & pointToPoint */}
+            {(tripType === "airportRide" || tripType === "pointToPoint") && (
+              <div className="flex items-center gap-2">
+                <label className="relative items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={meetGreetYes}
+                    onChange={() => {
+                      setReturnMeetGreetYes(!ReturnMeetGreetYes);
+                      setShowReturnMeetGreet(!showReturnMeetGreet);
+                    }}
+                    className="sr-only"
+                  />
+                  <div
+                    className={`w-11 h-6 rounded-full ${showReturnMeetGreet ? "bg-[#008492]" : "bg-gray-300"
+                      } relative transition-colors`}
+                  >
+                    <div
+                      className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${showReturnMeetGreet ? "translate-x-5" : "translate-x-0.5"
+                        }`}
+                    ></div>
                   </div>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Flight No #"
-                      value={returnflightNumber}
-                      onChange={(e) => setReturnFlightNumber(e.target.value)}
-                      className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
-                    {errors.returnflightNumber && <p className="text-red-500 text-sm mt-1">{errors.returnflightNumber}</p>}
-                  </div>
+                </label>
+                <span className="text-base text-gray-700">Meet & Greet</span>
+              </div>
+            )}
+
+            {/* Show airline & flight inputs ONLY for airportRide */}
+            {tripType === "airportRide" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Airline Name or Code"
+                    value={returnAirlineCode}
+                    onChange={(e) => setReturnAirlineCode(e.target.value)}
+                    className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                  {errors.returnAirlineCode && (
+                    <p className="text-red-500 text-sm mt-1">{errors.returnAirlineCode}</p>
+                  )}
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Flight No #"
+                    value={returnflightNumber}
+                    onChange={(e) => setReturnFlightNumber(e.target.value)}
+                    className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                  {errors.returnflightNumber && (
+                    <p className="text-red-500 text-sm mt-1">{errors.returnflightNumber}</p>
+                  )}
                 </div>
               </div>
             )}
+          </div>
+
+
         </div>
       )
       }
+
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row sm:justify-end mb-4 gap-4">

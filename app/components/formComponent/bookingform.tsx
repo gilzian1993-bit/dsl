@@ -204,30 +204,7 @@ export default function BookingForm(props: BookingFormProps) {
     }
     setStopsCount(prev => prev - 1);
   };
-useEffect(() => {
-  let count = 0;
 
-  if (defaultValues.stop1) {
-    count++;
-    setStop1(defaultValues.stop1);
-  }
-  if (defaultValues.stop2) {
-    count++;
-    setStop2(defaultValues.stop2);
-  }
-  if (defaultValues.stop3) {
-    count++;
-    setStop3(defaultValues.stop3);
-  }
-  if (defaultValues.stop4) {
-    count++;
-    setStop4(defaultValues.stop4);
-  }
-
-  if (count > 0) {
-    setStopsCount(count);
-  }
-}, [defaultValues, setStopsCount, setStop1, setStop2, setStop3, setStop4]);
 
   const updateStop = (index: number, value: string) => {
     switch (index) {
@@ -472,7 +449,7 @@ useEffect(() => {
                   className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
                 >
                   <div className="flex items-center gap-2 md:gap-3 w-full">
-                    <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                    <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
                       {index + 1}
                     </div>
 
@@ -519,7 +496,7 @@ useEffect(() => {
                     {[0, 1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"
+                        className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-[#008492]" : "bg-gray-200"
                           }`}
                       />
                     ))}
@@ -735,7 +712,7 @@ useEffect(() => {
                 className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
               >
                 <div className="flex items-center gap-2 md:gap-3 w-full">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
                     {index + 1}
                   </div>
 
@@ -782,7 +759,7 @@ useEffect(() => {
                   {[0, 1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-blue-500" : "bg-gray-200"
+                      className={`h-0.5 md:h-1 flex-1 rounded-full transition-all duration-300 ${i <= index ? "bg-[#008492]" : "bg-gray-200"
                         }`}
                     />
                   ))}

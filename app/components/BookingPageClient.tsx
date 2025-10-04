@@ -53,6 +53,11 @@ interface UserInfo {
   flightNumber?: string;
   finalTotal: number;
   returnPickupLocation?: string;
+  returnStop1?: string,
+  returnStop2?: string,
+  returnStop3?: string,
+  returnStop4?: string,
+  returnStopsCount?: string,
 }
 
 export default function BookingPageClient() {
@@ -150,6 +155,11 @@ export default function BookingPageClient() {
           }
           finalTotal={userInfo.finalTotal}
           returnPickupLocation={userInfo.returnPickupLocation || ""}
+          returnStop1={userInfo.returnStop1}
+          returnStop2={userInfo.returnStop2}
+          returnStop3={userInfo.returnStop3}
+          returnStop4={userInfo.returnStop4}
+          returnStopsCount={userInfo.returnStopsCount}
 
 
         />

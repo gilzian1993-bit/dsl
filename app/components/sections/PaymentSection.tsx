@@ -118,6 +118,11 @@ interface PaymentSectionProps {
     boosterSeat: number;
     returnflightNumber?: string;
     returnAirlineCode?: string;
+    returnStop1?: string,
+    returnStop2?: string,
+    returnStop3?: string,
+    returnStop4?: string,
+    returnStopsCount?: string,
     airlineCode?: string;
     flightNumber?: string;
     returnDate?: string;
@@ -165,10 +170,17 @@ export default function PaymentSection({
     selectedVehicle,
     ReturnMeetGreetYes,
     returnPickupLocation,
-   
+    returnStop1,
+    returnStop2, returnStop3, returnStop4, returnStopsCount
+
 }: PaymentSectionProps) {
     useEffect(() => {
         console.log("=== PAYMENT SECTION PROPS ===");
+         console.log("returnStop1:", returnStop1);
+          console.log("returnStop2:", returnStop2);
+           console.log("returnStop3:", returnStop3);
+            console.log("returnStop4:", returnStop4);
+             console.log("returnStopsCount:", returnStopsCount);
         console.log("Step:", step);
         console.log("Selected:", selectedVehicle);
         console.log("Vehicle:", vehicle);
@@ -204,7 +216,7 @@ export default function PaymentSection({
         airlineCode, flightNumber, returnDate, returnTime, totalPrice,
         finalTotal, hours, distance
     ]);
-    console.log("finalTotal:", finalTotal);
+
     const meetGreetCost = meetGreetYes ? 25 : 0;
 
     const getVehiclePrice = (vehicle: VehicleOption): number => {
@@ -216,7 +228,7 @@ export default function PaymentSection({
 
     const basePrice = getVehiclePrice(vehicle);
     // const finalTotal = totalPrice ?? basePrice + meetGreetCost;
-
+    console.log("finalTotal:", finalTotal);
 
 
 
@@ -617,6 +629,12 @@ export default function PaymentSection({
                                 returnDate={returnDate}
                                 returnTime={returnTime}
                                 returnPickupLocation={returnPickupLocation}
+                                returnStop1={returnStop1}
+                                returnStop2={returnStop2}
+                                returnStop3={returnStop3}
+                                returnStop4={returnStop4}
+                                returnStopsCount={returnStopsCount}
+                            
 
                             />
 

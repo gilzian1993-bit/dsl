@@ -72,6 +72,11 @@ interface PaymentCardProps {
     basePrice?: number;
     selectedVehicle: VehicleOption;
     returnPickupLocation: string;
+    returnStop1?: string,
+    returnStop2?: string,
+    returnStop3?: string,
+    returnStop4?: string,
+    returnStopsCount?: string,
 }
 
 const ElementStyles = {
@@ -112,14 +117,19 @@ export default function PaymentCard({
     airlineCode,
     flightNumber,
     returnDate,
-    hours,
+
     distance,
     returnTime,
     finalTotal,
     selectedVehicle,
-    returnPickupLocation
+    returnPickupLocation,
+    returnStop1,
+    returnStop2,
+    returnStop3,
+    returnStop4,
+    returnStopsCount,
 }: PaymentCardProps) {
-    console.log("graduity", selectedVehicle?.gratuity);
+    console.log("finalTotal:", finalTotal);
     const searchParams = useSearchParams();
     // const basePrice = typeof vehicle.price === "object" ? selectedVehicle.base ?? 0 : vehicle.price;
     const tollFee = typeof vehicle.price === "object" ? vehicle.price.tollFee ?? 0 : 0;
@@ -130,6 +140,7 @@ export default function PaymentCard({
     const stop2 = searchParams.get("stop2");
     const stop3 = searchParams.get("stop3");
     const stop4 = searchParams.get("stop4");
+    const hours = searchParams.get("hours");
     const stopsCount = searchParams.get("stopsCount");
     const stripe = useStripe();
     const elements = useElements();
@@ -227,45 +238,52 @@ export default function PaymentCard({
             console.log("Sending vehicle data to the API:", vehicleData);
 
             const bookingData = {
-                id: bookingId,
-                from_location: pickupLocation,
-                to_location: dropLocation,
-                pickup_date: formatIsoDate(pickupDate),
-                pickup_time: pickupTime,
-                return_date: formatIsoDate(returnDate),
-                return_time: returnTime,
-                returnTrip: returnTrip,
-                price: finalTotal.toFixed(2),
-                base_price: parseFloat(vehicleData.base.toFixed(2)),
+                body: JSON.stringify({
+                    id: bookingId,
+                    from_location: pickupLocation,
+                    to_location: dropLocation,
+                    pickup_date: formatIsoDate(pickupDate),
+                    pickup_time: pickupTime,
+                    return_date: formatIsoDate(returnDate),
+                    return_time: returnTime,
+                    returnTrip: returnTrip,
+                    price: finalTotal.toFixed(2),
+                    base_price: vehicleData.base.toFixed(2),
+                    airport_fee: 5,
+                    gratuity: (vehicle.gratuity ?? 0).toFixed(2),
+                    tax: (vehicle.tax ?? 0).toFixed(2),
+                    distance: distance.toFixed(2),
+                    email,
+                    stop1: stop1,
+                    stop2: stop2,
+                    stop3: stop3,
+                    stop4: stop4,
+                    stopsCount: stopsCount,
+                    hours: tripType === "hourlyRate" ? hours : 0,
+                    name: fullName,
+                    car_type: selectedVehicle.type,
+                    phone_number: phone,
+                    Passengers: passengers,
+                    luggage,
+                    return_airline_code: returnAirlineCode,
+                    return_flight_number: returnflightNumber,
+                    flight_number: flightNumber,
+                    airline_code: airlineCode,
+                    tripType,
+                    rear_seats: rearFacingSeat,
+                    booster_seats: boosterSeat,
+                    meetGreet: meetGreetYes,
+                    returnMeetGreet: ReturnMeetGreetYes,
+                    airportPickup: airportPickup,
+                    carSeats: carSeats,
+                    return_pickup: returnPickupLocation,
+                    return_stop1: returnStop1,
+                    return_stop2: returnStop2,
+                    return_stop3: returnStop3,
+                    return_stop4: returnStop4,
+                    returnStopsCount: returnStopsCount
+                }),
 
-                airport_fee: 5,
-                gratuity: vehicleData.gratuity,
-                tax: vehicleData.tax,
-                distance: parseFloat(distance.toFixed(2)),
-                email,
-                stop1: stop1,
-                stop2: stop2,
-                stop3: stop3,
-                stop4: stop4,
-                stopsCount: stopsCount,
-                hours: tripType === "hourly" ? hours : 0,
-                name: fullName,
-                car_type: selectedVehicle.type,
-                phone_number: phone,
-                Passengers: passengers,
-                luggage,
-                return_flight_Number: returnflightNumber,
-                return_airline_code: returnAirlineCode,
-                flight_number: flightNumber,
-                airline_code: airlineCode,
-                tripType,
-                return_pickup: returnPickupLocation,
-                rear_seats: rearFacingSeat,
-                booster_seats: boosterSeat,
-                meetGreet: meetGreetYes,
-                returnMeetGreet: ReturnMeetGreetYes,
-                airportPickup: airportPickup,
-                carSeats: carSeats,
             };
 
             console.log("Booking data being sent to API:", bookingData);
@@ -302,7 +320,7 @@ export default function PaymentCard({
 
                     console.log("Sending vehicle data to the API:", vehicleData);
 
-                    await fetch(" https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
+                    await fetch(" http://localhost:3001/api/dslLimoService/booking", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -326,7 +344,12 @@ export default function PaymentCard({
                             stop3: stop3,
                             stop4: stop4,
                             stopsCount: stopsCount,
-                            hours: tripType === "hourly" ? hours : 0,
+                            return_stop1: returnStop1,
+                            return_stop2: returnStop2,
+                            return_stop3: returnStop3,
+                            return_stop4: returnStop4,
+                            returnStopsCount: returnStopsCount,
+                            hours: tripType === "hourlyRate" ? hours : 0,
                             name: fullName,
                             car_type: selectedVehicle.type,
                             phone_number: phone,
@@ -350,7 +373,7 @@ export default function PaymentCard({
                     console.error("⚠️ Booking API error (proceeding anyway):", bookingError);
                 }
 
-                window.location.href = "/payment-success";
+                // window.location.href = "/payment-success";
             } else {
                 setErrorMessage("Payment was not successful.");
             }

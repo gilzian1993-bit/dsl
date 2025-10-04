@@ -81,6 +81,7 @@ interface VehicleOption {
     vehicleTitle?: string;
     basePrice?: number;
     total?: number;
+    base?: number;
 }
 
 interface Props {
@@ -223,11 +224,13 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     console.log("Selected Vehicle:", selectedVehicle);
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const [showModal, setShowModal] = useState(false);
+    const [rearFacingSeat, setRearFacingSeat] = useState(0);
+      const [boosterSeat, setBoosterSeat] = useState(0);
     const [showTripDetailsMobile, setShowTripDetailsMobile] = useState(false);
     const [meetGreetYes, setMeetGreetYes] = useState(false);
     const [ReturnMeetGreetYes, setReturnMeetGreetYes] = useState(false);
     const [returnTripYes, setReturnTripYes] = useState(false);
-
+    const [returnStopsCount, setReturnStopsCount] = useState(0);
     const meetGreetCost = (meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0);
     const returnDiscount = returnTripYes ? 0.10 : 0;
     const getVehiclePrice = (vehicle: VehicleOption): number => {
@@ -239,10 +242,11 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
     const basePrice = getVehiclePrice(vehicle);
 
-    const totalPriceBeforeDiscount = basePrice + meetGreetCost;
+    const totalPriceBeforeDiscount = tripType !== "hourlyRate" ? basePrice + meetGreetCost : basePrice;
 
-    // Apply return trip discount if applicable (7% of base price)
-    const discountAmount = returnDiscount * basePrice;
+
+    const discountAmount =
+        returnDiscount * basePrice
     const totalPrice = totalPriceBeforeDiscount - discountAmount;
 
     // Update the final total price
@@ -250,11 +254,21 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
 
     const total = selectedVehicle?.total ?? getVehiclePrice(selectedVehicle);
-    const calculatedPrice = returnTripYes
-        ? (total * 2 - (total * (10 / 100))+  (ReturnMeetGreetYes ? 25 : 0))     // total*2 minus 10%
-        : finalTotal;
+    const base = Number(selectedVehicle?.base ?? 0);
+    const seatCharge = (rearFacingSeat + boosterSeat) * 10;
+    const calculatedPrice =
+
+        returnTripYes
+            ? ((base * 2) - (base * 2 * 0.10)
+
+                + ((meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0))
+                + (returnStopsCount > 0 ? 20 * returnStopsCount : 0))
+                 + seatCharge
+            : finalTotal;
 
 
+
+    console.log("total:", basePrice);
     return (
         <>
             {/* Header */}
@@ -682,6 +696,12 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                         finalTotal: calculatedPrice // This is the updated total from state
                                     });
                                 }}
+                                setReturnStopsCount={setReturnStopsCount}
+                                boosterSeat={boosterSeat}
+                                setBoosterSeat={setBoosterSeat}
+                                rearFacingSeat={rearFacingSeat}
+                                setRearFacingSeat={setRearFacingSeat}
+                                returnStopsCount={returnStopsCount}
                                 pickupDate={pickupDate}
                                 totalPrice={totalPrice}
                                 tripType={tripType}
