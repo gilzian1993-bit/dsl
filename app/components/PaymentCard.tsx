@@ -320,7 +320,7 @@ export default function PaymentCard({
 
                     console.log("Sending vehicle data to the API:", vehicleData);
 
-                    await fetch(" http://localhost:3001/api/dslLimoService/booking", {
+                    await fetch("https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
