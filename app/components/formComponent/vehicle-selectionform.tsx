@@ -433,7 +433,7 @@ export default function VehicleSelection({
 
     return (
         <>
-            <div className="bg-[#DDDDDD] px-6 py-4">
+            <div className="bg-[#DDDDDD] md:block hidden px-6 py-4">
                 <div className="max-w-5xl mx-auto flex items-center justify-between">
                     <button onClick={handleBack} className="flex items-center font-semibold text-gray-700 hover:text-black">
                         <ArrowLeft className="h-4 w-4" />
