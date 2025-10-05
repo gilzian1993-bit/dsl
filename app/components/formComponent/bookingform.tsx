@@ -157,6 +157,42 @@ export default function BookingForm(props: BookingFormProps) {
       "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
     libraries,
   });
+// ✅ Initialize editable fields from defaultValues only once
+useEffect(() => {
+  if (defaultValues.pickupLocation && !pickupLocation)
+    setPickupLocation(defaultValues.pickupLocation);
+
+  if (defaultValues.dropLocation && !dropLocation)
+    setDropLocation(defaultValues.dropLocation);
+
+  if (defaultValues.pickupDate && !pickupDate)
+    setPickupDate(new Date(defaultValues.pickupDate));
+
+  if (defaultValues.pickupTime && !selectedTime)
+    setSelectedTime(defaultValues.pickupTime);
+
+  if (defaultValues.hours && !hours)
+    setHours(parseInt(defaultValues.hours));
+
+  // ✅ Restore stops
+  if (defaultValues.stop1) setStop1(defaultValues.stop1);
+  if (defaultValues.stop2) setStop2(defaultValues.stop2);
+  if (defaultValues.stop3) setStop3(defaultValues.stop3);
+  if (defaultValues.stop4) setStop4(defaultValues.stop4);
+
+  // ✅ Automatically show stop fields based on non-empty stop values
+  const activeStops = [
+    defaultValues.stop1,
+    defaultValues.stop2,
+    defaultValues.stop3,
+    defaultValues.stop4,
+  ].filter((s) => s && s.trim() !== "").length;
+
+  if (activeStops > 0) {
+    setStopsCount(activeStops);
+  }
+}, []);
+
 
   const handleTimeChange = (hour: number, minute: number) => {
     const period = hour >= 12 ? "PM" : "AM";
@@ -374,12 +410,12 @@ export default function BookingForm(props: BookingFormProps) {
                           key={airport.name}
                           className="cursor-pointer px-3 py-2 hover:bg-gray-100"
                           onClick={() => {
-                            setPickupLocation(airport.name || defaultValues.pickupLocation); // Set the selected airport name
+                            setPickupLocation(airport.name ); // Set the selected airport name
                             setPickupCoords(airport.coords); // Set the coordinates for the selected airport
                             setOpen(false); // Close dropdown
                           }}
                         >
-                          {airport.name || defaultValues.pickupLocation}
+                          {airport.name}
                         </li>
                       ))}
                     </ul>
@@ -405,7 +441,7 @@ export default function BookingForm(props: BookingFormProps) {
                   <input
                     placeholder="Enter pickup location"
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
-                    value={pickupLocation || defaultValues.pickupLocation}
+                    value={pickupLocation}
                     onChange={(e) => setPickupLocation(e.target.value)}
                   />
                 </Autocomplete>
@@ -470,6 +506,7 @@ export default function BookingForm(props: BookingFormProps) {
                           <div className="relative w-full">
                             <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
                             <input
+                            value={stopValue}
                               onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
                               placeholder={`Enter stop ${index + 1} location`}
                               className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
@@ -533,7 +570,7 @@ export default function BookingForm(props: BookingFormProps) {
                     className={`w-full text-left px-3 py-2 rounded-md text-sm hover:bg-gray-100 ${hours === hour ? "bg-gray-200 font-medium" : ""
                       }`}
                   >
-                    {hour || defaultValues.hours} Hour
+                    {hour } Hour
                   </button>
                 ))}
               </PopoverContent>
@@ -604,7 +641,7 @@ export default function BookingForm(props: BookingFormProps) {
                   <input
                     placeholder="Enter dropoff location"
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm outline-none text-base bg-white"
-                    value={dropLocation || defaultValues.dropLocation}
+                    value={dropLocation}
                     onChange={(e) => setDropLocation(e.target.value)}
                   />
                 </Autocomplete>
@@ -733,6 +770,7 @@ export default function BookingForm(props: BookingFormProps) {
                         <div className="relative w-full">
                           <SlLocationPin className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 md:w-4 md:h-4" />
                           <input
+                          value={stopValue}
                             onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
                             placeholder={`Enter stop ${index + 1} location`}
                             className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"

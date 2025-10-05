@@ -255,11 +255,11 @@ export default function VehicleSelection({
                 }
             } else if (pickupLocation === "John F. Kennedy International Airport (JFK)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
+                    basePrice = distance <= 15 ? 80 : 80 + (distance - 15) * 2.70;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.25;
+                    basePrice = distance <= 15 ? 95 : 95 + (distance - 15) * 3;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 15 ? 125 : 125 + (distance - 15) * 3.50;
+                    basePrice = distance <= 15 ? 105 : 105 + (distance - 15) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
                 }
@@ -286,14 +286,14 @@ export default function VehicleSelection({
                     basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
                 }
             }
-            // Adjust pricing for other locations...
+            
             else if (pickupLocation === "Newark Liberty International Airport (EWR)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
+                    basePrice = distance <= 15 ? 80 : 80 + (distance - 15) * 2.70;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.40;
+                    basePrice = distance <= 15 ? 95 : 95 + (distance - 15) * 3;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 15 ? 130 : 130 + (distance - 15) * 3.75;
+                    basePrice = distance <= 15 ? 105 : 105 + (distance - 15) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 260 : 260 + (distance - 15) * 7;
                 }
@@ -306,21 +306,21 @@ export default function VehicleSelection({
                             ? 85
                             : distance <= 20
                                 ? 100
-                                : 100 + (distance - 20) * 3;
+                                : 100 + (distance - 20) * 2.50;
                         break;
                     case "MID SUV":
                         basePrice = distance <= 10
                             ? 95
                             : distance <= 20
                                 ? 110
-                                : 110 + (distance - 20) * 3.25;
+                                : 110 + (distance - 20) * 2.70;
                         break;
                     case "SUV":
                         basePrice = distance <= 10
                             ? 110
                             : distance <= 20
                                 ? 125
-                                : 125 + (distance - 20) * 3.75;
+                                : 125 + (distance - 20) * 3.50;
                         break;
                     case "SPRINTER":
                         basePrice = distance <= 17
@@ -398,36 +398,50 @@ export default function VehicleSelection({
     };
 
 
-    const handleBack = () => {
-        const pickupLocation = searchParams.get("pickupLocation") || "";
-        const dropLocation = searchParams.get("dropLocation") || "";
-        const pickupDate = searchParams.get("pickupDate") || "";
-        const pickupTime = searchParams.get("pickupTime") || "";
-        const hours = searchParams.get("hours") || "0";
-        const pickupLat = Number(searchParams.get("pickupLat") || "0");
-        const pickupLng = Number(searchParams.get("pickupLng") || "0");
-        const dropLat = Number(searchParams.get("dropLat") || "0");
-        const dropLng = Number(searchParams.get("dropLng") || "0");
-        const stopsCount = searchParams.get("stopsCount") || "0";
+  const handleBack = () => {
+  const pickupLocation = searchParams.get("pickupLocation") || "";
+  const dropLocation = searchParams.get("dropLocation") || "";
+  const pickupDate = searchParams.get("pickupDate") || "";
+  const pickupTime = searchParams.get("pickupTime") || "";
+  const hours = searchParams.get("hours") || "0";
+  const pickupLat = Number(searchParams.get("pickupLat") || "0");
+  const pickupLng = Number(searchParams.get("pickupLng") || "0");
+  const dropLat = Number(searchParams.get("dropLat") || "0");
+  const dropLng = Number(searchParams.get("dropLng") || "0");
 
-        const formattedPickupDate = pickupDate ? new Date(pickupDate).toISOString() : "";
+  // ✅ stops
+  const stop1 = searchParams.get("stop1") || "";
+  const stop2 = searchParams.get("stop2") || "";
+  const stop3 = searchParams.get("stop3") || "";
+  const stop4 = searchParams.get("stop4") || "";
 
-        const params = new URLSearchParams({
-            pickupLocation,
-            dropLocation,
-            pickupDate: formattedPickupDate,
-            pickupTime,
-            hours,
-            pickupLat: pickupLat.toString(),   // ✅ convert number to string
-            pickupLng: pickupLng.toString(),   // ✅
-            dropLat: dropLat.toString(),       // ✅
-            dropLng: dropLng.toString(),       // ✅
-            stopsCount,
-        });
+  const stopsCount =
+    [stop1, stop2, stop3, stop4].filter((s) => s && s.trim() !== "").length.toString();
 
-        // ✅ Attach query params after `?`
-        router.push(`/?${params.toString()}`);
-    };
+  const formattedPickupDate = pickupDate
+    ? new Date(pickupDate).toISOString()
+    : "";
+
+  const params = new URLSearchParams({
+    pickupLocation,
+    dropLocation,
+    pickupDate: formattedPickupDate,
+    pickupTime,
+    hours,
+    pickupLat: pickupLat.toString(),
+    pickupLng: pickupLng.toString(),
+    dropLat: dropLat.toString(),
+    dropLng: dropLng.toString(),
+    stop1,
+    stop2,
+    stop3,
+    stop4,
+    stopsCount,
+  });
+
+  router.push(`/?${params.toString()}`);
+};
+
 
 
 

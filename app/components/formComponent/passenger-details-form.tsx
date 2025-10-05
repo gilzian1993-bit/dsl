@@ -979,10 +979,11 @@ export default function PassengerDetailsForm({
                   <input
                     type="checkbox"
                     checked={returnCarSeats}
-                    onChange={() => {
-                      setReturnCarSeats(!setCarSeats);
-                      setReturnShowCarSeats(!showReturnCarSeats);
-                    }}
+                  onChange={() => {
+  setReturnCarSeats(!returnCarSeats);
+  setReturnShowCarSeats(!showReturnCarSeats);
+}}
+
                     className="sr-only"
                   />
                   <div
@@ -1017,7 +1018,7 @@ export default function PassengerDetailsForm({
 
           </div>
 
-          {showReturnCarSeats && (
+          {!showReturnCarSeats && (
             <div className="mb-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
