@@ -245,21 +245,21 @@ export default function VehicleSelection({
             // Adjust pricing for LaGuardia Airport (LGA) and John F. Kennedy International Airport (JFK)
             if (pickupLocation === "LaGuardia Airport (LGA)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 10 ? 85 : 85 + (distance - 10) * 3;
+                    basePrice = distance <= 10 ? 80 : 80 + (distance - 10) * 3;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 10 ? 95 : 95 + (distance - 10) * 3.25;
+                    basePrice = distance <= 10 ? 90 : 90 + (distance - 10) * 3.25;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 10 ? 105 : 105 + (distance - 10) * 3.50;
+                    basePrice = distance <= 10 ? 100 : 100 + (distance - 10) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 210 : 210 + (distance - 15) * 7;
                 }
             } else if (pickupLocation === "John F. Kennedy International Airport (JFK)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 15 ? 80 : 80 + (distance - 15) * 2.70;
+                    basePrice = distance <= 15 ? 85 : 85 + (distance - 15) * 2.70;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 15 ? 95 : 95 + (distance - 15) * 3;
+                    basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 15 ? 105 : 105 + (distance - 15) * 3.50;
+                    basePrice = distance <= 15 ?  110 :  110 + (distance - 15) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
                 }
@@ -289,11 +289,11 @@ export default function VehicleSelection({
             
             else if (pickupLocation === "Newark Liberty International Airport (EWR)") {
                 if (vehicle.type === "SEDAN") {
-                    basePrice = distance <= 15 ? 80 : 80 + (distance - 15) * 2.70;
+                    basePrice = distance <= 15 ? 85 : 85 + (distance - 15) * 2.70;
                 } else if (vehicle.type === "MID SUV") {
-                    basePrice = distance <= 15 ? 95 : 95 + (distance - 15) * 3;
+                    basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 15 ? 105 : 105 + (distance - 15) * 3.50;
+                    basePrice = distance <= 15 ?  110 :  110 + (distance - 15) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 260 : 260 + (distance - 15) * 7;
                 }

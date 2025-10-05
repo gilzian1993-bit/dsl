@@ -179,7 +179,7 @@ export default function PaymentCard({
         const day = String(d.getDate()).padStart(2, "0");
         return `${month}-${day}-${year}`;
     }
-
+console.log("amount",amount)
     useEffect(() => {
         (async () => {
             try {
@@ -187,7 +187,7 @@ export default function PaymentCard({
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        amount,
+                        finalTotal: Math.round(finalTotal * 100),
                         vehicle,
                         pickupLocation,
                         dropLocation,
@@ -210,7 +210,7 @@ export default function PaymentCard({
                 setErrorMessage(err instanceof Error ? err.message : "Unknown error");
             }
         })();
-    }, [amount, vehicle, pickupLocation, dropLocation, pickupDate, pickupTime, meetGreetYes]);
+    }, [finalTotal, vehicle, pickupLocation, dropLocation, pickupDate, pickupTime, meetGreetYes]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

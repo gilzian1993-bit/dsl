@@ -377,7 +377,7 @@ export default function PassengerDetailsForm({
             onChange={(e) => setFullName(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-[#A7A7AA] rounded-md bg-[#F3F3F3] text-base text-[#515151] focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
-          {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+          {errors.fullName && <p className="text-red-500 text-base mt-1">{errors.fullName}</p>}
         </div>
         <div className="relative">
           <img
@@ -392,7 +392,7 @@ export default function PassengerDetailsForm({
             onChange={(e) => setEmail(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-[#A7A7AA] rounded-md bg-[#F3F3F3] text-base text-[#515151] focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+          {errors.email && <p className="text-red-500 text-base mt-1">{errors.email}</p>}
         </div>
       </div>
 
@@ -411,7 +411,7 @@ export default function PassengerDetailsForm({
             className="flex-1 px-4 py-3 border border-[#A7A7AA] rounded-r-md bg-[#F3F3F3] text-base text-[#515151] focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
-        {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+        {errors.phone && <p className="text-red-500 text-base mt-1">{errors.phone}</p>}
       </div>
 
       {/* Passengers */}
@@ -479,7 +479,7 @@ export default function PassengerDetailsForm({
               onChange={(e) => setAirlineCode(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            {errors.airlineCode && <p className="text-red-500 text-sm mt-1">{errors.airlineCode}</p>}
+            {errors.airlineCode && <p className="text-red-500 text-base mt-1">{errors.airlineCode}</p>}
           </div>
           <div className="relative">
             <input
@@ -489,7 +489,7 @@ export default function PassengerDetailsForm({
               onChange={(e) => setFlightNumber(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            {errors.flightNumber && <p className="text-red-500 text-sm mt-1">{errors.flightNumber}</p>}
+            {errors.flightNumber && <p className="text-red-500 text-base mt-1">{errors.flightNumber}</p>}
           </div>
         </div>
       )}
@@ -563,13 +563,13 @@ export default function PassengerDetailsForm({
           <div className="relative group">
             <Info className="w-4 h-4 text-gray-400 cursor-pointer" />
             {/* Tooltip card */}
-            <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+            <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
               $10 will be added in total price for per rear and booster seats.
             </div>
           </div>
         </div>
         {errors.carSeats && (
-          <p className="text-red-500 text-sm mt-1">{errors.carSeats}</p>
+          <p className="text-red-500 text-base mt-1">{errors.carSeats}</p>
         )}
 
         {/* Return Trip Toggle */}
@@ -633,7 +633,7 @@ export default function PassengerDetailsForm({
                   />
                   {/* Tooltip card */}
                   {tooltipVisible && (
-                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg z-50">
                       $10 will be added in total price for per rear and booster seats.
                     </div>
                   )}
@@ -661,7 +661,7 @@ export default function PassengerDetailsForm({
                   />
                   {/* Tooltip card */}
                   {boosterTooltipVisible && (
-                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg z-50">
                       $10 will be added in total price for per rear and booster seats.
                     </div>
                   )}
@@ -693,7 +693,7 @@ export default function PassengerDetailsForm({
             {/* Return Pickup */}
             <div className="flex flex-col ">
               <div className="flex flex-row justify-between ">
-                <label className="text-sm font-medium items-center text-gray-600 whitespace-nowrap">
+                <label className="text-base font-medium items-center text-gray-600 whitespace-nowrap">
                   Return Pickup
                 </label>
 
@@ -728,7 +728,7 @@ export default function PassengerDetailsForm({
                 )}
               </div>
               {errors.returnPickupLocation && (
-                <p className="text-red-500 text-sm mt-1">{errors.returnPickupLocation}</p>
+                <p className="text-red-500 text-base mt-1">{errors.returnPickupLocation}</p>
               )}
             </div>
             {returnStopsCount > 0 && (
@@ -749,13 +749,13 @@ export default function PassengerDetailsForm({
                       className="relative w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
                     >
                       <div className="flex items-center gap-2 md:gap-3 w-full">
-                        <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                        <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-base shadow-md flex-shrink-0">
                           {index + 1}
                         </div>
 
                         <div className="flex-1 min-w-0 w-full">
                           {!isLoaded ? (
-                            <div className="text-center text-sm">Loading...</div>
+                            <div className="text-center text-base">Loading...</div>
                           ) : (
                             <Autocomplete
                               options={{ componentRestrictions: { country: "us" } }}
@@ -772,7 +772,7 @@ export default function PassengerDetailsForm({
                                 <input
                                   onChange={(e) => updateStop(index, e.target.value)} // optional manual typing
                                   placeholder={`Enter stop ${index + 1} location`}
-                                  className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+                                  className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-base bg-white"
                                 />
                               </div>
                             </Autocomplete>
@@ -812,7 +812,7 @@ export default function PassengerDetailsForm({
             {/* Return Date */}
             <div className="flex flex-col mb-4">
 
-              <label className="text-sm font-medium text-gray-600 mb-1">Return Date</label>
+              <label className="text-base font-medium text-gray-600 mb-1">Return Date</label>
               <Popover open={isReturnCalendarOpen} onOpenChange={setIsReturnCalendarOpen}>
                 <PopoverTrigger asChild>
                   <button
@@ -839,7 +839,7 @@ export default function PassengerDetailsForm({
               </Popover>
               {/* Error under date */}
               {errors.returnDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.returnDate}</p>
+                <p className="text-red-500 text-base mt-1">{errors.returnDate}</p>
               )}
             </div>
             {returnStopsCount > 0 && (
@@ -859,13 +859,13 @@ export default function PassengerDetailsForm({
                       className="relative md:block hidden w-full p-2 md:p-3 rounded-xl border-2 bg-blue-50 transition-all duration-300 hover:shadow-md"
                     >
                       <div className="flex items-center gap-2 md:gap-3 w-full">
-                        <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-sm shadow-md flex-shrink-0">
+                        <div className="w-5 h-5 md:w-6 md:h-6 bg-[#008492] text-white rounded-full flex items-center justify-center font-bold text-xs md:text-base shadow-md flex-shrink-0">
                           {index + 1}
                         </div>
 
                         <div className="flex-1 w-full min-w-0">
                           {!isLoaded ? (
-                            <div className="text-center text-sm">Loading...</div>
+                            <div className="text-center text-base">Loading...</div>
                           ) : (
                             <Autocomplete
                               options={{ componentRestrictions: { country: "us" } }}
@@ -882,7 +882,7 @@ export default function PassengerDetailsForm({
                                 <input
                                   onChange={(e) => updateStop(index, e.target.value)}
                                   placeholder={`Enter stop ${index + 1} location`}
-                                  className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-sm bg-white"
+                                  className="w-full pl-7 md:pl-8 pr-2 md:pr-3 py-1.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] focus:border-transparent text-black text-xs md:text-base bg-white"
                                 />
                               </div>
                             </Autocomplete>
@@ -921,7 +921,7 @@ export default function PassengerDetailsForm({
 
           </div>
           <div className="flex flex-col relative">
-            <label className="text-sm font-medium text-gray-600 mb-1">Return Time</label>
+            <label className="text-base font-medium text-gray-600 mb-1">Return Time</label>
             <Popover open={isReturnTimeOpen} onOpenChange={setIsReturnTimeOpen}>
               <PopoverTrigger asChild>
                 <button
@@ -942,7 +942,7 @@ export default function PassengerDetailsForm({
             </Popover>
             {/* Error under time */}
             {errors.returnTime && (
-              <p className="text-red-500 text-sm mt-1">{errors.returnTime}</p>
+              <p className="text-red-500 text-base mt-1">{errors.returnTime}</p>
             )}
           </div>
           <div className="flex items-center mb-6 mt-5 gap-5">
@@ -1002,13 +1002,13 @@ export default function PassengerDetailsForm({
                 <div className="relative group">
                   <Info className="w-4 h-4 text-gray-400 cursor-pointer" />
                   {/* Tooltip card */}
-                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
                     $10 will be added in total price for per rear and booster seats.
                   </div>
                 </div>
               </div>
               {errors.carSeats && (
-                <p className="text-red-500 text-sm mt-1">{errors.carSeats}</p>
+                <p className="text-red-500 text-base mt-1">{errors.carSeats}</p>
               )}
 
 
@@ -1018,7 +1018,7 @@ export default function PassengerDetailsForm({
 
           </div>
 
-          {!showReturnCarSeats && (
+          {showReturnCarSeats && (
             <div className="mb-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
@@ -1030,7 +1030,7 @@ export default function PassengerDetailsForm({
                       />
                       {/* Tooltip card */}
                       {tooltipVisible && (
-                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg z-50">
                           $10 will be added in total price for per rear and booster seats.
                         </div>
                       )}
@@ -1058,7 +1058,7 @@ export default function PassengerDetailsForm({
                       />
                       {/* Tooltip card */}
                       {boosterTooltipVisible && (
-                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-sm p-3 rounded-lg shadow-lg z-50">
+                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg z-50">
                           $10 will be added in total price for per rear and booster seats.
                         </div>
                       )}
@@ -1092,7 +1092,7 @@ export default function PassengerDetailsForm({
                   className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
                 {errors.returnAirlineCode && (
-                  <p className="text-red-500 text-sm mt-1">{errors.returnAirlineCode}</p>
+                  <p className="text-red-500 text-base mt-1">{errors.returnAirlineCode}</p>
                 )}
               </div>
               <div className="relative">
@@ -1104,7 +1104,7 @@ export default function PassengerDetailsForm({
                   className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
                 {errors.returnflightNumber && (
-                  <p className="text-red-500 text-sm mt-1">{errors.returnflightNumber}</p>
+                  <p className="text-red-500 text-base mt-1">{errors.returnflightNumber}</p>
                 )}
               </div>
             </div>
