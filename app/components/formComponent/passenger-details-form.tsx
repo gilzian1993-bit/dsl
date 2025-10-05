@@ -1007,8 +1007,8 @@ export default function PassengerDetailsForm({
                   </div>
                 </div>
               </div>
-              {errors.carSeats && (
-                <p className="text-red-500 text-base mt-1">{errors.carSeats}</p>
+              {errors.returnCarSeats && (
+                <p className="text-red-500 text-base mt-1">{errors.returnCarSeats}</p>
               )}
 
 
@@ -1018,7 +1018,7 @@ export default function PassengerDetailsForm({
 
           </div>
 
-          {showCarSeats && (
+          {showReturnCarSeats && (
             <div className="mb-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
