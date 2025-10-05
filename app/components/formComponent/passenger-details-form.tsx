@@ -1018,7 +1018,7 @@ export default function PassengerDetailsForm({
 
           </div>
 
-          {showReturnCarSeats && (
+          {showCarSeats && (
             <div className="mb-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
