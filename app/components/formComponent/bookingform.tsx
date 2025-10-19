@@ -163,20 +163,17 @@ useEffect(() => {
   const savedData = localStorage.getItem("bookingData");
   let isReload = false;
 
-  // Detect if this navigation is a real page reload
   try {
     const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
-    isReload = nav?.type === "reload" || (performance as any)?.navigation?.type === 1;
+    const legacyPerf = (performance as Performance & { navigation?: { type?: number } }).navigation;
+    isReload = nav?.type === "reload" || legacyPerf?.type === 1;
   } catch {
-    // Fallback for browsers that don’t support Navigation Timing API
     isReload = false;
   }
 
   if (savedData && !isReload) {
-    // ✅ Case 1: Coming back or soft navigation → restore data from localStorage
     try {
       const data = JSON.parse(savedData);
-
       if (data.pickupLocation) setPickupLocation(data.pickupLocation);
       if (data.dropLocation) setDropLocation(data.dropLocation);
       if (data.pickupDate) setPickupDate(new Date(data.pickupDate));
@@ -192,14 +189,13 @@ useEffect(() => {
         (s) => s && s.trim() !== ""
       ).length;
       if (activeStops > 0) setStopsCount(activeStops);
-
-      return; // ⛔ Skip defaultValues logic
+      return;
     } catch (e) {
       console.warn("Invalid bookingData format in localStorage", e);
     }
   }
 
-  // ✅ Case 2: Hard refresh → show defaultValues and then clear localStorage
+  // On hard refresh → show defaultValues and then clear
   if (defaultValues.pickupLocation) setPickupLocation(defaultValues.pickupLocation);
   if (defaultValues.dropLocation) setDropLocation(defaultValues.dropLocation);
   if (defaultValues.pickupDate) setPickupDate(new Date(defaultValues.pickupDate));
@@ -219,11 +215,11 @@ useEffect(() => {
   ].filter((s) => s && s.trim() !== "").length;
   if (activeStops > 0) setStopsCount(activeStops);
 
-  // 🧹 Delay clearing so defaults are visible for one render
   setTimeout(() => {
     localStorage.removeItem("bookingData");
   }, 500);
 }, []);
+
 
 
   const handleTimeChange = (hour: number, minute: number) => {
