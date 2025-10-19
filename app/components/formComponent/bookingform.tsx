@@ -157,14 +157,73 @@ export default function BookingForm(props: BookingFormProps) {
       "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
     libraries,
   });
-
 useEffect(() => {
-  
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("bookingData");
-  }
-}, []);
+  if (typeof window === "undefined") return;
 
+  const savedData = localStorage.getItem("bookingData");
+  let isReload = false;
+
+  // Detect if this navigation is a real page reload
+  try {
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    isReload = nav?.type === "reload" || (performance as any)?.navigation?.type === 1;
+  } catch {
+    // Fallback for browsers that don’t support Navigation Timing API
+    isReload = false;
+  }
+
+  if (savedData && !isReload) {
+    // ✅ Case 1: Coming back or soft navigation → restore data from localStorage
+    try {
+      const data = JSON.parse(savedData);
+
+      if (data.pickupLocation) setPickupLocation(data.pickupLocation);
+      if (data.dropLocation) setDropLocation(data.dropLocation);
+      if (data.pickupDate) setPickupDate(new Date(data.pickupDate));
+      if (data.pickupTime) setSelectedTime(data.pickupTime);
+      if (data.hours) setHours(parseInt(data.hours));
+
+      if (data.stop1) setStop1(data.stop1);
+      if (data.stop2) setStop2(data.stop2);
+      if (data.stop3) setStop3(data.stop3);
+      if (data.stop4) setStop4(data.stop4);
+
+      const activeStops = [data.stop1, data.stop2, data.stop3, data.stop4].filter(
+        (s) => s && s.trim() !== ""
+      ).length;
+      if (activeStops > 0) setStopsCount(activeStops);
+
+      return; // ⛔ Skip defaultValues logic
+    } catch (e) {
+      console.warn("Invalid bookingData format in localStorage", e);
+    }
+  }
+
+  // ✅ Case 2: Hard refresh → show defaultValues and then clear localStorage
+  if (defaultValues.pickupLocation) setPickupLocation(defaultValues.pickupLocation);
+  if (defaultValues.dropLocation) setDropLocation(defaultValues.dropLocation);
+  if (defaultValues.pickupDate) setPickupDate(new Date(defaultValues.pickupDate));
+  if (defaultValues.pickupTime) setSelectedTime(defaultValues.pickupTime);
+  if (defaultValues.hours) setHours(parseInt(defaultValues.hours));
+
+  if (defaultValues.stop1) setStop1(defaultValues.stop1);
+  if (defaultValues.stop2) setStop2(defaultValues.stop2);
+  if (defaultValues.stop3) setStop3(defaultValues.stop3);
+  if (defaultValues.stop4) setStop4(defaultValues.stop4);
+
+  const activeStops = [
+    defaultValues.stop1,
+    defaultValues.stop2,
+    defaultValues.stop3,
+    defaultValues.stop4,
+  ].filter((s) => s && s.trim() !== "").length;
+  if (activeStops > 0) setStopsCount(activeStops);
+
+  // 🧹 Delay clearing so defaults are visible for one render
+  setTimeout(() => {
+    localStorage.removeItem("bookingData");
+  }, 500);
+}, []);
 
 
   const handleTimeChange = (hour: number, minute: number) => {
