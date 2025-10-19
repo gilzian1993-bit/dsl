@@ -257,25 +257,33 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
 
     const total = selectedVehicle?.total ?? getVehiclePrice(selectedVehicle);
     const base = Number(selectedVehicle?.base ?? 0);
+    // Outbound seats
     const seatCharge = (rearFacingSeat + boosterSeat) * 10;
+
+    // Return seats (if return trip)
+    const returnSeatCharge = (returnRearFacingSeat + returnBoosterSeat) * 10;
+
     const gratuity = (base * 2) * 0.20; // 20% of total base (for return trip)
     const tax = (base * 2) * 0.05;      // 5% of total base (for return trip)
-      const airportFee = tripType === "airportRide" ? 5 : 0;
-console.log("Meet Greet:", meetGreetYes, "Return Meet Greet:", ReturnMeetGreetYes,"cost", meetGreetCost);
+    const airportFee = tripType === "airportRide" ? 5 : 0;
+    console.log("Meet Greet:", meetGreetYes, "Return Meet Greet:", ReturnMeetGreetYes, "cost", meetGreetCost);
 
     const calculatedPrice =
         returnTripYes
             ? (
-                (base * 2)                       
-                - (base * 2 * 0.10)            
-                + (meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0)
-                + (returnStopsCount > 0 ? 20 * returnStopsCount : 0)        
-                + seatCharge                     
-                + gratuity                      
-                + tax  
-                + airportFee                    
+                (base * 2)
+                - (base * 2 * 0.10)
+                + (meetGreetYes ? 25 : 0)
+                + (ReturnMeetGreetYes ? 25 : 0)
+                + (returnStopsCount > 0 ? 20 * returnStopsCount : 0)
+                + seatCharge
+                + returnSeatCharge      // ✅ include return trip seats
+                + gratuity
+                + tax
+                + airportFee
             )
             : finalTotal;
+
 
 
 

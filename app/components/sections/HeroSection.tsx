@@ -11,24 +11,68 @@ import { calculateDistance } from "@/app/actions/getDistance";
 import BookingForm from "../formComponent/bookingform";
 
 export default function HeroSection() {
-  const searchParams = useSearchParams();
-  const bookingDetails = {
-    pickupLocation: searchParams.get("pickupLocation") || "",
-    dropLocation: searchParams.get("dropLocation") || "",
-    pickupDate: searchParams.get("pickupDate") || "",
-    pickupTime: searchParams.get("pickupTime") || "",
-    pickupLng: searchParams.get("pickupLng") || "",
-    pickupLat: searchParams.get("pickupLat") || "",
-    dropLng: searchParams.get("dropLng") || "",
-    dropLat: searchParams.get("dropLat") || "",
-    tripType: searchParams.get("tripType") || "",
-    stop1: searchParams.get("stop1") || "",
-    stop2: searchParams.get("stop2") || "",
-    stop3: searchParams.get(" stop3") || "",
-    stop4: searchParams.get("stop4") || "",
+  const [defaultValues, setDefaultValues] = useState({
+    pickupLocation: "",
+    dropLocation: "",
+    pickupDate: "",
+    pickupTime: "",
+    pickupLat: "",
+    pickupLng: "",
+    dropLat: "",
+    dropLng: "",
+    stop1: "",
+    stop2: "",
+    stop3: "",
+    stop4: "",
+    hours: "",
+    tripType: "airportRide",
+  });
 
-    hours: searchParams.get("hours") || "",
-  };
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("bookingData");
+      if (saved) {
+        const data = JSON.parse(saved);
+
+        setDefaultValues({
+          pickupLocation: data.pickupLocation || "",
+          dropLocation: data.dropLocation || "",
+          pickupDate: data.pickupDate || "",
+          pickupTime: data.pickupTime || "",
+          pickupLat: data.pickupLat?.toString() || "",
+          pickupLng: data.pickupLng?.toString() || "",
+          dropLat: data.dropLat?.toString() || "",
+          dropLng: data.dropLng?.toString() || "",
+          stop1: data.stop1 || "",
+          stop2: data.stop2 || "",
+          stop3: data.stop3 || "",
+          stop4: data.stop4 || "",
+          hours: data.hours?.toString() || "",
+          tripType: data.tripType || "airportRide",
+        });
+
+        // Restore UI fields too
+        setPickupLocation(data.pickupLocation || "");
+        setDropLocation(data.dropLocation || "");
+        setTripType(data.tripType || "airportRide");
+        if (data.pickupDate) setPickupDate(new Date(data.pickupDate));
+        if (data.pickupTime) setSelectedTime(data.pickupTime);
+        if (data.hours) setHours(Number(data.hours));
+        if (data.stop1) setStop1(data.stop1);
+        if (data.stop2) setStop2(data.stop2);
+        if (data.stop3) setStop3(data.stop3);
+        if (data.stop4) setStop4(data.stop4);
+
+        const activeStops = [data.stop1, data.stop2, data.stop3, data.stop4].filter(
+          (s) => s && s.trim() !== ""
+        ).length;
+        setStopsCount(activeStops);
+      }
+    } catch (err) {
+      console.error("❌ Error restoring booking data from localStorage:", err);
+    }
+  }, []);
+  const bookingDetails = defaultValues;
   const [tripType, setTripType] = useState("airportRide");
   const [pickupDate, setPickupDate] = useState<Date | null>(null);
 
