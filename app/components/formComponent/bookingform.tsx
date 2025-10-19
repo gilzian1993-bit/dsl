@@ -157,41 +157,14 @@ export default function BookingForm(props: BookingFormProps) {
       "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
     libraries,
   });
-// ✅ Initialize editable fields from defaultValues only once
+
 useEffect(() => {
-  if (defaultValues.pickupLocation && !pickupLocation)
-    setPickupLocation(defaultValues.pickupLocation);
-
-  if (defaultValues.dropLocation && !dropLocation)
-    setDropLocation(defaultValues.dropLocation);
-
-  if (defaultValues.pickupDate && !pickupDate)
-    setPickupDate(new Date(defaultValues.pickupDate));
-
-  if (defaultValues.pickupTime && !selectedTime)
-    setSelectedTime(defaultValues.pickupTime);
-
-  if (defaultValues.hours && !hours)
-    setHours(parseInt(defaultValues.hours));
-
-  // ✅ Restore stops
-  if (defaultValues.stop1) setStop1(defaultValues.stop1);
-  if (defaultValues.stop2) setStop2(defaultValues.stop2);
-  if (defaultValues.stop3) setStop3(defaultValues.stop3);
-  if (defaultValues.stop4) setStop4(defaultValues.stop4);
-
-  // ✅ Automatically show stop fields based on non-empty stop values
-  const activeStops = [
-    defaultValues.stop1,
-    defaultValues.stop2,
-    defaultValues.stop3,
-    defaultValues.stop4,
-  ].filter((s) => s && s.trim() !== "").length;
-
-  if (activeStops > 0) {
-    setStopsCount(activeStops);
+  
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("bookingData");
   }
 }, []);
+
 
 
   const handleTimeChange = (hour: number, minute: number) => {

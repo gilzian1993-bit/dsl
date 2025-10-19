@@ -259,7 +259,7 @@ export default function VehicleSelection({
                 } else if (vehicle.type === "MID SUV") {
                     basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 15 ?  110 :  110 + (distance - 15) * 3.50;
+                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
                 }
@@ -286,14 +286,14 @@ export default function VehicleSelection({
                     basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
                 }
             }
-            
+
             else if (pickupLocation === "Newark Liberty International Airport (EWR)") {
                 if (vehicle.type === "SEDAN") {
                     basePrice = distance <= 15 ? 85 : 85 + (distance - 15) * 2.70;
                 } else if (vehicle.type === "MID SUV") {
                     basePrice = distance <= 15 ? 100 : 100 + (distance - 15) * 3;
                 } else if (vehicle.type === "SUV") {
-                    basePrice = distance <= 15 ?  110 :  110 + (distance - 15) * 3.50;
+                    basePrice = distance <= 15 ? 110 : 110 + (distance - 15) * 3.50;
                 } else if (vehicle.type === "SPRINTER") {
                     basePrice = distance <= 15 ? 260 : 260 + (distance - 15) * 7;
                 }
@@ -398,49 +398,34 @@ export default function VehicleSelection({
     };
 
 
-  const handleBack = () => {
-  const pickupLocation = searchParams.get("pickupLocation") || "";
-  const dropLocation = searchParams.get("dropLocation") || "";
-  const pickupDate = searchParams.get("pickupDate") || "";
-  const pickupTime = searchParams.get("pickupTime") || "";
-  const hours = searchParams.get("hours") || "0";
-  const pickupLat = Number(searchParams.get("pickupLat") || "0");
-  const pickupLng = Number(searchParams.get("pickupLng") || "0");
-  const dropLat = Number(searchParams.get("dropLat") || "0");
-  const dropLng = Number(searchParams.get("dropLng") || "0");
+    const handleBack = () => {
+        const bookingData = {
+            pickupLocation: searchParams.get("pickupLocation") || "",
+            dropLocation: searchParams.get("dropLocation") || "",
+            pickupDate: searchParams.get("pickupDate") || "",
+            pickupTime: searchParams.get("pickupTime") || "",
+            hours: searchParams.get("hours") || "0",
+            pickupLat: Number(searchParams.get("pickupLat") || "0"),
+            pickupLng: Number(searchParams.get("pickupLng") || "0"),
+            dropLat: Number(searchParams.get("dropLat") || "0"),
+            dropLng: Number(searchParams.get("dropLng") || "0"),
+            stop1: searchParams.get("stop1") || "",
+            stop2: searchParams.get("stop2") || "",
+            stop3: searchParams.get("stop3") || "",
+            stop4: searchParams.get("stop4") || "",
+            stopsCount: 0, // ✅ add this here
+        };
 
-  // ✅ stops
-  const stop1 = searchParams.get("stop1") || "";
-  const stop2 = searchParams.get("stop2") || "";
-  const stop3 = searchParams.get("stop3") || "";
-  const stop4 = searchParams.get("stop4") || "";
+        bookingData.stopsCount = [
+            bookingData.stop1,
+            bookingData.stop2,
+            bookingData.stop3,
+            bookingData.stop4,
+        ].filter((s) => s && s.trim() !== "").length;
 
-  const stopsCount =
-    [stop1, stop2, stop3, stop4].filter((s) => s && s.trim() !== "").length.toString();
-
-  const formattedPickupDate = pickupDate
-    ? new Date(pickupDate).toISOString()
-    : "";
-
-  const params = new URLSearchParams({
-    pickupLocation,
-    dropLocation,
-    pickupDate: formattedPickupDate,
-    pickupTime,
-    hours,
-    pickupLat: pickupLat.toString(),
-    pickupLng: pickupLng.toString(),
-    dropLat: dropLat.toString(),
-    dropLng: dropLng.toString(),
-    stop1,
-    stop2,
-    stop3,
-    stop4,
-    stopsCount,
-  });
-
-  router.push(`/?${params.toString()}`);
-};
+        localStorage.setItem("bookingData", JSON.stringify(bookingData));
+        router.push("/");
+    };
 
 
 
