@@ -286,7 +286,6 @@ export default function VehicleSelection({
                     basePrice = distance <= 15 ? 270 : 270 + (distance - 15) * 7;
                 }
             }
-
             else if (pickupLocation === "Newark Liberty International Airport (EWR)") {
                 if (vehicle.type === "SEDAN") {
                     basePrice = distance <= 15 ? 85 : 85 + (distance - 15) * 2.70;

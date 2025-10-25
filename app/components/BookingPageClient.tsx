@@ -56,6 +56,8 @@ interface UserInfo {
   airlineCode?: string;
   flightNumber?: string;
   finalTotal: number;
+  infantSeat: string;
+  returnInfantSeat: string;
   returnPickupLocation?: string;
   returnStop1?: string,
   returnStop2?: string,
@@ -168,8 +170,8 @@ export default function BookingPageClient() {
           returnStop3={userInfo.returnStop3}
           returnStop4={userInfo.returnStop4}
           returnStopsCount={userInfo.returnStopsCount}
-
-
+          infantSeat={userInfo.infantSeat}
+          returnInfantSeat={userInfo.returnInfantSeat}
         />
       )}
     </div></PriceProvider>
