@@ -28,7 +28,7 @@ interface FormErrors {
 
 interface BookingFormProps {
   tripType: string;
-  setTripType: Dispatch<SetStateAction<string>>;
+  setTripType: (trip:string)=>void;
   pickupDate: Date | null;
   setPickupDate: Dispatch<SetStateAction<Date | null>>;
   pickupLocation: string;
