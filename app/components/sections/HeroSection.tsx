@@ -10,8 +10,7 @@ import TimePicker from "../time-picker";
 import { calculateDistance } from "@/app/actions/getDistance";
 import BookingForm from "../formComponent/bookingform";
 
-export default function HeroSection() {
-  const [defaultValues, setDefaultValues] = useState({
+const initailValues = {
     pickupLocation: "",
     dropLocation: "",
     pickupDate: "",
@@ -25,6 +24,11 @@ export default function HeroSection() {
     stop3: "",
     stop4: "",
     hours: "",
+  }
+
+export default function HeroSection() {
+  const [defaultValues, setDefaultValues] = useState({
+    ...initailValues,
     tripType: "airportRide",
   });
 
@@ -73,7 +77,7 @@ export default function HeroSection() {
     }
   }, []);
   const bookingDetails = defaultValues;
-  const [tripType, setTripType] = useState("airportRide");
+  const [tripType, setTrip] = useState("airportRide");
   const [pickupDate, setPickupDate] = useState<Date | null>(null);
 
   const [pickupLocation, setPickupLocation] = useState("");
@@ -227,6 +231,22 @@ export default function HeroSection() {
     animate(formRef.current, 900);
   }, []);
 
+  function setTripType(trip:string){
+    setDefaultValues({...initailValues, tripType:trip});
+    setTrip(trip);
+    setPickupDate(null);
+  setPickupLocation("");
+  setDropLocation("");
+  setSelectedTime("");
+  setSelectedDate(null);
+  setStopsCount(0);
+  setStop1("");
+  setStop2("");
+  setStop3("");
+  setStop4("");
+
+  }
+
   return (
     <section
       className="relative w-full min-h-[440px] flex flex-col items-center md:pt-16 justify-center pt-34 bg-cover bg-center transition-all duration-1000"
@@ -251,10 +271,7 @@ export default function HeroSection() {
       </div>
 
 
-      {/* Booking Box */}
-      {/* Booking Box */}
       <div ref={formRef} className="w-full flex md:mt-5 mt-47 justify-center">
-
         <BookingForm
           defaultValues={bookingDetails}
           tripType={tripType}
@@ -289,8 +306,6 @@ export default function HeroSection() {
           setStop2={setStop2}
           setStop3={setStop3}
           setStop4={setStop4}
-
-
         />
       </div>
 

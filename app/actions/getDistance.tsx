@@ -22,24 +22,25 @@ export async function calculateDistance({
 
     // Combine stops into the destinations string (if there are any stops)
     const destinations = [to, stop1, stop2, stop3, stop4].filter(Boolean).join('|');
-
+    console.log("from : ",from )
+    console.log("to : ",to )
     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(destinations)}&key=AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU`;
 
     const response = await fetch(url);
+     console.log("response : ",response)
+     if (!response.ok) {
+       return { error: "Failed to fetch distance data from Google Maps API.", status: 500 };
+      }
+      
+      const data = await response.json();
+      
+      const elementStatus = data.rows[0]?.elements[0]?.status;
+       console.log("elementStatus ",elementStatus)
+      if (elementStatus !== "OK") {
+        return { error: "Invalid locations or unable to calculate distance.", status: 500 };
+      }
+      console.log("data.rows[0].elements : ",data.rows[0].elements)
 
-    if (!response.ok) {
-      return { error: "Failed to fetch distance data from Google Maps API.", status: 500 };
-    }
-
-    const data = await response.json();
-
-    const elementStatus = data.rows[0]?.elements[0]?.status;
-
-    if (elementStatus !== "OK") {
-      return { error: "Invalid locations or unable to calculate distance.", status: 500 };
-    }
-
-    // Calculate the total distance by summing up the distances from each leg
     let totalDistanceInMiles = 0;
     for (const element of data.rows[0].elements) {
       if (element.status === "OK") {

@@ -80,6 +80,8 @@ interface PaymentCardProps {
     returnStop3?: string,
     returnStop4?: string,
     returnStopsCount?: string,
+    infantSeat:string,
+    returnInfantSeat:string,
 }
 
 const ElementStyles = {
@@ -133,6 +135,8 @@ export default function PaymentCard({
     returnStop3,
     returnStop4,
     returnStopsCount,
+    infantSeat,
+    returnInfantSeat,
 }: PaymentCardProps) {
     console.log("finalTotal:", finalTotal);
     const searchParams = useSearchParams();
@@ -369,6 +373,8 @@ console.log("amount",amount)
                             tripType,
                             rear_seats: rearFacingSeat,
                             booster_seats: boosterSeat,
+                            infantSeat,
+                            returnInfantSeat,
                             meetGreet: meetGreetYes,
                             returnMeetGreet: ReturnMeetGreetYes,
                             airportPickup: airportPickup,

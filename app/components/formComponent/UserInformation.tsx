@@ -50,6 +50,8 @@ interface UserInformationProps {
         returnDate?: string;
         returnTime?: string;
         finalTotal: number;
+        infantSeat: string;
+        returnInfantSeat: string;
     }) => void;
 
     onBack: () => void;
@@ -225,6 +227,8 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const [showModal, setShowModal] = useState(false);
     const [rearFacingSeat, setRearFacingSeat] = useState(0);
+    const [infantSeat, setInfantSeat] = useState('No');
+    const [returnInfantSeat, setReturnInfantSeat] = useState('No');
     const [boosterSeat, setBoosterSeat] = useState(0);
     const [returnRearFacingSeat, setReturnRearFacingSeat] = useState(0);
     const [returnBoosterSeat, setReturnBoosterSeat] = useState(0);
@@ -258,10 +262,11 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
     const total = selectedVehicle?.total ?? getVehiclePrice(selectedVehicle);
     const base = Number(selectedVehicle?.base ?? 0);
     // Outbound seats
-    const seatCharge = (rearFacingSeat + boosterSeat) * 10;
-
+    let seatCharge = (rearFacingSeat + boosterSeat) * 10;
+     seatCharge += infantSeat === 'Yes' ? 10 : 0
     // Return seats (if return trip)
-    const returnSeatCharge = (returnRearFacingSeat + returnBoosterSeat) * 10;
+    let returnSeatCharge = (returnRearFacingSeat + returnBoosterSeat) * 10;
+    returnSeatCharge += returnInfantSeat === 'Yes' ? 10 : 0
 
     const gratuity = (base * 2) * 0.20; // 20% of total base (for return trip)
     const tax = (base * 2) * 0.05;      // 5% of total base (for return trip)
@@ -725,6 +730,10 @@ export default function UserInformation({ vehicle, onNext, onBack, step,
                                 setBoosterSeat={setBoosterSeat}
                                 rearFacingSeat={rearFacingSeat}
                                 setRearFacingSeat={setRearFacingSeat}
+                                setInfantSeat={setInfantSeat}
+                                setReturnInfantSeat={setReturnInfantSeat}
+                                infantSeat={infantSeat}
+                                returnInfantSeat={returnInfantSeat}
                                 returnStopsCount={returnStopsCount}
                                 pickupDate={pickupDate}
                                 totalPrice={totalPrice}

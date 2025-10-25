@@ -130,6 +130,8 @@ interface PaymentSectionProps {
     flightNumber?: string;
     returnDate?: string;
     returnTime?: string;
+    infantSeat: string;
+    returnInfantSeat: string;
     finalTotal: number;
     totalPrice: number;
     onBack: () => void;
@@ -177,7 +179,7 @@ export default function PaymentSection({
     ReturnMeetGreetYes,
     returnPickupLocation,
     returnStop1,
-    returnStop2, returnStop3, returnStop4, returnStopsCount
+    returnStop2, returnStop3, returnStop4, returnStopsCount, infantSeat, returnInfantSeat
 
 }: PaymentSectionProps) {
     useEffect(() => {
@@ -643,7 +645,8 @@ export default function PaymentSection({
                                 returnStop3={returnStop3}
                                 returnStop4={returnStop4}
                                 returnStopsCount={returnStopsCount}
-
+                                infantSeat={infantSeat}
+                                returnInfantSeat={returnInfantSeat}
 
                             />
 

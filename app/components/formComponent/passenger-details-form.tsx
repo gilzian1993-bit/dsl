@@ -53,6 +53,8 @@ interface PassengerDetailsFormProps {
 
     returnTime?: string;
     finalTotal?: number;
+    infantSeat: string;
+    returnInfantSeat: string;
   }) => void;
   onBack: () => void;
   tripType: string;
@@ -61,9 +63,13 @@ interface PassengerDetailsFormProps {
   returnBoosterSeat: number;
   setReturnRearFacingSeat: React.Dispatch<React.SetStateAction<number>>;
   setReturnBoosterSeat: React.Dispatch<React.SetStateAction<number>>;
+  infantSeat: string;
+  returnInfantSeat: string;
   rearFacingSeat: number;
   boosterSeat: number;
   setRearFacingSeat: React.Dispatch<React.SetStateAction<number>>;
+  setInfantSeat: React.Dispatch<React.SetStateAction<string>>;
+  setReturnInfantSeat: React.Dispatch<React.SetStateAction<string>>;
   setBoosterSeat: React.Dispatch<React.SetStateAction<number>>;
   setMeetGreetYes: React.Dispatch<React.SetStateAction<boolean>>;
   ReturnMeetGreetYes: boolean;
@@ -101,8 +107,12 @@ export default function PassengerDetailsForm({
   setReturnBoosterSeat,
   setReturnRearFacingSeat,
   rearFacingSeat,
+  infantSeat,
+  returnInfantSeat,
   boosterSeat,
 
+  setInfantSeat,
+  setReturnInfantSeat,
   setRearFacingSeat,
   setBoosterSeat,
   onPriceChange,
@@ -156,14 +166,18 @@ export default function PassengerDetailsForm({
   });
   // 🔹 Real-time price calculation
   useEffect(() => {
-    const seatCharge = carSeats ? (rearFacingSeat + boosterSeat) * 10 : 0;
+    let seatCharge = carSeats ? (rearFacingSeat + boosterSeat) * 10 : 0;
+    seatCharge += infantSeat==='Yes' ? 10 : 0;
+   
+    let returnSeatCharge = carSeats ? (returnRearFacingSeat + returnBoosterSeat) * 10 : 0;
+    returnSeatCharge += returnInfantSeat ==='Yes' ? 10 : 0;
     // const meetGreetCharge = (meetGreetYes ? 25 : 0) + (ReturnMeetGreetYes ? 25 : 0);
     const returnTripCharge = returnTrip
       ? (basePrice! * 2) - (basePrice! * 2 * 0.10) + (returnStopsCount > 0 ? 20 * returnStopsCount : 0)
       : 0;
 
     const updatedTotal = returnTrip
-      ? returnTripCharge + seatCharge 
+      ? returnTripCharge + returnSeatCharge 
       : totalPrice + seatCharge;
 
     onPriceChange(updatedTotal);
@@ -264,7 +278,7 @@ export default function PassengerDetailsForm({
         returnDate: returnTrip && returnDate ? returnDate.toISOString() : undefined,
         returnTime: returnTrip ? returnTime ?? undefined : undefined,
         returnStop1,
-        returnStop2, returnStop3, returnStop4, returnStopsCount
+        returnStop2, returnStop3, returnStop4, returnStopsCount, infantSeat, returnInfantSeat
       };
 
       try {
@@ -293,12 +307,16 @@ export default function PassengerDetailsForm({
   };
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [boosterTooltipVisible, setboosterTooltipVisible] = useState(false);
+  const [infantTooltipVisible, setInfantTooltipVisible] = useState(false);
 
   const toggleTooltip = () => {
     setTooltipVisible(!tooltipVisible);
   };
   const boosterToggleTooltip = () => {
     setboosterTooltipVisible(!boosterTooltipVisible);
+  };
+  const infantToggleTooltip = () => {
+    setInfantTooltipVisible(!boosterTooltipVisible);
   };
   const addStop = () => {
     if (returnStopsCount < 4) {
@@ -674,6 +692,34 @@ export default function PassengerDetailsForm({
                 className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 {[...Array(7).keys()].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+
+              <div className="flex  items-center gap-2 relative group mt-0"><label className="block text-base text-gray-700 mb-2"> Infant Seat</label>
+                <div className="relative">
+                  <Info
+                    className="w-4 h-4 text-gray-400 cursor-pointer"
+                    onClick={toggleTooltip} 
+                  />
+                  {/* Tooltip card */}
+                  {tooltipVisible && (
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg z-50">
+                      $10 will be added in total price for yes infant seat.
+                    </div>
+                  )}
+                </div></div>
+
+              <select
+                value={infantSeat}
+                onChange={(e) => setInfantSeat(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                {['Yes','No'].map((n) => (
                   <option key={n} value={n}>
                     {n}
                   </option>
@@ -1071,6 +1117,35 @@ export default function PassengerDetailsForm({
                     className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     {[...Array(7).keys()].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                 <div >
+                  <div className="flex  items-center gap-2 relative group mt-0">
+                    <label className="block text-base text-gray-700 mb-2">Infant seat</label>
+                    <div className="relative">
+                      <Info
+                        className="w-4 h-4 text-gray-400 cursor-pointer"
+                        onClick={infantToggleTooltip} // Toggle tooltip on click
+                      />
+                      {/* Tooltip card */}
+                      {infantTooltipVisible && (
+                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 bg-gray-50 text-gray-700 text-base p-3 rounded-lg shadow-lg z-50">
+                          $10 will be added in total price for yes infant seat.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <select
+                    value={returnInfantSeat}
+                    onChange={(e) => setReturnInfantSeat(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    {['Yes','No'].map((n) => (
                       <option key={n} value={n}>
                         {n}
                       </option>
