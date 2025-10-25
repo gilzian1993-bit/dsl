@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { MapPin, CalendarIcon, ClockIcon, ChevronDown, Plus } from "lucide-react";
+import { MapPin, CalendarIcon, ClockIcon, ChevronDown, Plus, ArrowRightLeftIcon, ArrowUpDownIcon } from "lucide-react";
 import { Autocomplete, Libraries, useLoadScript } from "@react-google-maps/api";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import Calendar from "../../../components/ui/calendar";
@@ -407,7 +407,7 @@ useEffect(() => {
             <div className="lg:block hidden"><StopsSection /></div>
           </div>
 
-
+          
           <div className="relative w-full">
             {/* Ensure the MapPin icon is positioned correctly within the container */}
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none z-10" />
@@ -475,6 +475,18 @@ useEffect(() => {
                 </Autocomplete>
               )
             )}
+
+            <div onClick={()=>{
+              const _pickupLocation = pickupLocation
+              const _pickupCoords = pickupCoords
+              setPickupCoords(dropCoords)
+              setPickupLocation(dropLocation)
+              setDropLocation(_pickupLocation)
+              setDropCoords(_pickupCoords)
+            }} className="absolute max-md:left-1/2 max-md:-translate-x-1/2 max-md:-bottom-6 md:top-1/2 md:-translate-y-1/2 md:-right-4" >
+            <ArrowRightLeftIcon size={12} className="text-gray-500 max-md:hidden"/>
+            <ArrowUpDownIcon size={12} className="text-gray-500 md:hidden"/>
+            </div>
           </div>
 
           {errors.pickupLocation && (
@@ -483,7 +495,7 @@ useEffect(() => {
         </div>
 
 
-        <div className="mt-2 md:hidden block flex justify-center items-center">
+        <div className="mt-2 md:hidden  flex justify-center items-center">
           <h3 className="rounded-sm border text-white border-gray-300 bg-black px-2 py-2 text-[10px] whitespace-nowrap font-medium text-gray-600">
 
             Additional Stops
