@@ -1,315 +1,325 @@
-"use client";
+import React from 'react'
 
-import { useEffect, useRef, useState } from "react";
-import { Clock, MapPin, Calendar } from "lucide-react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Autocomplete, Libraries, useJsApiLoader, useLoadScript } from "@react-google-maps/api";
-import TimePicker from "../time-picker";
-import { calculateDistance } from "@/app/actions/getDistance";
-import BookingForm from "../formComponent/bookingform";
-
-const initailValues = {
-    pickupLocation: "",
-    dropLocation: "",
-    pickupDate: "",
-    pickupTime: "",
-    pickupLat: "",
-    pickupLng: "",
-    dropLat: "",
-    dropLng: "",
-    stop1: "",
-    stop2: "",
-    stop3: "",
-    stop4: "",
-    hours: "",
-  }
-
-export default function HeroSection() {
-  const [defaultValues, setDefaultValues] = useState({
-    ...initailValues,
-    tripType: "airportRide",
-  });
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("bookingData");
-      if (saved) {
-        const data = JSON.parse(saved);
-
-        setDefaultValues({
-          pickupLocation: data.pickupLocation || "",
-          dropLocation: data.dropLocation || "",
-          pickupDate: data.pickupDate || "",
-          pickupTime: data.pickupTime || "",
-          pickupLat: data.pickupLat?.toString() || "",
-          pickupLng: data.pickupLng?.toString() || "",
-          dropLat: data.dropLat?.toString() || "",
-          dropLng: data.dropLng?.toString() || "",
-          stop1: data.stop1 || "",
-          stop2: data.stop2 || "",
-          stop3: data.stop3 || "",
-          stop4: data.stop4 || "",
-          hours: data.hours?.toString() || "",
-          tripType: data.tripType || "airportRide",
-        });
-
-        // Restore UI fields too
-        setPickupLocation(data.pickupLocation || "");
-        setDropLocation(data.dropLocation || "");
-        setTripType(data.tripType || "airportRide");
-        if (data.pickupDate) setPickupDate(new Date(data.pickupDate));
-        if (data.pickupTime) setSelectedTime(data.pickupTime);
-        if (data.hours) setHours(Number(data.hours));
-        if (data.stop1) setStop1(data.stop1);
-        if (data.stop2) setStop2(data.stop2);
-        if (data.stop3) setStop3(data.stop3);
-        if (data.stop4) setStop4(data.stop4);
-
-        const activeStops = [data.stop1, data.stop2, data.stop3, data.stop4].filter(
-          (s) => s && s.trim() !== ""
-        ).length;
-        setStopsCount(activeStops);
-      }
-    } catch (err) {
-      console.error("❌ Error restoring booking data from localStorage:", err);
-    }
-  }, []);
-  const bookingDetails = defaultValues;
-  const [tripType, setTrip] = useState("airportRide");
-  const [pickupDate, setPickupDate] = useState<Date | null>(null);
-
-  const [pickupLocation, setPickupLocation] = useState("");
-  const [dropLocation, setDropLocation] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [selectedTime, setSelectedTime] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [stopsCount, setStopsCount] = useState(0);
-  const [stop1, setStop1] = useState("");
-  const [stop2, setStop2] = useState("");
-  const [stop3, setStop3] = useState("");
-  const [stop4, setStop4] = useState("");
-
-  // ✅ Parent component
-  const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
-
-  const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [dropCoords, setDropCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const dropRef = useRef<google.maps.places.Autocomplete | null>(null);
-
-  const [hours, setHours] = useState<number>(0);
-
-  const router = useRouter();
-  const libraries: Libraries = ["places"]
-  // Google Places Loader
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
-    libraries,
-  })
-
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time);
-    setIsTimePickerOpen(false);
-  };
-  const handleDateChange = (date: Date | null) => setPickupDate(date);
-  const handleTripTypeChange = (type: string) => setTripType(type);
-
-  const handleBookNow = async () => {
-    setLoading(true);
-    let distance = 0;
-
-    if (tripType === "pointToPoint") {
-      // ✅ Point-to-Point distance
-      const result = await calculateDistance({
-        from: pickupLocation || bookingDetails.pickupLocation,
-        to: dropLocation || bookingDetails.dropLocation,
-        stop1: stop1 || bookingDetails.stop1,
-        stop2: stop2 || bookingDetails.stop2,
-        stop3: stop3 || bookingDetails.stop3,
-        stop4: stop4 || bookingDetails.stop4,
-      });
-
-      if (result.error || !result.distance) {
-        alert(result.error || "Could not calculate distance");
-        setLoading(false);
-        return;
-      }
-
-      distance = result.distance;
-    }
-    else if (tripType === "airportRide") {
-      // ✅ Airport Ride distance (pickup -> airport)
-      const result = await calculateDistance({
-        from: pickupLocation || bookingDetails.pickupLocation,
-        to: dropLocation || bookingDetails.dropLocation, // fallback if drop isn't used
-      });
-
-      if (result.error || !result.distance) {
-        alert(result.error || "Could not calculate distance");
-        setLoading(false);
-        return;
-      }
-
-      distance = result.distance;
-    }
-
-    const params = new URLSearchParams({
-      pickupLocation: pickupLocation || bookingDetails.pickupLocation,
-      dropLocation: dropLocation || bookingDetails.dropLocation,
-      pickupDate: pickupDate ? pickupDate.toISOString() : bookingDetails.pickupDate,
-      pickupTime: selectedTime || bookingDetails.pickupTime,
-      pickupLat: pickupCoords?.lat?.toString() || bookingDetails.pickupLat,
-      pickupLng: pickupCoords?.lng?.toString() || bookingDetails.pickupLng,
-      dropLat: dropCoords?.lat?.toString() || bookingDetails.dropLat,
-      dropLng: dropCoords?.lng?.toString() || bookingDetails.dropLng,
-      distance: distance.toFixed(2),
-      tripType: tripType || bookingDetails.tripType,
-      stop1: stop1 || bookingDetails.stop1,
-      stop2: stop2 || bookingDetails.stop2,
-      stop3: stop3 || bookingDetails.stop3,
-      stop4: stop4 || bookingDetails.stop4,
-      stopsCount: stopsCount.toString(),
-      hours: hours ? hours.toString() : bookingDetails.hours,
-    });
-
-
-    setTimeout(() => {
-      setLoading(false);
-      router.push(`/booking?${params.toString()}`);
-    }, 1500);
-  };
-
-
-
-  // Animations
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLDivElement>(null);
-  const backgrounds = [
-    "/header.png",
-    "/header2.png",
-    "/header3.png",
-    "/header4.png",
-  ];
-  const [currentBg, setCurrentBg] = useState(0);
-
-  // Auto change background every 5s
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBg((prev) => (prev + 1) % backgrounds.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [backgrounds.length]);
-  useEffect(() => {
-    const animate = (el: HTMLElement | null, delay: number) => {
-      if (!el) return;
-      el.style.opacity = "0";
-      el.style.transform = "translateY(30px)";
-      setTimeout(() => {
-        el.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
-        el.style.opacity = "1";
-        el.style.transform = "translateY(0)";
-      }, delay);
-    };
-    if (overlayRef.current) {
-      overlayRef.current.style.opacity = "0.7";
-
-      setTimeout(() => {
-        if (overlayRef.current) {   // 👈 check again before using
-          overlayRef.current.style.transition = "opacity 1.5s ease-out";
-          overlayRef.current.style.opacity = "0.4";
-        }
-      }, 100);
-    }
-
-    animate(titleRef.current, 300);
-    animate(subtitleRef.current, 600);
-    animate(formRef.current, 900);
-  }, []);
-
-  function setTripType(trip:string){
-    setDefaultValues({...initailValues, tripType:trip});
-    setTrip(trip);
-    setPickupDate(null);
-  setPickupLocation("");
-  setDropLocation("");
-  setSelectedTime("");
-  setSelectedDate(null);
-  setStopsCount(0);
-  setStop1("");
-  setStop2("");
-  setStop3("");
-  setStop4("");
-
-  }
-
+function HeroSection() {
   return (
-    <section
-      className="relative w-full min-h-[440px] flex flex-col items-center md:pt-16 justify-center pt-34 bg-cover bg-center transition-all duration-1000"
-      style={{ backgroundImage: `url(${backgrounds[currentBg]})` }}
-    >
+    <div>HeroSection</div>
+  )
+}
 
-      <div ref={overlayRef} className="absolute inset-0 bg-black/20 z-0" />
-      {/* Text */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center mt-5 md:mb-6">
-        <h1
-          ref={titleRef}
-          className="text-[#FFFFFF] text-4xl md:text-5xl font-bold font-hind tracking-wide mb-2"
-        >
-          The Best Fleet Services
-        </h1>
-        <div
-          ref={subtitleRef}
-          className="text-[#FFFFFF] text-2xl md:text-3xl font-normal"
-        >
-          In New York
-        </div>
-      </div>
+export default HeroSection
+
+// "use client";
+
+// import { useEffect, useRef, useState } from "react";
+// import "react-datepicker/dist/react-datepicker.css";
+// import { useRouter,  } from "next/navigation";
+// import {  Libraries, useLoadScript } from "@react-google-maps/api";
+// import { calculateDistance } from "@/app/actions/getDistance";
+// import BookingForm from "../formComponent/bookingform";
+
+// const initailValues = {
+//     pickupLocation: "",
+//     dropLocation: "",
+//     pickupDate: "",
+//     pickupTime: "",
+//     pickupLat: "",
+//     pickupLng: "",
+//     dropLat: "",
+//     dropLng: "",
+//     stop1: "",
+//     stop2: "",
+//     stop3: "",
+//     stop4: "",
+//     hours: "",
+//   }
+
+// export default function HeroSection() {
+//   const [defaultValues, setDefaultValues] = useState({
+//     ...initailValues,
+//     tripType: "airportRide",
+//   });
+
+//   useEffect(() => {
+//     try {
+//       const saved = localStorage.getItem("bookingData");
+//       if (saved) {
+//         const data = JSON.parse(saved);
+
+//         setDefaultValues({
+//           pickupLocation: data.pickupLocation || "",
+//           dropLocation: data.dropLocation || "",
+//           pickupDate: data.pickupDate || "",
+//           pickupTime: data.pickupTime || "",
+//           pickupLat: data.pickupLat?.toString() || "",
+//           pickupLng: data.pickupLng?.toString() || "",
+//           dropLat: data.dropLat?.toString() || "",
+//           dropLng: data.dropLng?.toString() || "",
+//           stop1: data.stop1 || "",
+//           stop2: data.stop2 || "",
+//           stop3: data.stop3 || "",
+//           stop4: data.stop4 || "",
+//           hours: data.hours?.toString() || "",
+//           tripType: data.tripType || "airportRide",
+//         });
+
+//         // Restore UI fields too
+//         setPickupLocation(data.pickupLocation || "");
+//         setDropLocation(data.dropLocation || "");
+//         setTripType(data.tripType || "airportRide");
+//         if (data.pickupDate) setPickupDate(new Date(data.pickupDate));
+//         if (data.pickupTime) setSelectedTime(data.pickupTime);
+//         if (data.hours) setHours(Number(data.hours));
+//         if (data.stop1) setStop1(data.stop1);
+//         if (data.stop2) setStop2(data.stop2);
+//         if (data.stop3) setStop3(data.stop3);
+//         if (data.stop4) setStop4(data.stop4);
+
+//         const activeStops = [data.stop1, data.stop2, data.stop3, data.stop4].filter(
+//           (s) => s && s.trim() !== ""
+//         ).length;
+//         setStopsCount(activeStops);
+//       }
+//     } catch (err) {
+//       console.error("❌ Error restoring booking data from localStorage:", err);
+//     }
+//   }, []);
+//   const bookingDetails = defaultValues;
+//   const [tripType, setTrip] = useState("airportRide");
+//   const [pickupDate, setPickupDate] = useState<Date | null>(null);
+
+//   const [pickupLocation, setPickupLocation] = useState("");
+//   const [dropLocation, setDropLocation] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [selectedTime, setSelectedTime] = useState("");
+//   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+//   const [stopsCount, setStopsCount] = useState(0);
+//   const [stop1, setStop1] = useState("");
+//   const [stop2, setStop2] = useState("");
+//   const [stop3, setStop3] = useState("");
+//   const [stop4, setStop4] = useState("");
+
+//   // ✅ Parent component
+//   const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
+
+//   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
+//   const [dropCoords, setDropCoords] = useState<{ lat: number; lng: number } | null>(null);
+//   const pickupRef = useRef<google.maps.places.Autocomplete | null>(null);
+//   const dropRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+//   const [hours, setHours] = useState<number>(0);
+
+//   const router = useRouter();
+//   const libraries: Libraries = ["places"]
+//   // Google Places Loader
+//   const { isLoaded } = useLoadScript({
+//     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
+//     libraries,
+//   })
+
+//   const handleTimeSelect = (time: string) => {
+//     setSelectedTime(time);
+//     setIsTimePickerOpen(false);
+//   };
+//   const handleDateChange = (date: Date | null) => setPickupDate(date);
+//   const handleTripTypeChange = (type: string) => setTripType(type);
+
+//   const handleBookNow = async () => {
+//     setLoading(true);
+//     let distance = 0;
+
+//     if (tripType === "pointToPoint") {
+//       // ✅ Point-to-Point distance
+//       const result = await calculateDistance({
+//         from: pickupLocation || bookingDetails.pickupLocation,
+//         to: dropLocation || bookingDetails.dropLocation,
+//         stop1: stop1 || bookingDetails.stop1,
+//         stop2: stop2 || bookingDetails.stop2,
+//         stop3: stop3 || bookingDetails.stop3,
+//         stop4: stop4 || bookingDetails.stop4,
+//       });
+
+//       if (result.error || !result.distance) {
+//         alert(result.error || "Could not calculate distance");
+//         setLoading(false);
+//         return;
+//       }
+
+//       distance = result.distance;
+//     }
+//     else if (tripType === "airportRide") {
+//       // ✅ Airport Ride distance (pickup -> airport)
+//       const result = await calculateDistance({
+//         from: pickupLocation || bookingDetails.pickupLocation,
+//         to: dropLocation || bookingDetails.dropLocation, // fallback if drop isn't used
+//       });
+
+//       if (result.error || !result.distance) {
+//         alert(result.error || "Could not calculate distance");
+//         setLoading(false);
+//         return;
+//       }
+
+//       distance = result.distance;
+//     }
+
+//     const params = new URLSearchParams({
+//       pickupLocation: pickupLocation || bookingDetails.pickupLocation,
+//       dropLocation: dropLocation || bookingDetails.dropLocation,
+//       pickupDate: pickupDate ? pickupDate.toISOString() : bookingDetails.pickupDate,
+//       pickupTime: selectedTime || bookingDetails.pickupTime,
+//       pickupLat: pickupCoords?.lat?.toString() || bookingDetails.pickupLat,
+//       pickupLng: pickupCoords?.lng?.toString() || bookingDetails.pickupLng,
+//       dropLat: dropCoords?.lat?.toString() || bookingDetails.dropLat,
+//       dropLng: dropCoords?.lng?.toString() || bookingDetails.dropLng,
+//       distance: distance.toFixed(2),
+//       tripType: tripType || bookingDetails.tripType,
+//       stop1: stop1 || bookingDetails.stop1,
+//       stop2: stop2 || bookingDetails.stop2,
+//       stop3: stop3 || bookingDetails.stop3,
+//       stop4: stop4 || bookingDetails.stop4,
+//       stopsCount: stopsCount.toString(),
+//       hours: hours ? hours.toString() : bookingDetails.hours,
+//     });
 
 
-      <div ref={formRef} className="w-full flex md:mt-5 mt-47 justify-center">
-        <BookingForm
-          defaultValues={bookingDetails}
-          tripType={tripType}
-          setTripType={setTripType}
-          pickupDate={pickupDate}
-          setPickupDate={setPickupDate}
-          pickupLocation={pickupLocation}
-          setPickupLocation={setPickupLocation}
-          dropLocation={dropLocation}
-          setDropLocation={setDropLocation}
-          pickupCoords={pickupCoords}
-          setPickupCoords={setPickupCoords}
-          dropCoords={dropCoords}
-          setDropCoords={setDropCoords}
-          selectedTime={selectedTime}
-          setSelectedTime={setSelectedTime}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          isTimePickerOpen={isTimePickerOpen}
-          setIsTimePickerOpen={setIsTimePickerOpen}
-          hours={hours}
-          setHours={setHours}
-          handleBookNow={handleBookNow}
-          loading={loading}
-          stopsCount={stopsCount}
-          setStopsCount={setStopsCount}
-          stop1={stop1}
-          stop2={stop2}
-          stop3={stop3}
-          stop4={stop4}
-          setStop1={setStop1}
-          setStop2={setStop2}
-          setStop3={setStop3}
-          setStop4={setStop4}
-        />
-      </div>
+//     setTimeout(() => {
+//       setLoading(false);
+//       router.push(`/booking?${params.toString()}`);
+//     }, 1500);
+//   };
 
 
-    </section>
-  );
-}  
+
+//   // Animations
+//   const titleRef = useRef<HTMLHeadingElement>(null);
+//   const subtitleRef = useRef<HTMLDivElement>(null);
+//   const overlayRef = useRef<HTMLDivElement>(null);
+//   const formRef = useRef<HTMLDivElement>(null);
+//   const backgrounds = [
+//     "/header.png",
+//     "/header2.png",
+//     "/header3.png",
+//     "/header4.png",
+//   ];
+//   const [currentBg, setCurrentBg] = useState(0);
+
+//   // Auto change background every 5s
+//   useEffect(() => {
+//     const interval = setInterval(() => {
+//       setCurrentBg((prev) => (prev + 1) % backgrounds.length);
+//     }, 5000);
+
+//     return () => clearInterval(interval);
+//   }, [backgrounds.length]);
+//   useEffect(() => {
+//     const animate = (el: HTMLElement | null, delay: number) => {
+//       if (!el) return;
+//       el.style.opacity = "0";
+//       el.style.transform = "translateY(30px)";
+//       setTimeout(() => {
+//         el.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
+//         el.style.opacity = "1";
+//         el.style.transform = "translateY(0)";
+//       }, delay);
+//     };
+//     if (overlayRef.current) {
+//       overlayRef.current.style.opacity = "0.7";
+
+//       setTimeout(() => {
+//         if (overlayRef.current) {   // 👈 check again before using
+//           overlayRef.current.style.transition = "opacity 1.5s ease-out";
+//           overlayRef.current.style.opacity = "0.4";
+//         }
+//       }, 100);
+//     }
+
+//     animate(titleRef.current, 300);
+//     animate(subtitleRef.current, 600);
+//     animate(formRef.current, 900);
+//   }, []);
+
+//   function setTripType(trip:string){
+//     setDefaultValues({...initailValues, tripType:trip});
+//     setTrip(trip);
+//     setPickupDate(null);
+//   setPickupLocation("");
+//   setDropLocation("");
+//   setSelectedTime("");
+//   setSelectedDate(null);
+//   setStopsCount(0);
+//   setStop1("");
+//   setStop2("");
+//   setStop3("");
+//   setStop4("");
+
+//   }
+
+//   return (
+//     <section
+//       className="relative w-full min-h-[440px] flex flex-col items-center md:pt-16 justify-center pt-34 bg-cover bg-center transition-all duration-1000"
+//       style={{ backgroundImage: `url(${backgrounds[currentBg]})` }}
+//     >
+
+//       <div ref={overlayRef} className="absolute inset-0 bg-black/20 z-0" />
+//       {/* Text */}
+//       <div className="relative z-10 flex flex-col items-center justify-center text-center mt-5 md:mb-6">
+//         <h1
+//           ref={titleRef}
+//           className="text-[#FFFFFF] text-4xl md:text-5xl font-bold font-hind tracking-wide mb-2"
+//         >
+//           The Best Fleet Services
+//         </h1>
+//         <div
+//           ref={subtitleRef}
+//           className="text-[#FFFFFF] text-2xl md:text-3xl font-normal"
+//         >
+//           In New York
+//         </div>
+//       </div>
+
+
+//       <div ref={formRef} className="w-full flex md:mt-5 mt-47 justify-center">
+//         <BookingForm
+//           defaultValues={bookingDetails}
+//           tripType={tripType}
+//           setTripType={setTripType}
+//           pickupDate={pickupDate}
+//           setPickupDate={setPickupDate}
+//           pickupLocation={pickupLocation}
+//           setPickupLocation={setPickupLocation}
+//           dropLocation={dropLocation}
+//           setDropLocation={setDropLocation}
+//           pickupCoords={pickupCoords}
+//           setPickupCoords={setPickupCoords}
+//           dropCoords={dropCoords}
+//           setDropCoords={setDropCoords}
+//           selectedTime={selectedTime}
+//           setSelectedTime={setSelectedTime}
+//           selectedDate={selectedDate}
+//           setSelectedDate={setSelectedDate}
+//           isTimePickerOpen={isTimePickerOpen}
+//           setIsTimePickerOpen={setIsTimePickerOpen}
+//           hours={hours}
+//           setHours={setHours}
+//           handleBookNow={handleBookNow}
+//           loading={loading}
+//           stopsCount={stopsCount}
+//           setStopsCount={setStopsCount}
+//           stop1={stop1}
+//           stop2={stop2}
+//           stop3={stop3}
+//           stop4={stop4}
+//           setStop1={setStop1}
+//           setStop2={setStop2}
+//           setStop3={setStop3}
+//           setStop4={setStop4}
+//         />
+//       </div>
+
+
+//     </section>
+//   );
+// }  
+
+
+// export default HeroSection

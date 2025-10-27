@@ -150,3 +150,23 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+/* new form */
+@theme {
+  --color-brand: #008492;
+}
+
+@keyframes infinite-slide {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(calc(-50%));
+  }
+}
+
+/* 💫 Define animation utility */
+@utility animate-infinite-slide {
+  animation: infinite-slide 35s linear infinite;
+}

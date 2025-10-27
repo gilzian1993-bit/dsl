@@ -1,19 +1,19 @@
 
 export const dynamic = "force-dynamic"; 
-import Image from "next/image";
-import styles from "./page.module.css";
-import HeroSection from "../components/sections/HeroSection";
+
 import AirportsWeServe from "../components/sections/AirpportsWeServe";
 import OurFleet from "../components/sections/OurfleetSection";
 import BestExperienceBanner from "../components/sections/BestExperienceBanner";
 import ServicesSection from "../components/sections/Services-Section";
+import NewHeroSection from "./book-ride/NewHeroSection";
+import InfiniteSlide from "./book-ride/InfiniteSlide";
 
 
 export default function Home() {
   return (
       <main >
-     
-      <HeroSection/>
+     <NewHeroSection/>
+     <InfiniteSlide/>
       <AirportsWeServe/>
       <OurFleet/>
       <BestExperienceBanner/>
