@@ -3,56 +3,61 @@
 export async function calculateDistance({
   from,
   to,
-  stop1 = "",
-  stop2 = "",
-  stop3 = "",
-  stop4 = "",
+  stops,
 }: {
   from: string;
   to: string;
-  stop1?: string;
-  stop2?: string;
-  stop3?: string;
-  stop4?: string;
+  stops: string[];
 }) {
   try {
-    // if (!from || !to) {
-    //   return { error: 'Both "from" and "to" parameters are required.' };
-    // }
-
-    // Combine stops into the destinations string (if there are any stops)
-    const destinations = [to, stop1, stop2, stop3, stop4].filter(Boolean).join('|');
-    console.log("from : ",from )
-    console.log("to : ",to )
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(destinations)}&key=AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU`;
-
-    const response = await fetch(url);
-     console.log("response : ",response)
-     if (!response.ok) {
-       return { error: "Failed to fetch distance data from Google Maps API.", status: 500 };
-      }
-      
-      const data = await response.json();
-      
-      const elementStatus = data.rows[0]?.elements[0]?.status;
-       console.log("elementStatus ",elementStatus)
-      if (elementStatus !== "OK") {
-        return { error: "Invalid locations or unable to calculate distance.", status: 500 };
-      }
-      console.log("data.rows[0].elements : ",data.rows[0].elements)
-
-    let totalDistanceInMiles = 0;
-    for (const element of data.rows[0].elements) {
-      if (element.status === "OK") {
-        totalDistanceInMiles += Number(element.distance.value) / 1609.34;  // Convert meters to miles
-      } else {
-        return { error: "One of the locations could not be reached.", status: 500 };
-      }
+    if (!from || !to) {
+      return { error: 'Both "from" and "to" parameters are required.' };
     }
 
-    return { distance: totalDistanceInMiles, status: 200, error: '' };
+
+    // Create route chain — always start from 'from' and end at 'to'
+    const routePoints = [from, ...stops, to];
+
+    let totalDistanceMeters = 0;
+
+    // Loop through all route legs (e.g., from->stop1, stop1->stop2, ..., stop3->to)
+    for (let i = 0; i < routePoints.length - 1; i++) {
+      const origin = routePoints[i];
+      const destination = routePoints[i + 1];
+
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${encodeURIComponent(
+        origin
+      )}&destinations=${encodeURIComponent(
+        destination
+      )}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        return { error: "Failed to fetch distance data from Google Maps API.", status: 500 };
+      }
+
+      const data = await response.json();
+      const element = data.rows[0]?.elements[0];
+
+      if (!element || element.status !== "OK") {
+        return { error: `Failed to calculate distance between "${origin}" and "${destination}".`, status: 500 };
+      }
+
+      totalDistanceMeters += element.distance.value;
+    }
+
+    const distanceInKm = totalDistanceMeters / 1000;
+    const distanceInMiles = totalDistanceMeters / 1609.34;
+
+    return {
+      kmDistance: Number(distanceInKm.toFixed(2)),
+      mileDistance: Number(distanceInMiles.toFixed(2)),
+      status: 200,
+      error: "",
+    };
   } catch (error) {
     console.error("Error calculating distance:", error);
     return { error: "An error occurred while calculating distance.", status: 500 };
   }
-}  
+}
