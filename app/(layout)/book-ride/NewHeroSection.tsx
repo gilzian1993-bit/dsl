@@ -16,7 +16,7 @@ function NewHeroSection() {
          
       
       <div className='text-2xl font-semibold  lg:text-7xl lg::font-bold text-white'>The Best Fleet Service in NewYork</div>
-      <div className='text-base lg:text-2xl text-white'>5% OFF on One Way & 10% OFF on Return</div>
+      <div className='text-base lg:text-2xl text-brand font-bold'>5% OFF on One Way & 10% OFF on Return</div>
 
           </div>
         

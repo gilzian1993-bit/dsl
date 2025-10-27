@@ -4,7 +4,7 @@ import { calculateDistance } from "@/app/actions/getDistance";
 import { hourlyInitialFormData, tripInitialFormData } from "@/constants/storeInitailObjects";
 import { create } from "zustand";
 
-  interface FieldType<T> {
+  export interface FieldType<T> {
   value: T;
   error: string;
   coardinates: string;

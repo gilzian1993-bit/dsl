@@ -41,13 +41,13 @@ useEffect(()=>{
     <div className=' w-full bg-slate-100 flex flex-col min-h-[50vh]'>
         <div ref={headerRef} className='h-24 w-full bg-black'></div>
 
-        <div className='max-w-screen-lg mx-auto py-16 lg:py-24 w-full flex items-center justify-center flex-col gap-6 lg:gap-12 text-center p-3'>
+        <div className='max-w-5xl mx-auto py-16 lg:py-24 w-full flex items-center justify-center flex-col gap-6 lg:gap-12 text-center p-3'>
             
             <div className='w-full flex items-center justify-center flex-col gap-3 lg:gap-5'>
                 <MdDone className='p-2 text-white bg-green-500 rounded-full ' size={45} />
             <div className='text-gray-800 '>Great choice, {formData.name.value}</div>
             <div className='text-black text-2xl lg:text-4xl font-bold'>YOUR RESERVATION IS CONFIRMED</div>
-            <div className='text-gray-800'>We've sent a confirmation email to {formData.email.value}</div>
+            <div className='text-gray-800'>We&apos;ve sent a confirmation email to {formData.email.value}</div>
             </div>
 
          <div className='w-full grid md:grid-cols-3 lg:gap-5'>

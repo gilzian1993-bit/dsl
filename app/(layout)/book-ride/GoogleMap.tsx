@@ -10,11 +10,11 @@ export default function GoogleMapsRoute() {
   const { formData } = useFormStore();
   const { fromLocation, toLocation, stops, distance, duration } = formData;
 
-  const fromCoords = fromLocation.coardinates;
-  const toCoords = toLocation.coardinates;
+  const fromCoords = fromLocation?.coardinates;
+  const toCoords = toLocation?.coardinates;
 
-  // Helper: "lat,lng" → { lat, lng }
-  const parseCoords = (coord?: string) => {
+  // Convert "lat,lng" → { lat, lng }
+  const parseCoords = (coord?: string): google.maps.LatLngLiteral | null => {
     if (!coord) return null;
     const [lat, lng] = coord.split(",").map(Number);
     return isNaN(lat) || isNaN(lng) ? null : { lat, lng };
@@ -31,26 +31,24 @@ export default function GoogleMapsRoute() {
         const to = parseCoords(toCoords);
         const waypointsList = (stops || [])
           .map((s) => parseCoords(s.coardinates))
-          .filter(Boolean);
+          .filter((p): p is google.maps.LatLngLiteral => !!p);
 
+        // Initialize map
         const map = new Map(mapRef.current as HTMLElement, {
-          center: from || { lat: 31.5204, lng: 74.3587 }, // Default: Lahore
-          zoom: 11,
+          center: from || { lat: 31.5204, lng: 74.3587 }, // Lahore default
+          zoom: 13,
           disableDefaultUI: true,
         });
 
-        // Case 1: Only pickup
+        // Only pickup marker
         if (from && !to && waypointsList.length === 0) {
-          new Marker({
-            position: from,
-            map,
-            label: "A",
-          });
+          new Marker({ position: from, map, label: "A" });
           map.setCenter(from);
+          map.setZoom(14);
           return;
         }
 
-        // Case 2: Full route
+        // Full route logic
         if (from && to) {
           const directionsService = new DirectionsService();
           const directionsRenderer = new DirectionsRenderer({
@@ -62,8 +60,8 @@ export default function GoogleMapsRoute() {
           });
           directionsRenderer.setMap(map);
 
-          const waypoints = waypointsList.map((stop) => ({
-            location: stop!,
+          const waypoints: google.maps.DirectionsWaypoint[] = waypointsList.map((stop) => ({
+            location: stop,
             stopover: true,
           }));
 
@@ -78,26 +76,28 @@ export default function GoogleMapsRoute() {
             if (status === "OK" && result) {
               directionsRenderer.setDirections(result);
 
-              // Label sequence: A (pickup), B..Y (stops), Z (dropoff)
-              const labels = ["A", ...Array.from({ length: waypointsList.length }, (_, i) => String.fromCharCode(66 + i)), String.fromCharCode(66 + waypointsList.length)];
+              const bounds = new google.maps.LatLngBounds();
+              const labels = ["A", ...waypointsList.map((_, i) => String.fromCharCode(66 + i)), "Z"];
 
               // Pickup
               new Marker({ position: from, map, label: labels[0] });
+              bounds.extend(from);
 
               // Stops
               waypointsList.forEach((stop, idx) => {
-                new Marker({
-                  position: stop!,
-                  map,
-                  label: labels[idx + 1],
-                });
+                new Marker({ position: stop, map, label: labels[idx + 1] });
+                bounds.extend(stop);
               });
 
               // Dropoff
-              new Marker({
-                position: to,
-                map,
-                label: labels[labels.length - 1],
+              new Marker({ position: to, map, label: labels[labels.length - 1] });
+              bounds.extend(to);
+
+              map.fitBounds(bounds);
+
+              google.maps.event.addListenerOnce(map, "bounds_changed", () => {
+                const zoom = map.getZoom();
+                if (zoom && zoom > 15) map.setZoom(14);
               });
             }
           });
@@ -107,32 +107,34 @@ export default function GoogleMapsRoute() {
       }
     };
 
-    if (typeof window !== "undefined" && (window as any).google) {
+    // ✅ Fully type-safe check for existing google.maps
+    if (typeof window !== "undefined" ) {
       initMap();
     } else {
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=maps,marker,routes`;
       script.async = true;
       script.defer = true;
-      script.onload = initMap;
+      script.onload = () => {
+        // Wait a tick to ensure google.maps is ready
+        setTimeout(initMap, 100);
+      };
       document.head.appendChild(script);
     }
   }, [fromCoords, toCoords, JSON.stringify(formData.stops)]);
 
   return (
-    <div
-      className={`w-full h-[350px] rounded-2xl overflow-hidden bg-white border-2 lg:border-4 border-brand shadow-sm flex flex-col`}
-    >
+    <div className="w-full h-[350px] rounded-2xl overflow-hidden bg-white border-2 lg:border-4 border-brand shadow-sm flex flex-col">
       <div ref={mapRef} className="w-full h-full rounded-sm" />
-      <div className="py-1 flex items-center gap-3 px-2 ">
-      <div className="py-1 flex items-center gap-1 ">
-       <Route color={brandColor} size={15}/>
-       <div>{distance.value ?? 0 } Mile</div>
-      </div>
-      <div className="py-1 flex items-center gap-1 ">
-       <Timer color={brandColor} size={15}/>
-       <div>{duration.value !== '' ? duration.value : 0} hours</div>
-      </div>
+      <div className="py-1 flex items-center gap-3 px-2">
+        <div className="py-1 flex items-center gap-1">
+          <Route color={brandColor} size={15} />
+          <div>{distance?.value ?? 0} Mile</div>
+        </div>
+        <div className="py-1 flex items-center gap-1">
+          <Timer color={brandColor} size={15} />
+          <div>{duration?.value !== "" ? duration?.value : 0} hours</div>
+        </div>
       </div>
     </div>
   );

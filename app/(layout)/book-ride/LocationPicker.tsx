@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
 import { SlLocationPin } from "react-icons/sl";
-import useFormStore, { FormDataType } from "@/stores/FormStore";
+import useFormStore, { FieldType, FormDataType } from "@/stores/FormStore";
 
 interface LocationInputProps {
   field: keyof FormDataType;
@@ -47,7 +47,7 @@ export default function LocationInput({
   const fieldData =
      field === "stops" 
       ? formData.stops[index!]
-      : (formData[field as keyof FormDataType] as any);
+      : (formData[field as keyof FormDataType] as FieldType<string>);
 
      
 
