@@ -8,6 +8,7 @@ import { fleets } from './CarList'
 import SelectableCheckbox from './SelectableCheckbox'
 import AddReturn from './AddReturn'
 import LoadingButton from './LoadingButton'
+import SeatSelectBox from './SelectBox'
 
 function Step3() {
     const {formData, setFormData, changeStep, formLoading} = useFormStore();
@@ -33,6 +34,8 @@ const bagsArray = Array.from(
     }
   }
 )
+console.log("formData.date.value : ",formData.date.value)
+console.log("formData.date.value !== '' ? false : true : ",formData.date.value !== '' ? false : true)
   return (
     <div className='flex flex-col gap-5 w-full'>
         <div className='text-2xl'>Details</div>
@@ -42,28 +45,33 @@ const bagsArray = Array.from(
             <PhoneInput/>
             <DetailsInput field='email' placeholder='Your email' Icon={Mail} type='email' />
             <NewDateTimePicker 
-        selectedDate={formData.date.value}
-        selectedTime={formData.time.value}
-        setFormData={setFormData}
-        dateFieldName="date"
-        timeFieldName="time" 
-         placeholder='Select Date & Time'
-         isDisable={false}
-        />
+              selectedDate={formData.date.value}
+              selectedTime={formData.time.value}
+              setFormData={setFormData}
+              dateFieldName="date"
+              timeFieldName="time" 
+              placeholder='Select Date & Time'
+              isDisable={false}
+            />
         <div className='grid grid-cols-2 gap-3' >
             <NewDropdownInput Icon={Users} fieldName='passengers' placeholder='No. of Passengers' options={passengersArray} />
             <NewDropdownInput Icon={LuggageIcon} fieldName='bags' placeholder='No. of Bags' options={bagsArray} />
         </div>
         <AddReturn/>
-         {formData.isReturn.value && <NewDateTimePicker 
+        <div className={`w-full ${formData.isReturn.value ? 'overflow-visible' : 'overflow-hidden'} transition-all duration-500`}
+       style={{ maxHeight: formData.isReturn.value ? '200px' : '0' }}>
+      <div className={`flex flex-col gap-3 pt-3 opacity-${formData.isReturn.value ? '100' : '0'} transition-opacity duration-500`}>
+     <NewDateTimePicker 
         selectedDate={formData.returnDate.value}
         selectedTime={formData.returnTime.value}
         setFormData={setFormData}
         dateFieldName="returnDate"
-        minSelectableDate={new Date(formData.date.value)}
+        minSelectableDate={new Date(formData.date.value )}
         isDisable={formData.date.value === '' ? true : false}
         timeFieldName="returnTime" placeholder='Select Return Date & Time'/>
-        }
+       </div>
+       </div>
+         
 
        <div className="w-full">
        <SelectableCheckbox fieldName='isAirportPickup' label='Airport Pickup Details' />
@@ -71,15 +79,34 @@ const bagsArray = Array.from(
       <div className="w-full overflow-hidden transition-all duration-500"
        style={{ maxHeight: formData.isAirportPickup.value ? '200px' : '0' }}>
       <div className={`flex flex-col gap-3 pt-3 opacity-${formData.isAirportPickup.value ? '100' : '0'} transition-opacity duration-500`}>
+      
       <DetailsInput field='flightName' placeholder='Airline Name' Icon={Plane} type='text' />
       <DetailsInput field='flightNumber' placeholder='Flight Number' Icon={Plane} type='text' />
+       </div>
+       </div>
       </div>
-     </div>
-    </div>
 
           <div className='font-bold'>Equipment and Extras</div>
-        <SelectableCheckbox fieldName='isFlightTrack' label='Car Seats' subLabel='$ 10'  />
         <SelectableCheckbox fieldName='isMeetGreet' label='Meet & Greet' subLabel='$ 25'  />
+        <div className='grid grid-cols-3 gap-3 sm:gap-5 w-full'>
+          <SeatSelectBox field='rearSeat' placeholder='Rear Seat' />
+          <SeatSelectBox field='boosterSeat' placeholder='Booster Seat' />
+          <SeatSelectBox field='infantSeat' placeholder='Infant Seat' />
+        </div>
+
+<div className="w-full overflow-hidden transition-all duration-500"
+       style={{ maxHeight: formData.isReturn.value ? '200px' : '0' }}>
+      <div className={`flex flex-col gap-3 pt-3 opacity-${formData.isReturn.value ? '100' : '0'} transition-opacity duration-500`}>
+      <div className='font-bold'>Return Equipment and Extras</div>
+        <SelectableCheckbox fieldName='isReturnMeetGreet' label='Meet & Greet' subLabel='$ 25'  />
+       <div className='grid grid-cols-3 gap-3 sm:gap-5 w-full'>
+          <SeatSelectBox field='returnRearSeat' placeholder='Rear Seat' />
+          <SeatSelectBox field='returnBoosterSeat' placeholder='Booster Seat' />
+          <SeatSelectBox field='returnInfantSeat' placeholder='Infant Seat' />
+        </div>
+       </div>
+       </div>
+
         </div>
         {
           formLoading ? <LoadingButton/> :
