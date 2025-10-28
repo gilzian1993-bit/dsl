@@ -35,7 +35,7 @@ export const fleets = [
     name: "MID SUV",
     image: "/images/SUV/lincoln-aviator.png",
     price10Miles: 110,
-    price: 110,
+    price: 3.25,
     hourly: 90,
     passengers: 4,
     suitcases: 4,
@@ -52,7 +52,7 @@ export const fleets = [
     name: "SUV",
     image: "/images/SUV/cadilac-escalate.png",
     price10Miles: 110,
-    price: 110,
+    price: 3.5,
     hourly: 100,
     passengers: 7,
     suitcases: 6,
@@ -101,7 +101,7 @@ function CarList() {
           price = item.price10Miles;
           price += formData.distance.value > 10 ? (formData.distance.value - 10 ) * item.price : 0;
         }
-        const graduatiy = ((price/100)*20);
+        const graduatiy = (price/100)*20;
         const totalPrice =  (price + graduatiy).toFixed(2);
         return <div
           key={item.name}
