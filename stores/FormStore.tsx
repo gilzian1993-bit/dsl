@@ -13,14 +13,13 @@ import { create } from "zustand";
   step: number;
   }
 
-  export interface FormDataType {
+ export interface FormDataType {
   fromLocation: FieldType<string>;
   toLocation: FieldType<string>;
-  stops: FieldType<string>[];        
+  stops: FieldType<string>[];
   duration: FieldType<string>;
   distance: FieldType<number>;
   car: FieldType<string>;
-  price: FieldType<string>;
   name: FieldType<string>;
   phone: FieldType<string>;
   email: FieldType<string>;
@@ -33,11 +32,39 @@ import { create } from "zustand";
   flightName: FieldType<string>;
   flightNumber: FieldType<string>;
   paymentId: FieldType<string>;
+
+  // Seats and Add-ons
+  rearSeat: FieldType<number>;
+  boosterSeat: FieldType<number>;
+  infantSeat: FieldType<number>;
+  returnRearSeat: FieldType<number>;
+  returnBoosterSeat: FieldType<number>;
+  returnInfantSeat: FieldType<number>;
+
+  // Boolean options
   isAirportPickup: FieldType<boolean>;
   isFlightTrack: FieldType<boolean>;
   isMeetGreet: FieldType<boolean>;
+  isReturnMeetGreet: FieldType<boolean>;
   isReturn: FieldType<boolean>;
-  }
+
+  // Computed fields
+  basePrice: FieldType<number>;
+  graduatiy: FieldType<number>;
+  tax: FieldType<number>;
+  discount: FieldType<number>;
+  isMeetGreetPrice: FieldType<number>;
+  rearSeatPrice: FieldType<number>;
+  infantSeatPrice: FieldType<number>;
+  boosterSeatPrice: FieldType<number>;
+  returnPrice: FieldType<number>;
+  isReturnMeetGreetPrice: FieldType<number>;
+  returnRearSeatPrice: FieldType<number>;
+  returnInfantSeatPrice: FieldType<number>;
+  returnBoosterSeatPrice: FieldType<number>;
+  totalPrice: FieldType<number>;
+}
+
 
   interface FormStoreType {
   step: number;
@@ -64,6 +91,7 @@ import { create } from "zustand";
   changeCategory: (newCategory: "trip" | "hourly") => void;
   manageStops: (action: "add" | "remove", index?: number) => void;
   toggleMobileDropdown: () => void;
+  calculatePrices: () => void;
   resetForm: () => void;
   }
 
@@ -88,12 +116,15 @@ import { create } from "zustand";
   isOrderDone: false,
   orderId:'',
   setFormData: (key, value, coardinates = "", index) => {
+    const {calculatePrices} = get()
+    
     if (key === "stops" && typeof index === "number") {
       set((state) => {
         const stops = [...state.formData.stops];
         stops[index] = { ...stops[index], value: value as string, coardinates, error:'' };
         return { formData: { ...state.formData, stops } };
       });
+      calculatePrices()
       return;
     }
     set((state) => ({
@@ -102,6 +133,7 @@ import { create } from "zustand";
         [key]: { ...state.formData[key as keyof FormDataType], value, coardinates, error:''  },
       },
     }));
+     calculatePrices();
   },
   setFieldOptions: (key, required) => {
     if(key==='stops') return;
@@ -123,7 +155,7 @@ import { create } from "zustand";
     (Object.keys(formData) as (keyof FormDataType)[]).forEach((k) => {
       if (k === "stops") return;
       const item = formData[k] as FieldType<string>;
-      const hasErr = item.step === _step && item.required && !item.value;
+      const hasErr = item.step === _step && item.required && !item.value && Number(item.value) !== 0 ;
       const hasErr2 = item.step === _step && item.coardinatesRequired && !item.coardinates;
       (updated[k] as FieldType<string>) = { ...item, error: hasErr ? `${k} is required` : hasErr2 ? `${k} coordinates required` : "" };
     });
@@ -163,8 +195,9 @@ import { create } from "zustand";
 
     set((state) => ({ ...state, formError: "", formLoading: true }));
 
+
     if (validateData(_step)) {
-      console.log("not validate")
+      console.log("not validate ",formData)
       set((state) => ({ ...state, formError: "", formLoading: false }));
       return false;
     }
@@ -327,7 +360,60 @@ import { create } from "zustand";
   toggleMobileDropdown:()=>{
     set((state)=>({...state, isMobileDropdownOpen:!state.isMobileDropdownOpen}))
   },
-  
+  calculatePrices: () => {
+  set((state) => {
+    const { formData } = state;
+
+    const basePrice = formData.basePrice.value;
+    const returnPrice = formData.isReturn.value ? basePrice - ((basePrice / 100) * 5) : 0;
+    const graduatiy = ((basePrice + returnPrice)/100) * 20;
+    const tax = ((basePrice + returnPrice)/100) * 5;
+    const discount = ((basePrice + returnPrice)/100) * 5;
+    const isMeetGreetPrice = formData.isMeetGreet.value ? 25 : 0;
+    const rearSeatPrice = formData.rearSeat.value * 10;
+    const infantSeatPrice = formData.infantSeat.value * 10;
+    const boosterSeatPrice = formData.boosterSeat.value * 10;
+    const isReturnMeetGreetPrice = formData.isReturnMeetGreet.value ? 25 : 0;
+    const returnRearSeatPrice = formData.returnRearSeat.value * 10;
+    const returnInfantSeatPrice = formData.returnInfantSeat.value * 10;
+    const returnBoosterSeatPrice = formData.returnBoosterSeat.value * 10;
+
+    const totalPrice =
+      basePrice +
+      graduatiy +
+      tax +
+      isMeetGreetPrice +
+      rearSeatPrice +
+      infantSeatPrice +
+      boosterSeatPrice +
+      returnPrice +
+      returnBoosterSeatPrice +
+      returnInfantSeatPrice +
+      returnRearSeatPrice +
+      isReturnMeetGreetPrice -
+      discount;
+
+    return {
+      formData: {
+        ...formData,
+        basePrice: { ...formData.basePrice, value: basePrice },
+        graduatiy: { ...formData.graduatiy, value: graduatiy },
+        tax: { ...formData.tax, value: tax },
+        discount: { ...formData.discount, value: discount },
+        isMeetGreetPrice: { ...formData.isMeetGreetPrice, value: isMeetGreetPrice },
+        rearSeatPrice: { ...formData.rearSeatPrice, value: rearSeatPrice },
+        infantSeatPrice: { ...formData.infantSeatPrice, value: infantSeatPrice },
+        boosterSeatPrice: { ...formData.boosterSeatPrice, value: boosterSeatPrice },
+        returnPrice: { ...formData.returnPrice, value: returnPrice },
+        isReturnMeetGreetPrice: { ...formData.isReturnMeetGreetPrice, value: isReturnMeetGreetPrice },
+        returnRearSeatPrice: { ...formData.returnRearSeatPrice, value: returnRearSeatPrice },
+        returnInfantSeatPrice: { ...formData.returnInfantSeatPrice, value: returnInfantSeatPrice },
+        returnBoosterSeatPrice: { ...formData.returnBoosterSeatPrice, value: returnBoosterSeatPrice },
+        totalPrice: { ...formData.totalPrice, value: totalPrice },
+      },
+    };
+  });
+},
   resetForm: () => set({ formData: tripInitialFormData, step: 1, category: "trip", formError: "", formLoading: false, isMobileDropdownOpen:false, isOrderDone:false, orderId:'' }),
   }));
 

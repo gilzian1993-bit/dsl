@@ -14,11 +14,10 @@ export default function Home() {
       <main >
      <NewHeroSection/>
      <InfiniteSlide/>
-      <AirportsWeServe/>
-      <OurFleet/>
-      <BestExperienceBanner/>
-      <ServicesSection/>
-  
+     <AirportsWeServe/>
+     <OurFleet/>
+     <BestExperienceBanner/>
+     <ServicesSection/>
     </main>
   );
 }

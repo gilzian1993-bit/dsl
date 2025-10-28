@@ -1,40 +1,11 @@
 import { FormDataType } from "@/stores/FormStore"
 
-
 const commonFormDataFields = {
-  fromLocation: {
-    value: "",
-    coardinates: "",
-    error: "",
-    required: true,
-    coardinatesRequired: true,
-    step: 1,
-  },
-  toLocation: {
-    value: "",
-    coardinates: "",
-    error: "",
-    required: true,
-    step: 1,
-    coardinatesRequired: true,
-  },
+  fromLocation: { value: "", coardinates: "", error: "", required: true, coardinatesRequired: true, step: 1 },
+  toLocation: { value: "", coardinates: "", error: "", required: true, coardinatesRequired: true, step: 1 },
   stops: [],
-  duration: {
-    value: "",
-    error: "",
-    required: false,
-    step: 1,
-    coardinates: "",
-    coardinatesRequired: false,
-  },
-  distance: {
-    value: 0,
-    error: "",
-    required: true,
-    step: 2,
-    coardinates: "",
-    coardinatesRequired: false,
-  },
+  duration: { value: "", error: "", required: false, step: 1, coardinates: "", coardinatesRequired: false },
+  distance: { value: 0, error: "", required: true, step: 2, coardinates: "", coardinatesRequired: false },
   car: { value: "", error: "", required: true, step: 2, coardinates: "", coardinatesRequired: false },
   price: { value: "20", error: "", required: true, step: 2, coardinates: "", coardinatesRequired: false },
   name: { value: "", error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
@@ -51,8 +22,31 @@ const commonFormDataFields = {
   isAirportPickup: { value: false, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   isFlightTrack: { value: false, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   isMeetGreet: { value: false, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  isReturnMeetGreet: { value: false, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   isReturn: { value: false, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   paymentId: { value: "", error: "", required: true, step: 4, coardinates: "", coardinatesRequired: false },
+  rearSeat: { value: 0, error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
+  infantSeat: { value: 0, error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
+  boosterSeat: { value: 0, error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
+  returnRearSeat: { value: 0, error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
+  returnInfantSeat: { value: 0, error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
+  returnBoosterSeat: { value: 0, error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
+
+  // 🧮 Computed Price Fields
+  basePrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  graduatiy: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  tax: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  discount: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  isMeetGreetPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  rearSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  infantSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  boosterSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  returnPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  isReturnMeetGreetPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  returnRearSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  returnInfantSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  returnBoosterSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  totalPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
 }
 
 export const tripInitialFormData: FormDataType = {

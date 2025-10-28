@@ -34,7 +34,7 @@ function Page() {
   return (
     <div className=' w-full bg-slate-50 flex flex-col min-h-[50vh]'>
         <div ref={headerRef} className='h-24 w-full bg-black header'></div>
-        <div className='max-w-screen-lg mx-auto flex flex-col gap-5 lg:gap-10 w-full py-5 lg:py-16 px-2 '>
+        <div className='max-w-5xl mx-auto flex flex-col gap-5 lg:gap-10 w-full py-5 lg:py-16 px-2 '>
           <div className={`w-full border-2 border-brand rounded-md flex flex-col lg:hidden ${isMobileDropdownOpen ? 'gap-5' : 'gap-0'}`}>
              <div className={`overflow-hidden transition-all duration-700 flex flex-col gap-3  ease-out
              ${isMobileDropdownOpen ? 'max-h-[2000px] opacity-100  p-1' : 'max-h-0 opacity-0 p-0' }

@@ -18,7 +18,7 @@ export const fleets = [
     name: "SEDAN",
     image: "/images/sedan/cadilac-xts.png",
     price10Miles: 85,
-    price: 85,
+    price: 3,
     hourly: 80,
     passengers: 3,
     suitcases: 3,
@@ -84,22 +84,25 @@ export const fleets = [
 function CarList() {
   const { formData, category, setFormData, changeStep, formLoading } = useFormStore();
 
-  const handleSelect = (item: (typeof fleets)[0],price:number) => {
+  const handleSelect = (item: (typeof fleets)[0], price:number, graduatiy:number) => {
     setFormData("car", item.name, '');
-    setFormData("price", price.toString(), '');
+    setFormData("basePrice", price, '');
+    setFormData("graduatiy", graduatiy, '');
     changeStep(true,2);
   };
 
   return (
     <div className="w-full flex flex-col gap-2 md:gap-4">
       {fleets.map((item) => {
-        let price = '0';
+        let price = 0;
         if(category==='hourly'){
-           price = (Number(formData.duration.value) * item.hourly).toFixed()
+           price = (Number(formData.duration.value) * item.hourly)
         } else{
-          const distance = formData.distance.value - 10;
-          price = ((Number(distance) * item.price) + item.price10Miles).toFixed()
+          price = item.price10Miles;
+          price += formData.distance.value > 10 ? (formData.distance.value - 10 ) * item.price : 0;
         }
+        const graduatiy = ((price/100)*20);
+        const totalPrice =  (price + graduatiy).toFixed(2);
         return <div
           key={item.name}
           className={cn(
@@ -107,6 +110,7 @@ function CarList() {
             "hover:shadow-md transition-shadow duration-200" , item.name===formData.car.value ? 'border-brand' : 'border-gray-200'
           )}
         >
+
           {/* Image Section */}
           <div className=" bg-white flex justify-center items-center w-full col-span-2">
             <Image
@@ -137,10 +141,10 @@ function CarList() {
             </div>
             <div className="flex items-start gap-1 md:gap-3 w-full">
               <div className="text-xl md:text-3xl font-bold text-gray-900">
-                ${price}
+                ${totalPrice}
               </div>
               <div className="text-[10px] lg:text-sm text-red-500 line-through">
-                ${(Number(price)+(Number(price)/5)).toFixed(2)}
+                ${(Number(totalPrice)+((Number(totalPrice)/100)*5)).toFixed(2)}
               </div>
             </div>
           </div>
@@ -151,14 +155,14 @@ function CarList() {
             {formLoading && formData.car.value===item.name ? <LoadingButton/>  :
             item.isAvailable ?
             <button
-              onClick={() => handleSelect(item,Number(price))}
+              onClick={() => handleSelect(item, price, graduatiy)}
               className={`bg-brand hover:bg-[#04272b] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base w-fit flex justify-center items-center gap-1`}
             >
               <span>Select</span> <span className="max-md:hidden">Vehicle</span>
               <ArrowRight className="max-lg:hidden text-2xl" size={20}/>
               <ArrowRight className="lg:hidden" size={15}/>
             </button>
-            : <Link href='/contact' className={`bg-brand hover:bg-[#04272b] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base w-fit flex justify-center items-center gap-1 w-full`}>Request</Link>
+            : <Link href='/contact' className={`bg-brand hover:bg-[#0294a4] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base flex justify-center items-center gap-1 w-full`}>Request</Link>
             }
           </div>
         </div>

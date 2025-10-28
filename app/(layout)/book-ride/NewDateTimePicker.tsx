@@ -43,7 +43,6 @@ export default function NewDateTimePicker({
   // Calendar logic
   const getCalendarDays = () => {
     const startOfCurrentMonth = startOfMonth(currentMonth)
-    const endOfCurrentMonth = endOfMonth(currentMonth)
     const startDayOfWeek = (getDay(startOfCurrentMonth) + 6) % 7
 
     const startDate = new Date(startOfCurrentMonth)
@@ -69,6 +68,10 @@ export default function NewDateTimePicker({
     setFormData(timeFieldName, e.target.value)
   }
   const isError = !Array.isArray(formData[dateFieldName]) && formData[dateFieldName].error || !Array.isArray(formData[timeFieldName]) && formData[timeFieldName].error ;
+
+  console.log("isDisable : ", dateFieldName , isDisable , open)
+  console.log("!isDisable && open  : ",!isDisable && open )
+
   return (
     <div className="relative w-full ">
         <div className={`p-2 rounded-md w-full border text-sm flex items-center gap-2 md:gap-5 bg-white ${isError ? 'border-red-500' : 'border-gray-300'}`}>
@@ -84,13 +87,13 @@ export default function NewDateTimePicker({
             }`
             : ""
         }
-        onClick={() => { if(isDisable){ return;} setOpen((prev) => !prev)}}
+        onClick={() => { console.log("working "); setOpen((prev) => !prev)}}
         className="w-full focus:outline-none bg-transparent border-transparent"
         placeholder={placeholder}
         />
 
         </div>
-      {open && (
+      {!isDisable && open && (
         <div className="absolute top-full left-0 mt-2 z-30 bg-black text-white rounded-xl shadow-2xl border border-gray-700 p-3 w-full max-w-72 md:max-w-80 ">
           {/* Calendar Header */}
           <div className="flex items-center justify-between text-sm mb-2">

@@ -7,7 +7,7 @@ import useFormStore, { FieldType, FormDataType } from "@/stores/FormStore";
 
 interface LocationInputProps {
   field: keyof FormDataType;
-  label: string;
+  label?: string;
   placeholder: string;
   index?: number; 
   isStop?: boolean;
@@ -58,7 +58,7 @@ export default function LocationInput({
       {/* Input */}
       {!isLoaded ? (
         <div className="flex flex-col gap-1 w-full">
-          <div className="text-sm font-semibold text-gray-700">{label}</div>
+          {label && <div className="text-sm font-semibold text-gray-700">{label}</div>}
         <div className="relative flex-1">
           <SlLocationPin className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
@@ -69,7 +69,7 @@ export default function LocationInput({
             </div>
       ) : (
         <div className="flex flex-col gap-1 w-full">
-          <div className="text-sm font-semibold text-gray-700">{label}</div>
+        {label &&  <div className="text-sm font-semibold text-gray-700">{label}</div> }
         <Autocomplete
           onLoad={(auto) => (autocompleteRef.current = auto)}
           onPlaceChanged={handlePlaceChanged}

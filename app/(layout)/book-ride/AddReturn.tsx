@@ -56,7 +56,7 @@ export default function AddReturn() {
 
       <div className="h-full flex items-end justify-end ml-auto">
         <div
-          onClick={() => {setFormData("isReturn", !isReturn); setFieldOptions('returnDate',isReturn? false : true); setFieldOptions('returnTime',isReturn? false : true) }}
+          onClick={() => {setFormData("isReturn", !isReturn); setFieldOptions('returnDate',isReturn? false : true); setFieldOptions('returnTime',isReturn? false : true); setFieldOptions('returnLocation',isReturn? false : true) }}
           className={`px-2 md:px-6 py-1 md:py-2 rounded-sm border border-black text-nowrap cursor-pointer transition-all duration-200 max-lg:text-sm ${
             isReturn
               ? "bg-black text-white hover:bg-red-600 hover:border-red-600"
