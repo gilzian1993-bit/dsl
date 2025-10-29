@@ -231,104 +231,117 @@ import { create } from "zustand";
     }
 
     if (_step === 4) {
-      const original = Object.entries(formData).reduce<Record<string, string | boolean | number | string[] >>((acc, [key, item]) => {
-        if (key === "stops") {
-          acc.stops = formData.stops.map((s) => (s.value));
-        } else {
-          acc[key] = (item as FieldType<string | boolean | number>).value;
-        }
-        return acc;
-      }, {});
+  const { formData } = get();
 
-      try {
-        const newObject = {
-  id: original.paymentId || null,
-  name: original.name,
-  email: original.email,
-  phone_number: original.phone,
-
-  from_location: original.fromLocation,
-  to_location: original.toLocation,
-  pickup_date: original.date,
-  pickup_time: original.time,
-  return_date: original.returnDate,
-  return_time: original.returnTime,
-
-  Passengers: original.passengers,
-  luggage: original.bags,
-
-  // seats
-  rear_seats: 0,
-  booster_seats: 0,
-  carSeats: 0,
-  infantSeat: 0,
-  return_rear_seats: 0,
-  return_booster_seats: 0,
-  returnCarSeats: 0,
-  returnInfantSeat: 0,
-
-  // flight info
-  flight_number: original.flightNumber,
-  airline_code: original.flightName || "",
-  return_flight_number: "",
-  return_airline_code: "",
-
-  // trip info
-  returnTrip: original.isReturn,
-  tripType: original.isReturn ? "return" : "oneway",
-
-  // car and pricing
-  car_type: original.car,
-  base_price: original.price,
-  distance: original.distance,
-  price: original.price,
-  tax: 0,
-  gratuity: 0,
-  airport_fee: original.isAirportPickup ? 10 : 0, // example fee
-  hours: original.duration || "",
-
-  // stops
-  stop1: (original.stops as string[]) [0] || "",
-  stop2: (original.stops as string[])[1] || "",
-  stop3: (original.stops as string[])[2] || "",
-  stop4: (original.stops as string[])[3] || "",
-  stopsCount: (original.stops as string[]).length,
-
-  // meet greet
-  meetGreet: original.isMeetGreet,
-  returnMeetGreet: false,
-
-  // return trip stops
-  return_pickup: "",
-  return_stop1: "",
-  return_stop2: "",
-  return_stop3: "",
-  return_stop4: "",
-  returnStopsCount: 0,
-};
-        console.log('orderData ',newObject)
-        const res = await fetch("https://devsquare-apis.vercel.app/api/dslLimoService/booking", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(newObject),
-                    });
-                    const response = await res.json()
-        if (response.status !== 201) {
-          set({ formError: response.error, formLoading: false });
-          return false;
-        }
-        set({ formError: "", formLoading: false, orderId:response?.order?.id ?? ''  });
-      } catch (error) {
-        set({ formError: error instanceof Error ? error.message : "Failed to place order", formLoading: false });
-        return false;
-      }
+  const original = Object.entries(formData).reduce<Record<string, string[] |string| number | boolean>>((acc, [key, item]) => {
+    if (key === "stops") {
+      acc.stops = formData.stops.map((s) => s.value);
+    } else {
+      acc[key] = (item as FieldType<string>).value;
     }
+    return acc;
+  }, {});
+
+  try {
+    const newObject = {
+      // 🔹 Basic Info
+      payment_id: original.paymentId ,
+      name: original.name,
+      email: original.email,
+      phone_number: original.phone,
+
+      // 🔹 Route Info
+      from_location: original.fromLocation,
+      to_location: original.toLocation,
+      stops: original.stops ?? [],
+      pickup_date: original.date,
+      pickup_time: original.time,
+      return_date: original.returnDate,
+      return_time: original.returnTime,
+
+      // 🔹 Passenger Info
+      passengers: original.passengers,
+      luggage: original.bags,
+
+      // 🔹 Flight Info
+      flight_number: original.flightNumber,
+      airline_code: original.flightName || "",
+      return_flight_number: "",
+      return_airline_code: "",
+
+      // 🔹 Car & Trip Info
+      car_type: original.car,
+      returnTrip: original.isReturn,
+      tripType: original.isReturn ? "return" : "oneway",
+      hours: original.duration || "",
+      distance: original.distance || 0,
+
+      // 🔹 Seats
+      rear_seats: original.rearSeat,
+      booster_seats: original.boosterSeat,
+      infantSeat: original.infantSeat,
+      return_rear_seats: original.returnRearSeat,
+      return_booster_seats: original.returnBoosterSeat,
+      return_infantSeat: original.returnInfantSeat,
+
+      // 🔹 Meet & Greet
+      meetGreet: original.isMeetGreet,
+      returnMeetGreet: original.isReturnMeetGreet,
+
+      // 🔹 Pricing (all computed and extra prices)
+      base_price: original.basePrice,
+      gratuity: original.graduatiy,
+      tax: original.tax,
+      discount: original.discount,
+      isMeetGreetPrice: original.isMeetGreetPrice,
+      rearSeatPrice: original.rearSeatPrice,
+      infantSeatPrice: original.infantSeatPrice,
+      boosterSeatPrice: original.boosterSeatPrice,
+      returnPrice: original.returnPrice,
+      isReturnMeetGreetPrice: original.isReturnMeetGreetPrice,
+      returnRearSeatPrice: original.returnRearSeatPrice,
+      returnInfantSeatPrice: original.returnInfantSeatPrice,
+      returnBoosterSeatPrice: original.returnBoosterSeatPrice,
+      totalPrice: original.totalPrice,
+
+      // 🔹 Optional flags
+      isAirportPickup: original.isAirportPickup,
+      isFlightTrack: original.isFlightTrack,
+      category
+    };
+
+    console.log("🚀 Sending booking payload:", newObject);
+
+    const response = await fetch('/api/send-booking',{method:'POST', body:JSON.stringify(newObject)})
+     const res = await response.json()
+
+
+    if (!res.success) {
+      set({ formError: res.message ?? "Booking failed", formLoading: false });
+      return false;
+    }
+
+    // Success ✅
+    set({
+      formError: "",
+      formLoading: false,
+    });
+
+  } catch (error) {
+    set({
+      formError: error instanceof Error ? error.message : "Failed to place order",
+      formLoading: false,
+    });
+    return false;
+  }
+}
+
     if(_step===4 && isNext){
       set((state) => ({ ...state, formError: "", formLoading: false, step: 1, isOrderDone:true }));
       return true;
     }
     console.log("working fine : ",_step)
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     console.log("working fine 2 : ",_step)
     set((state) => ({ ...state, formError: "", formLoading: false, step: isNext ? _step + 1 : Math.max(1, _step - 1) }));
     return true; 
