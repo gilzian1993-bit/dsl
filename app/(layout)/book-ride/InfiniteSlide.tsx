@@ -17,7 +17,7 @@ const list = [
     },
     {
       image: three,
-      text: 'New Jarsey to Everywhere'
+      text: 'Tri State To Anywhere'
     },
     {
       image: four,
