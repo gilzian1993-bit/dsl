@@ -12,6 +12,7 @@ import { toast, Toaster } from "sonner";
 import TimeInput from "../time-picker";
 import { SlLocationPin } from "react-icons/sl";
 import { X } from "lucide-react";
+import { GOOGLE_MAPS_API_KEY } from "@/lib/config";
 
 interface LatLng {
   lat: number;
@@ -153,8 +154,7 @@ export default function BookingForm(props: BookingFormProps) {
   const libraries: Libraries = ["places"];
   const { isLoaded } = useLoadScript({
     googleMapsApiKey:
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-      "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
+      GOOGLE_MAPS_API_KEY ,
     libraries,
   });
 useEffect(() => {

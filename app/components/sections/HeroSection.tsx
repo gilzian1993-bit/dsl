@@ -112,7 +112,7 @@ export default HeroSection
 //   const libraries: Libraries = ["places"]
 //   // Google Places Loader
 //   const { isLoaded } = useLoadScript({
-//     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
+//     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
 //     libraries,
 //   })
 
