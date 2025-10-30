@@ -52,7 +52,7 @@ export default function SelectableCheckbox({
           {label}
         </label>
         {subLabel && (
-          <span className="text-xs text-gray-500 mt-[1px]">{subLabel}</span>
+          <span className="text-xs text-gray-500 mt-px">{subLabel}</span>
         )}
       </div>
     </div>

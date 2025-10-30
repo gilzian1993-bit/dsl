@@ -27,7 +27,7 @@ function SeatSelectBox({ field, placeholder }: SeatSelectBoxType) {
         onValueChange={(val) => setFormData(field, Number(val))}
       >
         <SelectTrigger
-          className={`p-2 rounded-md w-full border text-sm flex items-center  gap-2 md:gap-5 bg-white ${
+          className={`p-2 rounded-md w-full border flex items-center  gap-2 md:gap-5 bg-white ${
             error ? 'border-red-500' : 'border-gray-300'
           }`}
         >

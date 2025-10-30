@@ -83,7 +83,7 @@ export default function LocationInput({
               value={fieldData?.value || ""}
               onChange={(e) => handleInputChange(e.target.value)}
               placeholder={placeholder}
-              className={`w-full pl-8 md:pl-10 pr-2 md:pr-3 py-2 md:py-2.5 border  rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] text-black text-sm md:text-base bg-white ${fieldData.error ? ' border-red-500' : 'border-gray-300'} `}
+              className={`w-full pl-8 md:pl-10 pr-2 md:pr-3 py-2 md:py-2.5 border  rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4910B] text-black text-base bg-white ${fieldData.error ? ' border-red-500' : 'border-gray-300'} `}
             />
           </div>
         </Autocomplete>

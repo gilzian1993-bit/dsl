@@ -73,7 +73,7 @@ useEffect(()=>{
         <div key={`marker-${i}`} className="relative flex items-center justify-center">
           <div
             className={`relative rounded-full bg-white z-10 flex items-center justify-center
-              ${isStart || isEnd ? 'border-[4px] border-gray-700 w-4 h-4' : 'border-[2px] border-gray-600 w-4 h-4'}`}
+              ${isStart || isEnd ? 'border-4 border-gray-700 w-4 h-4' : 'border-2 border-gray-600 w-4 h-4'}`}
           >
        
             {!isStart && !isEnd && (
@@ -95,7 +95,7 @@ useEffect(()=>{
         nodes.push(
           <div key={`between-${i}`} className="flex flex-col items-center">
            
-            <div className="w-px h-[18.5px] sm:h-[25px] border-l-[3px] border-dotted border-gray-300" />
+            <div className="w-px h-[20.5px] sm:h-[25px] border-l-[3px] border-dotted border-gray-300" />
 
            
             <button
@@ -108,7 +108,7 @@ useEffect(()=>{
             </button>
 
             
-            <div className="w-px h-[18.5px] sm:h-[25px] border-l-[3px] border-dotted border-gray-300" />
+            <div className="w-px h-[20.5px] sm:h-[25px] border-l-[3px] border-dotted border-gray-300" />
           </div>
         );
       }

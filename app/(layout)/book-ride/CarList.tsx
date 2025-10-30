@@ -156,7 +156,7 @@ function CarList() {
             item.isAvailable ?
             <button
               onClick={() => handleSelect(item, price, graduatiy)}
-              className={`bg-brand hover:bg-[#04272b] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base w-fit flex justify-center items-center gap-1`}
+              className={`bg-brand hover:bg-[#0294a4] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base w-fit flex justify-center items-center gap-1`}
             >
               <span>Select</span> <span className="max-md:hidden">Vehicle</span>
               <ArrowRight className="max-lg:hidden text-2xl" size={20}/>
