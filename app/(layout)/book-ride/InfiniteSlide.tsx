@@ -18,6 +18,7 @@ const list = [
     {
       image: three,
       text: 'New Jersey to Everywhere'
+      text: 'Tri State To Anywhere'
     },
     {
       image: four,
