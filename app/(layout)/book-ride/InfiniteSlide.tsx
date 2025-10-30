@@ -17,6 +17,7 @@ const list = [
     },
     {
       image: three,
+      text: 'New Jersey to Everywhere'
       text: 'Tri State To Anywhere'
     },
     {
@@ -31,7 +32,7 @@ const list = [
 
 function InfiniteSlide() {
 
-    return <div className="overflow-hidden flex max-w-screen-lg mx-auto w-full ">
+    return <div className="overflow-hidden flex max-w-5xl mx-auto w-full ">
           <div className="flex items-center max-lg:animate-infinite-slide px-2 py-8">
             { list.map((item)=>{
               return <div key={item.text} className="flex items-center text-gray-700 text-xl font-medium " >

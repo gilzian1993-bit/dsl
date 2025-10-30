@@ -74,7 +74,7 @@ export default function NewDateTimePicker({
 
   return (
     <div className="relative w-full ">
-        <div className={`p-2 rounded-md w-full border text-sm flex items-center gap-2 md:gap-5 bg-white ${isError ? 'border-red-500' : 'border-gray-300'}`}>
+        <div className={`p-2 rounded-md w-full border flex items-center gap-2 md:gap-5 bg-white ${isError ? 'border-red-500' : 'border-gray-300'}`}>
 
         <TimerIcon color="gray" />
       <input
@@ -164,6 +164,7 @@ export default function NewDateTimePicker({
               className="w-full text-black rounded-lg px-2 py-1 bg-gray-100 max-w-32"
               value={selectedTime || ""}
               onChange={handleTimeSelect}
+              placeholder="Time"
             />
           </div>}
          

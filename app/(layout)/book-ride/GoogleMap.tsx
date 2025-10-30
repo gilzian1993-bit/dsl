@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import useFormStore from "@/stores/FormStore";
 import { brandColor } from "@/lib/colors";
 import { Route, Timer } from "lucide-react";
+import { GOOGLE_MAPS_API_KEY } from "@/lib/config";
 
 export default function GoogleMapsRoute() {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -112,7 +113,7 @@ export default function GoogleMapsRoute() {
       initMap();
     } else {
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=maps,marker,routes`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=maps,marker,routes`;
       script.async = true;
       script.defer = true;
       script.onload = () => {

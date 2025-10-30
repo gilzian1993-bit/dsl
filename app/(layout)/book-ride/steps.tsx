@@ -47,7 +47,7 @@ export default function Steps() {
           
           {index < steps.length - 1 && (
             <div
-              className={`flex-1 h-[1px] mx-2 ${
+              className={`flex-1 h-px mx-2 ${
                 step > stepData.id ? "bg-gray-300" : "bg-gray-200"
               }`}
             />

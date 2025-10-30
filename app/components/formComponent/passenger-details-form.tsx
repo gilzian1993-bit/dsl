@@ -9,6 +9,7 @@ import Calendar from "../../../components/ui/calendar";
 import TimeInput from "../time-picker";
 import { Autocomplete, Libraries, useLoadScript } from "@react-google-maps/api";
 import { SlLocationPin } from "react-icons/sl";
+import { GOOGLE_MAPS_API_KEY } from "@/lib/config";
 
 interface Price {
   basePrice: number;
@@ -159,9 +160,7 @@ export default function PassengerDetailsForm({
   const stopsRefs = useRef<(google.maps.places.Autocomplete | null)[]>([]);
   const libraries: Libraries = ["places"];
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey:
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-      "AIzaSyDaQ998z9_uXU7HJE5dolsDqeO8ubGZvDU",
+    googleMapsApiKey:GOOGLE_MAPS_API_KEY,
     libraries,
   });
   // 🔹 Real-time price calculation

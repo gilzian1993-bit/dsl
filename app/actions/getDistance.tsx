@@ -1,5 +1,7 @@
 "use server";
 
+import { GOOGLE_MAPS_API_KEY } from "@/lib/config";
+
 export async function calculateDistance({
   from,
   to,
@@ -29,7 +31,7 @@ export async function calculateDistance({
         origin
       )}&destinations=${encodeURIComponent(
         destination
-      )}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+      )}&key=${GOOGLE_MAPS_API_KEY}`;
 
       const response = await fetch(url);
 

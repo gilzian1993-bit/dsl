@@ -72,7 +72,7 @@ export default function NewDropdownInput({
         <button
           type="button"
           className={cn(
-            "w-full justify-between text-left p-2 rounded-md border text-sm flex items-center gap-2 bg-white text-black",
+            "w-full justify-between text-left p-2 rounded-md border flex items-center gap-2 bg-white text-black",
             error ? "border-red-500" : "border-gray-300"
           )}
         >
@@ -86,7 +86,7 @@ export default function NewDropdownInput({
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search..."
