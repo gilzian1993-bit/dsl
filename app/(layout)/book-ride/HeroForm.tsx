@@ -10,14 +10,12 @@ function HeroForm() {
   const { category, changeCategory, formError, formLoading, changeStep, formData, manageStops, isOrderDone, step, resetForm } = useFormStore()
 
   const router = useRouter()
-  const durationArray = Array.from({ length: 48 }, (_, i) => {
-  const hours = (i + 1) / 2
-  const label =
-    hours === 0.5
-      ? "0.5 Hour"
-      : `${hours} ${hours === 1 ? "Hour" : "Hours"}`
+  const durationArray = Array.from({ length: 197 }, (_, i) => {
+  const hours = (i + 4) / 2 
+  const label = `${hours} ${hours === 1 ? "Hour" : "Hours"}`
   return { label, value: hours.toString() }
 })
+
 
 useEffect(()=>{
   if(isOrderDone){

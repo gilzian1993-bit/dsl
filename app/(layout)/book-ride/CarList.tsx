@@ -144,7 +144,7 @@ function CarList() {
                 ${totalPrice}
               </div>
               <div className="text-[10px] lg:text-sm text-red-500 line-through">
-                ${(Number(totalPrice)+((Number(totalPrice)/100)*5)).toFixed(2)}
+                ${(Number(totalPrice)+((Number(price)/100)*5)).toFixed(2)}
               </div>
             </div>
           </div>
