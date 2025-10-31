@@ -22,6 +22,7 @@ function Step4() {
     returnInfantSeatPrice,
     returnBoosterSeatPrice,
     totalPrice,
+    isAirportPickupPrice
   } = formData;
 
   const formatPrice = (price: number) => (price > 0 ? `$ ${price.toFixed(2)}` : '—');
@@ -39,6 +40,12 @@ function Step4() {
             <span>{formatPrice(basePrice.value)}</span>
           </div>
           
+          {isAirportPickupPrice.value > 0 && (
+            <div className="flex justify-between">
+              <span>Airport Pickup</span>
+              <span>{formatPrice(isAirportPickupPrice.value)}</span>
+            </div>
+          )}
           {isMeetGreetPrice.value > 0 && (
             <div className="flex justify-between">
               <span>Meet & Greet</span>
