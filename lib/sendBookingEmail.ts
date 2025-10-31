@@ -5,65 +5,9 @@ import { render } from "@react-email/render";
 import { db } from "@/db";
 import { bookings } from "@/db/schema";
 import BookingEmailTemplate from "@/components/emails/BookingEmailTemplate";
+import { BookingData } from "@/app/actions/send-booking";
 
-export interface BookingData {
-  name: string;
-  email: string;
-  phone_number: string;
 
-  from_location: string;
-  to_location: string;
-  stops: string[];
-
-  pickup_date?: string;
-  pickup_time?: string;
-  return_date?: string;
-  return_time?: string;
-
-  passengers?: number;
-  luggage?: number;
-
-  flight_number?: string;
-  airline_code?: string;
-  return_flight_number?: string;
-  return_airline_code?: string;
-
-  car_type?: string;
-  returnTrip: boolean;
-  tripType: "oneway" | "return";
-  hours?: string;
-  distance?: number;
-
-  rear_seats?: number;
-  booster_seats?: number;
-  infantSeat?: number;
-  return_rear_seats?: number;
-  return_booster_seats?: number;
-  return_infantSeat?: number;
-
-  meetGreet?: boolean;
-  returnMeetGreet?: boolean;
-
-  payment_id: string;
-  base_price: number;
-  gratuity?: number;
-  tax?: number;
-  discount?: number;
-  isMeetGreetPrice?: number;
-  rearSeatPrice?: number;
-  infantSeatPrice?: number;
-  boosterSeatPrice?: number;
-  returnPrice?: number;
-  isReturnMeetGreetPrice?: number;
-  returnRearSeatPrice?: number;
-  returnInfantSeatPrice?: number;
-  returnBoosterSeatPrice?: number;
-  totalPrice: number;
-
-  isAirportPickup?: boolean;
-  isFlightTrack?: boolean;
-  category: "trip" | "hourly";
-}
 const emailConfig = {
   host: "smtp.hostinger.com",
   port: 587,

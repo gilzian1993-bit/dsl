@@ -1,6 +1,7 @@
 'use client';
 
 import { calculateDistance } from "@/app/actions/getDistance";
+import { SendBookingAction } from "@/app/actions/send-booking";
 import { hourlyInitialFormData, tripInitialFormData } from "@/constants/storeInitailObjects";
 import { create } from "zustand";
 
@@ -244,77 +245,76 @@ import { create } from "zustand";
   }, {});
 
   try {
-    const newObject = {
-      // 🔹 Basic Info
-      payment_id: original.paymentId ,
-      name: original.name,
-      email: original.email,
-      phone_number: original.phone,
+     const newObject = {
+    // 🔹 Basic Info
+    payment_id: String(original.paymentId ?? ""),
+    name: String(original.name ?? ""),
+    email: String(original.email ?? ""),
+    phone_number: String(original.phone ?? ""),
 
-      // 🔹 Route Info
-      from_location: original.fromLocation,
-      to_location: original.toLocation,
-      stops: original.stops ?? [],
-      pickup_date: original.date,
-      pickup_time: original.time,
-      return_date: original.returnDate,
-      return_time: original.returnTime,
+    // 🔹 Route Info
+    from_location: String(original.fromLocation ?? ""),
+    to_location: String(original.toLocation ?? ""),
+    stops: Array.isArray(original.stops)
+      ? (original.stops as string[])
+      : [],
+    pickup_date: String(original.date ?? ""),
+    pickup_time: String(original.time ?? ""),
+    return_date: String(original.returnDate ?? ""),
+    return_time: String(original.returnTime ?? ""),
 
-      // 🔹 Passenger Info
-      passengers: original.passengers,
-      luggage: original.bags,
+    // 🔹 Passenger Info
+    passengers: Number(original.passengers ?? 0),
+    luggage: Number(original.bags ?? 0),
 
-      // 🔹 Flight Info
-      flight_number: original.flightNumber,
-      airline_code: original.flightName || "",
-      return_flight_number: "",
-      return_airline_code: "",
+    // 🔹 Flight Info
+    flight_number: String(original.flightNumber ?? ""),
+    airline_code: String(original.flightName ?? ""),
 
-      // 🔹 Car & Trip Info
-      car_type: original.car,
-      returnTrip: original.isReturn,
-      tripType: original.isReturn ? "return" : "oneway",
-      hours: original.duration || "",
-      distance: original.distance || 0,
+    // 🔹 Car & Trip Info
+    car_type: String(original.car ?? ""),
+    returnTrip: Boolean(original.isReturn),
+    tripType: Boolean(original.isReturn) ? "return" : "oneway" as "return" | "oneway",
+    hours: String(original.duration ?? ""),
+    distance: String(original.distance ?? "0"),
 
-      // 🔹 Seats
-      rear_seats: original.rearSeat,
-      booster_seats: original.boosterSeat,
-      infantSeat: original.infantSeat,
-      return_rear_seats: original.returnRearSeat,
-      return_booster_seats: original.returnBoosterSeat,
-      return_infantSeat: original.returnInfantSeat,
+    // 🔹 Seats
+    rear_seats: Number(original.rearSeat ?? 0),
+    booster_seats: Number(original.boosterSeat ?? 0),
+    infantSeat: Number(original.infantSeat ?? 0),
+    return_rear_seats: Number(original.returnRearSeat ?? 0),
+    return_booster_seats: Number(original.returnBoosterSeat ?? 0),
+    return_infantSeat: Number(original.returnInfantSeat ?? 0),
 
-      // 🔹 Meet & Greet
-      meetGreet: original.isMeetGreet,
-      returnMeetGreet: original.isReturnMeetGreet,
+    // 🔹 Meet & Greet
+    meetGreet: Boolean(original.isMeetGreet),
+    returnMeetGreet: Boolean(original.isReturnMeetGreet),
 
-      // 🔹 Pricing (all computed and extra prices)
-      base_price: original.basePrice,
-      gratuity: original.graduatiy,
-      tax: original.tax,
-      discount: original.discount,
-      isMeetGreetPrice: original.isMeetGreetPrice,
-      rearSeatPrice: original.rearSeatPrice,
-      infantSeatPrice: original.infantSeatPrice,
-      boosterSeatPrice: original.boosterSeatPrice,
-      returnPrice: original.returnPrice,
-      isReturnMeetGreetPrice: original.isReturnMeetGreetPrice,
-      returnRearSeatPrice: original.returnRearSeatPrice,
-      returnInfantSeatPrice: original.returnInfantSeatPrice,
-      returnBoosterSeatPrice: original.returnBoosterSeatPrice,
-      totalPrice: original.totalPrice,
+    // 🔹 Pricing
+    base_price: String(original.basePrice ?? "0"),
+    gratuity: String(original.graduatiy ?? "0"),
+    tax: String(original.tax ?? "0"),
+    discount: String(original.discount ?? "0"),
+    isMeetGreetPrice: String(original.isMeetGreetPrice ?? "0"),
+    rearSeatPrice: String(original.rearSeatPrice ?? "0"),
+    infantSeatPrice: String(original.infantSeatPrice ?? "0"),
+    boosterSeatPrice: String(original.boosterSeatPrice ?? "0"),
+    returnPrice: String(original.returnPrice ?? "0"),
+    isReturnMeetGreetPrice: String(original.isReturnMeetGreetPrice ?? "0"),
+    returnRearSeatPrice: String(original.returnRearSeatPrice ?? "0"),
+    returnInfantSeatPrice: String(original.returnInfantSeatPrice ?? "0"),
+    returnBoosterSeatPrice: String(original.returnBoosterSeatPrice ?? "0"),
+    totalPrice: String(original.totalPrice ?? "0"),
 
-      // 🔹 Optional flags
-      isAirportPickup: original.isAirportPickup,
-      isFlightTrack: original.isFlightTrack,
-      category
-    };
+    // 🔹 Optional flags
+    isAirportPickup: Boolean(original.isAirportPickup),
+    isFlightTrack: Boolean(original.isFlightTrack),
+    category: category,
+  };
 
     console.log("🚀 Sending booking payload:", newObject);
 
-    const response = await fetch('/api/send-booking',{method:'POST', body:JSON.stringify(newObject)})
-     const res = await response.json()
+    const res = await SendBookingAction(newObject)
 
 
     if (!res.success) {
