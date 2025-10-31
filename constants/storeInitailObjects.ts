@@ -16,7 +16,7 @@ const commonFormDataFields = {
   returnDate: { value: "", error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   returnTime: { value: "", error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   passengers: { value: "", error: "", required: true, step: 3, coardinates: "", coardinatesRequired: false },
-  bags: { value: "0", error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  bags: { value: "", error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   flightName: { value: "", error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   flightNumber: { value: "", error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   isAirportPickup: { value: false, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
