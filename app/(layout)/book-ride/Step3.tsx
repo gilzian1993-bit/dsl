@@ -25,17 +25,19 @@ function Step3() {
 )
 
 const bagsArray = Array.from(
-  { length: selectedFleet?.suitcases ?? 0 },
+  { length: selectedFleet?.suitcases ? selectedFleet?.suitcases+1 : 0 },
   (_, i) => {
-    const count = i + 1
+    const count = i 
     return {
       label: `${count} ${count === 1 ? "Bag" : "Bags"}`,
       value: count.toString(),
     }
   }
 )
+
 console.log("formData.date.value : ",formData.date.value)
 console.log("formData.date.value !== '' ? false : true : ",formData.date.value !== '' ? false : true)
+
   return (
     <div className='flex flex-col gap-5 w-full'>
         <div className='text-2xl'>Details</div>

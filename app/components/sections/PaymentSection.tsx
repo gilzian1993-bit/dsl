@@ -87,10 +87,10 @@ interface UserInformationProps {
     step: number;
     meetGreetYes: boolean;
 }
-if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
+if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === undefined) {
     throw new Error("Key not defined")
 }
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY ?? '')
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '')
 interface PaymentSectionProps {
     step: number;
     vehicle: VehicleOption;
