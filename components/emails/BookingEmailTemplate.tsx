@@ -216,12 +216,9 @@ export default function BookingEmail(props: BookingData ) {
                     formatCurrency(Number(isMeetGreetPrice)
                     ),
                   ],
-                  [
-                    "Child Seats",
-                    `Rear: $${formatCurrency(Number(rearSeatPrice))} | Booster: $${formatCurrency(
-                     Number( boosterSeatPrice)
-                    ) } | Infant: $${formatCurrency(Number(infantSeatPrice))} `,
-                  ],
+                  ["Gratuity 20%", formatCurrency(Number(gratuity))],
+                  ["Tax 5%", formatCurrency(Number(tax))],
+                  
                   
                   ["Return Transfer", formatCurrency(Number(returnPrice))],
                   [
@@ -235,8 +232,12 @@ export default function BookingEmail(props: BookingData ) {
                       Number(returnBoosterSeatPrice)
                     ) } | Infant: $${formatCurrency(Number(returnInfantSeatPrice))} `,
                   ],
-                  ["Gratuity 20%", formatCurrency(Number(gratuity))],
-                  ["Tax 5%", formatCurrency(Number(tax))],
+                  [
+                    "Child Seats",
+                    `Rear: $${formatCurrency(Number(rearSeatPrice))} | Booster: $${formatCurrency(
+                     Number( boosterSeatPrice)
+                    ) } | Infant: $${formatCurrency(Number(infantSeatPrice))} `,
+                  ],
                   ["Discount", `-${formatCurrency(Number(discount))}`],
                   
                  

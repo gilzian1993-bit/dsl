@@ -5,10 +5,10 @@ import React, { useEffect, useRef } from 'react'
 import { fleets } from '../book-ride/CarList'
 import { MdDone } from 'react-icons/md'
 import Image from 'next/image'
-import Link from 'next/link'
+// import Link from 'next/link'
 
 function Page() {
-const { isOrderDone, formData, category, orderId }  = useFormStore()
+const { isOrderDone, formData, category }  = useFormStore()
 const router = useRouter()
  const headerRef = useRef<HTMLDivElement | null>(null)
 
@@ -80,7 +80,7 @@ useEffect(()=>{
                 <div className='flex items-center gap-5'>
 
                 {/* <Link className='bg-brand px-3 py-2 text-black w-fit rounded-md' href='/' >Home</Link> */}
-                <Link className='bg-brand px-3 py-2 text-black font-semibold w-fit rounded-md' href={`/order/${orderId}`} >View Order Details</Link>
+                {/* <Link className='bg-brand px-3 py-2 text-black font-semibold w-fit rounded-md' href={`/order/${orderId}`} >View Order Details</Link> */}
                 </div>
               </div>
 
