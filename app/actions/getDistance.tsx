@@ -34,14 +34,14 @@ export async function calculateDistance({
       )}&key=${GOOGLE_MAPS_API_KEY}`;
 
       const response = await fetch(url);
-
       if (!response.ok) {
+        console.log('response : ',response)
         return { error: "Failed to fetch distance data from Google Maps API.", status: 500 };
       }
 
       const data = await response.json();
       const element = data.rows[0]?.elements[0];
-
+      console.log("data :: ",data)
       if (!element || element.status !== "OK") {
         return { error: `Failed to calculate distance between "${origin}" and "${destination}".`, status: 500 };
       }

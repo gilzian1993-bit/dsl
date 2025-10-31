@@ -53,6 +53,7 @@ import { create } from "zustand";
   graduatiy: FieldType<number>;
   tax: FieldType<number>;
   discount: FieldType<number>;
+  isAirportPickupPrice: FieldType<number>;
   isMeetGreetPrice: FieldType<number>;
   rearSeatPrice: FieldType<number>;
   infantSeatPrice: FieldType<number>;
@@ -390,6 +391,7 @@ import { create } from "zustand";
     const returnRearSeatPrice = formData.returnRearSeat.value * 10;
     const returnInfantSeatPrice = formData.returnInfantSeat.value * 10;
     const returnBoosterSeatPrice = formData.returnBoosterSeat.value * 10;
+    const isAirportPickupPrice = formData.isAirportPickup.value ? 5 : 0 ;
 
     const totalPrice =
       basePrice +
@@ -402,7 +404,8 @@ import { create } from "zustand";
       returnPrice +
       returnBoosterSeatPrice +
       returnInfantSeatPrice +
-      returnRearSeatPrice +
+      returnRearSeatPrice + 
+      isAirportPickupPrice +
       isReturnMeetGreetPrice -
       discount;
 
@@ -412,6 +415,7 @@ import { create } from "zustand";
         basePrice: { ...formData.basePrice, value: basePrice },
         graduatiy: { ...formData.graduatiy, value: graduatiy },
         tax: { ...formData.tax, value: tax },
+        isAirportPickupPrice: { ...formData.isAirportPickupPrice, value: isAirportPickupPrice },
         discount: { ...formData.discount, value: discount },
         isMeetGreetPrice: { ...formData.isMeetGreetPrice, value: isMeetGreetPrice },
         rearSeatPrice: { ...formData.rearSeatPrice, value: rearSeatPrice },
