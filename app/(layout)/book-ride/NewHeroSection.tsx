@@ -6,7 +6,7 @@ import Image from 'next/image'
 function NewHeroSection() {
   return (
     <div className='relative '>
-    <Image src='/manhattan-skyline_649448-1559.jpg' width={1000} height={1000} alt='Background Image' className='absolute w-full h-[420px] lg:h-full left-0 right-0' />
+    <Image src='/Image (4).png' width={1000} height={1000} alt='Background Image' className='absolute w-full h-[420px] lg:h-full left-0 right-0' />
     <div className='relative bg-black/40 w-full max-lg:rounded-b-3xl '>
 
     <div className='grid gap-6 lg:grid-cols-2 xl:grid-cols-3 pt-20 lg:py-48 lg:px-5 w-full overflow-hidden  max-w-screen-2xl mx-auto'>
