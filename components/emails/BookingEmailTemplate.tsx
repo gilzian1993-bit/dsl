@@ -9,7 +9,7 @@ import {
   Text,
   Heading,
 } from "@react-email/components";
-import { BookingData } from "@/lib/sendBookingEmail";
+import { BookingData } from "@/app/actions/send-booking";
 
 function formatCurrency(n?: number | null) {
   if (n === undefined || n === null) return "0.00";
@@ -210,34 +210,34 @@ export default function BookingEmail(props: BookingData ) {
 
                 {/* Price Details */}
                 {[
-                  ["Base Price", formatCurrency(base_price)],
+                  ["Base Price", formatCurrency(Number(base_price))],
                   [
                     "Meet and Greet",
-                    formatCurrency(isMeetGreetPrice
+                    formatCurrency(Number(isMeetGreetPrice)
                     ),
                   ],
                   [
                     "Child Seats",
-                    `Rear: $${formatCurrency(rearSeatPrice)} | Booster: $${formatCurrency(
-                      boosterSeatPrice
-                    ) } | Infant: $${formatCurrency(infantSeatPrice)} `,
+                    `Rear: $${formatCurrency(Number(rearSeatPrice))} | Booster: $${formatCurrency(
+                     Number( boosterSeatPrice)
+                    ) } | Infant: $${formatCurrency(Number(infantSeatPrice))} `,
                   ],
                   
-                  ["Return Transfer", formatCurrency(returnPrice)],
+                  ["Return Transfer", formatCurrency(Number(returnPrice))],
                   [
                     "Return Meet and Greet",
-                    formatCurrency(isReturnMeetGreetPrice
+                    formatCurrency(Number(isReturnMeetGreetPrice)
                     ),
                   ],
                   [
                     "Return Child Seats",
-                    `Rear: $${formatCurrency(returnRearSeatPrice)} | Booster: $${formatCurrency(
-                      returnBoosterSeatPrice
-                    ) } | Infant: $${formatCurrency(returnInfantSeatPrice)} `,
+                    `Rear: $${formatCurrency(Number(returnRearSeatPrice))} | Booster: $${formatCurrency(
+                      Number(returnBoosterSeatPrice)
+                    ) } | Infant: $${formatCurrency(Number(returnInfantSeatPrice))} `,
                   ],
-                  ["Gratuity 20%", formatCurrency(gratuity)],
-                  ["Tax 5%", formatCurrency(tax)],
-                  ["Discount", `-${formatCurrency(discount)}`],
+                  ["Gratuity 20%", formatCurrency(Number(gratuity))],
+                  ["Tax 5%", formatCurrency(Number(tax))],
+                  ["Discount", `-${formatCurrency(Number(discount))}`],
                   
                  
                 ].filter(([label, _])=>{
@@ -279,7 +279,7 @@ export default function BookingEmail(props: BookingData ) {
                       padding: "12px",
                     }}
                   >
-                    ${formatCurrency(totalPrice)}
+                    ${formatCurrency(Number(totalPrice))}
                   </td>
                 </tr>
               </tbody>
