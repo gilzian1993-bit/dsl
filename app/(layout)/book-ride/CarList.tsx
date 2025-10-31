@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { GoPeople } from "react-icons/go";
+import { GoInfo, GoPeople } from "react-icons/go";
 import { PiSuitcase } from "react-icons/pi";
 import { cn } from "@/lib/utils";
 import useFormStore from "@/stores/FormStore";
@@ -151,6 +151,11 @@ function CarList() {
 
           {/* Price and Action Section */}
           <div className="flex flex-col justify-end items-center w-full col-span-2 gap-2">
+            <div className="text-right font-normal text-black gap-2 items-center md:text-sm text-[7px] flex" >
+
+              <GoInfo />
+              No Tools Include
+            </div>
             <div className="text-center font-bold text-orange-500 md:text-base" >5% OFF</div>
             {formLoading && formData.car.value===item.name ? <LoadingButton/>  :
             item.isAvailable ?
