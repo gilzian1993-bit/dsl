@@ -11,7 +11,8 @@ function HeroForm() {
 
   const router = useRouter()
   const durationArray = Array.from({ length: 197 }, (_, i) => {
-  const hours = (i + 4) / 2 
+  const hours = i + 2
+ 
   const label = `${hours} ${hours === 1 ? "Hour" : "Hours"}`
   return { label, value: hours.toString() }
 })
