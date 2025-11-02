@@ -17,13 +17,11 @@ function HeroForm() {
   return { label, value: hours.toString() }
 })
 
-
 useEffect(()=>{
   if(isOrderDone){
     resetForm()
   }
 },[step, isOrderDone])
-
 
   return (
     <div className='flex flex-col gap-3 sm:gap-5 w-full max-w-screen-sm'>
