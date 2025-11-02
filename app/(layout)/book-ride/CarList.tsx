@@ -103,6 +103,9 @@ function CarList() {
         }
         const graduatiy = (price/100)*20;
         const totalPrice =  (price + graduatiy).toFixed(2);
+        
+        const isSprinter = item.name === "SPRINTER";
+        
         return <div
           key={item.name}
           className={cn(
@@ -139,24 +142,31 @@ function CarList() {
                 <span>{item.suitcases} <span className="max-md:hidden">Suitcases</span></span>
               </div>
             </div>
-            <div className="flex items-start gap-1 md:gap-3 w-full">
-              <div className="text-xl md:text-3xl font-bold text-gray-900">
-                ${totalPrice}
+            
+            {!isSprinter && (
+              <div className="flex items-start gap-1 md:gap-3 w-full">
+                <div className="text-xl md:text-3xl font-bold text-gray-900">
+                  ${totalPrice}
+                </div>
+                <div className="text-[10px] lg:text-sm text-red-500 line-through">
+                  ${(Number(totalPrice)+((Number(price)/100)*5)).toFixed(2)}
+                </div>
               </div>
-              <div className="text-[10px] lg:text-sm text-red-500 line-through">
-                ${(Number(totalPrice)+((Number(price)/100)*5)).toFixed(2)}
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Price and Action Section */}
           <div className="flex flex-col justify-end items-center w-full col-span-2 gap-2">
-            <div className="text-right font-normal text-black gap-2 items-center md:text-sm text-[7px] flex" >
-
-              <GoInfo />
-              No Tools Include
-            </div>
-            <div className="text-center font-bold text-orange-500 md:text-base" >5% OFF</div>
+            {!isSprinter && (
+              <>
+                <div className="text-right font-normal text-black gap-2 items-center md:text-sm text-[7px] flex" >
+                  <GoInfo />
+                  No Tools Include
+                </div>
+                <div className="text-center font-bold text-orange-500 md:text-base" >5% OFF</div>
+              </>
+            )}
+            
             {formLoading && formData.car.value===item.name ? <LoadingButton/>  :
             item.isAvailable ?
             <button
