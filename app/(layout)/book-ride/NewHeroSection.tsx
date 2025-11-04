@@ -83,7 +83,7 @@ export default function NewHeroSection() {
               alt={s.alt ?? `Slide ${i + 1}`}
               fill
               sizes="100vw"
-              className="object-cover w-full h-full"
+              className={`object-cover w-full h-full ${i===2 ? 'lg:scale-x-[-1]' : ''}  `}
               priority={i === index}
             />
             <div className="absolute inset-0 bg-black/40" />
