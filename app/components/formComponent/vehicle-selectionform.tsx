@@ -447,14 +447,7 @@ export default function VehicleSelection({
                         <div className="mb-6">
                             <div className="w-full ">
                                 {/* Google Maps Embed showing route from pickup to drop location */}
-
-
-                                <GoogleMapsRoute
-                                    fromCoords={{ lat: pickupLat, lng: pickupLng }}
-                                    toCoords={{ lat: dropLat, lng: dropLng }}
-                                />
-
-
+                                <GoogleMapsRoute/>
                             </div>
                         </div>
                         {/* Mobile: Trip Details */}
