@@ -12,9 +12,9 @@ type Slide = {
 
 export default function NewHeroSection() {
   const slides: Slide[] = [
-    { src: "/brunette-businesswoman-posing-inside-car.jpg", alt: "Hero image 1", title: "The Best Fleet Service in New York" },
     { src: "/manhattan-skyline.jpg", alt: "Hero image 2", title: "Luxury Travel & Chauffeured Service" },
-    { src: "/brunette-businesswoman-inside-car.jpg", alt: "Hero image 3", title: "Airport Chauffeur Service To and From JFK, LGA, EWR, TEB" },
+    { src: "/brunette-businesswoman-posing-inside-car.jpg", alt: "Hero image 1", title: "The Best Fleet Service in New York" },
+    { src: "/3rd.png", alt: "Hero image 3", title: "Airport Chauffeur Service To and From JFK, LGA, EWR, TEB" },
   ];
 
   const [index, setIndex] = useState(0);
@@ -29,7 +29,7 @@ export default function NewHeroSection() {
     if (!isPaused) {
       timeoutRef.current = window.setTimeout(() => {
         setIndex((i) => (i + 1) % slides.length);
-      }, 2000);
+      }, 6000);
     }
 
     return () => {
@@ -72,7 +72,7 @@ export default function NewHeroSection() {
         {slides.map((s, i) => (
           <div
             key={s.src}
-            className={`absolute inset-0 transition-opacity duration-700 ease-[cubic-bezier(.22,1,.36,1)] ${
+            className={`absolute inset-0 transition-opacity duration-1000 ease-[cubic-bezier(.22,1,.36,1)] ${
               i === index ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
             }`}
             aria-hidden={i === index ? "false" : "true"}
