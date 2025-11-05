@@ -1,5 +1,6 @@
 'use client';
 
+import { fleets } from "@/app/(layout)/book-ride/CarList";
 import { calculateDistance } from "@/app/actions/getDistance";
 import { SendBookingAction } from "@/app/actions/send-booking";
 import { hourlyInitialFormData, tripInitialFormData } from "@/constants/storeInitailObjects";
@@ -245,6 +246,7 @@ import { create } from "zustand";
   }, {});
 
   try {
+    const carImage = fleets.find((item)=>item.name===formData.car.value)?.image;
      const newObject = {
     // 🔹 Basic Info
     payment_id: String(original.paymentId ?? ""),
@@ -310,6 +312,7 @@ import { create } from "zustand";
     isAirportPickup: Boolean(original.isAirportPickup),
     isFlightTrack: Boolean(original.isFlightTrack),
     category: category,
+    carImage:carImage??'N/A'
   };
 
     console.log("🚀 Sending booking payload:", newObject);
@@ -407,7 +410,9 @@ import { create } from "zustand";
       returnRearSeatPrice + 
       isAirportPickupPrice +
       isReturnMeetGreetPrice -
-      discount;
+      discount +
+      (formData.stops.length * 20)
+      ;
 
     return {
       formData: {
