@@ -63,6 +63,7 @@ export interface BookingData {
 }
 
 export interface BookingResult {
+  id?:string;
   success: boolean;
   message: string;
 }
@@ -77,14 +78,14 @@ export async function SendBookingAction(booking: BookingData): Promise<BookingRe
     // ✅ Call your email sender function (must be a server-side function)
     const result = await sendBookingEmail(booking);
 
-    if (!result?.success) {
+    if (!result?.success || !result.id) {
       return {
         success: false,
         message: result?.message ?? "Failed to send booking email.",
       };
     }
 
-    return { success: true, message: "Booking email sent successfully." };
+    return { success: true, message: "Booking email sent successfully.", id: result.id.toString() };
   } catch (error) {
     console.error("❌ Error in sendBookingAction:", error);
     return {

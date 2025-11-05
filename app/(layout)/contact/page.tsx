@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Mail, Phone, House, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 const ContactSection: React.FC = () => {
@@ -151,7 +151,7 @@ const ContactSection: React.FC = () => {
                     <div>
                         <h3 className="text-xs font-bold text-gray-700 mb-2 tracking-wider uppercase">Before Contacting Us</h3>
                         <p className="text-sm text-gray-600">
-                            DSL Limo offers top-rated limousine and car services in New York and New Jersey, with professional, licensed drivers. We ensure secure, memorable rides to airports or nearby states at reasonable rates. With a vast network and quick response time, customer satisfaction is our top priority.
+                            DSL Limo offers top-rated limousine and car services in New York and New Jersey, with professional, licensed drivers. We ensure secure, memorable rides to airports or nearby states at reasonable rates. With a fast network and quick response time, customer satisfaction is our top priority.
                         </p>
                     </div>
                     <div>

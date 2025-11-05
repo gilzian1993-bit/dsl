@@ -72,6 +72,8 @@ export async function sendBookingEmail(booking: BookingData) {
       is_airport_pickup: booking.isAirportPickup,
       is_flight_track: booking.isFlightTrack
     }).returning();
+    
+    console.log("insertResult[0] : ",insertResult[0])
 
     const insertedId = insertResult[0]?.id;
     const orderLink = `https://dsllimoservice.com/order/${insertedId}`;
@@ -92,7 +94,7 @@ export async function sendBookingEmail(booking: BookingData) {
     return {
       success: true,
       message: "Email sent successfully.",
-      id: insertedId ?? null,
+      id: insertedId ,
     };
   } catch (error) {
     console.error("❌ Error sending booking email:", error);
