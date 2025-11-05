@@ -16,7 +16,7 @@ export default function Footer() {
               </Link>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
-              DSL Limo offers top-rated limousine and car services in New York and New Jersey, with professional, licensed drivers. We ensure secure, memorable rides to airports or nearby states at reasonable rates. With a vast network and quick response time, customer satisfaction is our top priority.
+              DSL Limo offers top-rated limousine and car services in New York and New Jersey, with professional, licensed drivers. We ensure secure, memorable rides to airports or nearby states at reasonable rates. With a fast network and quick response time, customer satisfaction is our top priority.
             </p>
             <h1 className="text-2xl mt-4 mb-4">SOCIAL LINKS</h1>
             <div className="flex flex-wrap gap-4">

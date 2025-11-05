@@ -16,6 +16,7 @@ import { create } from "zustand";
   }
 
  export interface FormDataType {
+
   fromLocation: FieldType<string>;
   toLocation: FieldType<string>;
   stops: FieldType<string>[];
@@ -70,6 +71,7 @@ import { create } from "zustand";
 
 
   interface FormStoreType {
+  id:string;
   step: number;
   isMobileDropdownOpen: boolean;
   category: "trip" | "hourly";
@@ -110,6 +112,7 @@ import { create } from "zustand";
 
 
   const useFormStore = create<FormStoreType>((set, get) => ({
+  id:'',
   step: 1,
   isMobileDropdownOpen: false,
   category: "trip",
@@ -320,22 +323,25 @@ import { create } from "zustand";
     const res = await SendBookingAction(newObject)
 
 
-    if (!res.success) {
-      set({ formError: res.message ?? "Booking failed", formLoading: false });
+    if (!res.success || !res.id) {
+      set((state)=> ({...state, formError: res.message ?? "Booking failed", formLoading: false }));
       return false;
     }
 
     // Success ✅
-    set({
+    set((state)=> ({
+      ...state,
+      id:res.id,
       formError: "",
       formLoading: false,
-    });
+    }));
 
   } catch (error) {
-    set({
+    set((state)=> ({
+      ...state,
       formError: error instanceof Error ? error.message : "Failed to place order",
       formLoading: false,
-    });
+    }));
     return false;
   }
 }
