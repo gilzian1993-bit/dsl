@@ -54,11 +54,6 @@ export default function NewHeroSection() {
     };
   }, []);
 
-  const goTo = (i: number) => {
-    setIndex(i % slides.length);
-  };
-  const next = () => setIndex((i) => (i + 1) % slides.length);
-  const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length);
 
   return (
     <section

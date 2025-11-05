@@ -4,8 +4,8 @@ import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import { db } from "@/db";
 import { bookings } from "@/db/schema";
-import BookingEmailTemplate from "@/components/emails/BookingEmailTemplate";
 import { BookingData } from "@/app/actions/send-booking";
+import { NewBookingEmailTemplate } from "@/components/emails/NewBookingEmailTemplate";
 
 
 const emailConfig = {
@@ -42,8 +42,6 @@ export async function sendBookingEmail(booking: BookingData) {
       luggage: booking.luggage,
       flight_number: booking.flight_number,
       airline_code: booking.airline_code,
-      return_flight_number: booking.return_flight_number,
-      return_airline_code: booking.return_airline_code,
       car_type: booking.car_type,
       return_trip: booking.returnTrip,
       trip_type: booking.tripType,
@@ -76,10 +74,10 @@ export async function sendBookingEmail(booking: BookingData) {
     }).returning();
 
     const insertedId = insertResult[0]?.id;
-
-    const emailHtml = await render(
-      BookingEmailTemplate(booking,)
-    );
+    const orderLink = `https://dsllimoservice.com/order/${insertedId}`;
+    const carImage = `https://dsllimoservice.com/order/${booking.carImage}`;
+    const stops = stopsForDb.map((item,index)=>({label:index===0? 'Pickup Location' : stopsForDb.length-1 === index ? booking.category==='hourly' ? 'Duration' : 'Stop ' + index  : 'Dropoff Location' , value:stopsForDb.length-1 === index && booking.category==='hourly' ? item + ' hours' : item}))
+    const htmEmail = await render(NewBookingEmailTemplate({carImage, stops, viewOrderLink:orderLink}))
 
     const transporter = nodemailer.createTransport(emailConfig);
 
@@ -87,7 +85,7 @@ export async function sendBookingEmail(booking: BookingData) {
       from: `info@dsllimoservice.com`,
       to:[ booking.email, 'info@dsllimoservice.com'],
       subject: `Booking Confirmation - DSL Limo Service`,
-      html: emailHtml,
+      html: htmEmail,
     });
     console.log("emailResponse ",emailResponse)
 

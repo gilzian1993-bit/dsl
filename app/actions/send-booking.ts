@@ -55,6 +55,7 @@ export interface BookingData {
   returnInfantSeatPrice?: string;
   returnBoosterSeatPrice?: string;
   totalPrice: string;
+  carImage: string;
 
   isAirportPickup?: boolean;
   isFlightTrack?: boolean;
