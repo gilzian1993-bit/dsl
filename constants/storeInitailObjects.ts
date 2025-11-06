@@ -47,6 +47,7 @@ const commonFormDataFields = {
   returnRearSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   returnInfantSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   returnBoosterSeatPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
+  stopsPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
   totalPrice: { value: 0, error: "", required: false, step: 3, coardinates: "", coardinatesRequired: false },
 }
 
