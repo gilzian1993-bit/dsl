@@ -22,14 +22,14 @@ function StripePaymentForm({price}:{price:string}) {
 
   const [error, setError] = useState<string>("")
   const [loading, setLoading] = useState(false)
-  const {formError, setFormData, changeStep, formData } = useFormStore()
+  const {formError, setFormData, changeStep, formData, formLoading } = useFormStore()
 
   const amount = Number(price)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
 
-    if(formData.paymentId.value){
+    if(formData.paymentId.value && !formLoading){
       const isOk = await changeStep(true,4)
       if(isOk){
         router.replace('/order-placed')
