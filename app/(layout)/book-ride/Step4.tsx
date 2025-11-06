@@ -22,6 +22,7 @@ function Step4() {
     returnInfantSeatPrice,
     returnBoosterSeatPrice,
     totalPrice,
+    stopsPrice,
     isAirportPickupPrice
   } = formData;
 
@@ -39,7 +40,18 @@ function Step4() {
             <span>Base Price</span>
             <span>{formatPrice(basePrice.value)}</span>
           </div>
-          
+          {graduatiy.value > 0 && (
+            <div className="flex justify-between">
+              <span>Graduity</span>
+              <span>{formatPrice(graduatiy.value)}</span>
+            </div>
+          )}
+          {tax.value > 0 && (
+            <div className="flex justify-between">
+              <span>Tax (5%)</span>
+              <span>{formatPrice(tax.value)}</span>
+            </div>
+          )}
           {isAirportPickupPrice.value > 0 && (
             <div className="flex justify-between">
               <span>Airport Pickup</span>
@@ -100,16 +112,10 @@ function Step4() {
               <span>{formatPrice(returnBoosterSeatPrice.value)}</span>
             </div>
           )}
-          {graduatiy.value > 0 && (
+          {stopsPrice.value > 0 && (
             <div className="flex justify-between">
-              <span>Graduity</span>
-              <span>{formatPrice(graduatiy.value)}</span>
-            </div>
-          )}
-          {tax.value > 0 && (
-            <div className="flex justify-between">
-              <span>Tax (5%)</span>
-              <span>{formatPrice(tax.value)}</span>
+              <span>Stops</span>
+              <span>{formatPrice(stopsPrice.value)}</span>
             </div>
           )}
           {discount.value > 0 && (

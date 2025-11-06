@@ -24,7 +24,7 @@ const emailConfig = {
 
 export async function sendBookingEmail(booking: BookingData) {
   try {
-    const stopsForDb = booking.stops ?? [];
+    let stopsForDb = booking.stops ?? [];
 
     const insertResult = await db.insert(bookings).values({
       payment_id: booking.payment_id,
@@ -74,6 +74,12 @@ export async function sendBookingEmail(booking: BookingData) {
     }).returning();
     
     console.log("insertResult[0] : ",insertResult[0])
+    stopsForDb= [booking.from_location , ...stopsForDb ]
+    if(booking.category==='trip'){
+      stopsForDb= [...stopsForDb, booking.to_location ]  
+    }else{
+      stopsForDb= [...stopsForDb, String(booking.hours + ' hours') ]  
+    }
 
     const insertedId = insertResult[0]?.id;
     const orderLink = `https://dsllimoservice.com/order/${insertedId}`;
