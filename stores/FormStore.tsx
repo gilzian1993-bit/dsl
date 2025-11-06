@@ -53,6 +53,7 @@ import { create } from "zustand";
 
   // Computed fields
   basePrice: FieldType<number>;
+  stopsPrice: FieldType<number>;
   graduatiy: FieldType<number>;
   tax: FieldType<number>;
   discount: FieldType<number>;
@@ -390,8 +391,10 @@ import { create } from "zustand";
     const basePrice = formData.basePrice.value;
     const returnPrice = formData.isReturn.value ? basePrice - ((basePrice / 100) * 5) : 0;
     const graduatiy = ((basePrice + returnPrice)/100) * 20;
-    const tax = ((basePrice + returnPrice)/100) * 5;
+    const tax = ((basePrice + returnPrice + graduatiy)/100) * 5;
     const discount = ((basePrice + returnPrice)/100) * 5;
+    const stopsPice = formData.stops.length * 20;
+
     const isMeetGreetPrice = formData.isMeetGreet.value ? 25 : 0;
     const rearSeatPrice = formData.rearSeat.value * 10;
     const infantSeatPrice = formData.infantSeat.value * 10;
@@ -415,9 +418,9 @@ import { create } from "zustand";
       returnInfantSeatPrice +
       returnRearSeatPrice + 
       isAirportPickupPrice +
+      stopsPice +
       isReturnMeetGreetPrice -
-      discount +
-      (formData.stops.length * 20)
+      discount 
       ;
 
     return {
@@ -437,6 +440,7 @@ import { create } from "zustand";
         returnRearSeatPrice: { ...formData.returnRearSeatPrice, value: returnRearSeatPrice },
         returnInfantSeatPrice: { ...formData.returnInfantSeatPrice, value: returnInfantSeatPrice },
         returnBoosterSeatPrice: { ...formData.returnBoosterSeatPrice, value: returnBoosterSeatPrice },
+        stopsPrice: { ...formData.stopsPrice, value: stopsPice },
         totalPrice: { ...formData.totalPrice, value: totalPrice },
       },
     };

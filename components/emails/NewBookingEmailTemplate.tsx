@@ -31,7 +31,7 @@ export function NewBookingEmailTemplate({
   viewOrderLink,
   
 }: TripOrderEmailProps) {
-    const logoImage = "https://chauffeurio.com//Chauffeurio Logo PNG.png";
+    const logoImage = "https://dsllimoservice.com/Logo.png";
   return (
     <Html>
       <Head />
