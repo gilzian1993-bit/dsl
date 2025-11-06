@@ -70,12 +70,9 @@ export interface BookingResult {
 
 export async function SendBookingAction(booking: BookingData): Promise<BookingResult> {
   try {
-    // ✅ Validate input
     if (!booking.name || !booking.email || !booking.payment_id) {
       return { success: false, message: "Missing required fields." };
     }
-
-    // ✅ Call your email sender function (must be a server-side function)
     const result = await sendBookingEmail(booking);
 
     if (!result?.success || !result.id) {

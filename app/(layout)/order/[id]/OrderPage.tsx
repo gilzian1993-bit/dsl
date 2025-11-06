@@ -155,10 +155,10 @@ function OrderPage({ id }: { id: string }) {
       <div className='px-3'>
 
       
-      <header className="bg-[#181818] text-white flex justify-between items-center px-6 sm:px-10 py-5 max-w-screen-lg mx-auto rounded-2xl">
+      <header className="bg-[#181818] text-white flex justify-between items-center px-6 sm:px-10 py-5 max-w-5xl mx-auto rounded-2xl">
        <Image
-                      src="/Chauffeurio Logo PNG.png"
-                      alt="Company Logo"
+                      src="/Logo.png"
+                      alt="DSL Logo"
                       width={120}
                       height={60}
                       className='max-w-16 sm:max-w-32 object-contain'
@@ -194,7 +194,7 @@ function OrderPage({ id }: { id: string }) {
             label="Distance"
             value={`${toMiles(order.distance?.toString())} miles`}
           />}
-          <SummaryCard label="Vehicle Type" value={order.car_image || 'Premium'} />
+          <SummaryCard label="Trip Type" value={order.category?.toLowerCase() ?? 'N/A' } />
         </div>
 
         {/* Route Information */}
