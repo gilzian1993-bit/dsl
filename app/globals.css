@@ -170,3 +170,17 @@ body {
 @utility animate-infinite-slide {
   animation: infinite-slide 35s linear infinite;
 }
+
+
+/* Time Picker on Iphone  */
+input[type="time"]::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+input[type="time"] {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  font-size: 16px !important; /* Required for iOS */
+  background-color: white !important;
+}

@@ -161,7 +161,10 @@ export default function NewDateTimePicker({
             <input
               type="time"
               ref={timeInputRef} 
-              className="w-full text-black rounded-lg px-2 py-1 bg-gray-100 max-w-32"
+              className="w-full rounded-lg px-2 py-1 max-w-32
+             bg-white text-black
+             appearance-none
+             focus:outline-none"
               value={selectedTime || ""}
               onChange={handleTimeSelect}
               placeholder="Time"

@@ -14,9 +14,9 @@ function Step3() {
     const {formData, setFormData, changeStep, formLoading} = useFormStore();
     const selectedFleet = fleets.find((item)=>item.name===formData.car.value)
     const passengersArray = Array.from(
-  { length: selectedFleet?.passengers ?? 0 },
+  { length: (selectedFleet?.passengers  ?? 0) + 1 },
   (_, i) => {
-    const count = i + 1
+    const count = i 
     return {
       label: `${count} ${count === 1 ? "Passenger" : "Passengers"}`,
       value: count.toString(),
