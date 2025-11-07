@@ -250,7 +250,7 @@ import { create } from "zustand";
   }, {});
 
   try {
-    const carImage = 'https://dsllimoservice.com/' + fleets.find((item)=>item.name===formData.car.value)?.image;
+    const carImage = 'https://dsllimoservice.com' + fleets.find((item)=>item.name===formData.car.value)?.image;
     console.log("car image")
      const newObject = {
     // 🔹 Basic Info
