@@ -40,6 +40,12 @@ function Step4() {
             <span>Base Price</span>
             <span>{formatPrice(basePrice.value)}</span>
           </div>
+          {discount.value > 0 && (
+            <div className="flex justify-between">
+              <span>Discount</span>
+              <span>- {formatPrice(discount.value)}</span>
+            </div>
+          )}
           {graduatiy.value > 0 && (
             <div className="flex justify-between">
               <span>Graduity</span>
@@ -118,12 +124,7 @@ function Step4() {
               <span>{formatPrice(stopsPrice.value)}</span>
             </div>
           )}
-          {discount.value > 0 && (
-            <div className="flex justify-between">
-              <span>Discount</span>
-              <span>- {formatPrice(discount.value)}</span>
-            </div>
-          )}
+          
         </div>
 
         {/* Total */}

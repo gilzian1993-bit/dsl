@@ -40,7 +40,7 @@ useEffect(()=>{
         <LocationInput
           key={i}
           field={`stops`}
-          label={`Stop ${i+1}`}
+          label={`Stop ${i+1} (20$ extra)`}
           index={i}
           isStop
           placeholder={`Stop ${i + 1}`}
