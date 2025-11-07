@@ -158,17 +158,21 @@ export default function NewDateTimePicker({
 
           { !Array.isArray(formData[dateFieldName]) && formData[dateFieldName].value &&  <div className="mt-2 md:mt-4 flex items-center justify-between gap-10">
             <div className="font-semibold">Time</div>
-            <input
-              type="time"
-              ref={timeInputRef} 
-              className="w-full rounded-lg px-2 py-1 max-w-32
-             bg-white text-black
-             appearance-none
-             focus:outline-none"
-              value={selectedTime || ""}
-              onChange={handleTimeSelect}
-              placeholder="Time"
-            />
+            <div className="relative w-full max-w-32">
+  <input
+    type="time"
+    ref={timeInputRef}
+    className="w-full rounded-lg px-2 py-1 bg-white text-black appearance-none focus:outline-none"
+    value={selectedTime || ""}
+    onChange={handleTimeSelect}
+  />
+  {!selectedTime && (
+    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+      --:--
+    </span>
+  )}
+</div>
+
           </div>}
          
           {!Array.isArray(formData[timeFieldName]) && !Array.isArray(formData[dateFieldName]) && formData[timeFieldName].value && formData[dateFieldName].value && <div className="mt-2 md:mt-4">
