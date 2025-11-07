@@ -152,22 +152,18 @@ import { create } from "zustand";
     }));
   },
 
-  validateData: (_step:number) => {
+   validateData: (_step: number) => {
     const { formData } = get();
-
-    // Validate all fields (including dynamic stops)
     const updated: FormDataType = { ...formData };
 
-    // validate simple fields
     (Object.keys(formData) as (keyof FormDataType)[]).forEach((k) => {
       if (k === "stops") return;
-      const item = formData[k] as FieldType<string>;
-      const hasErr = item.step === _step && item.required && !item.value && Number(item.value) !== 0 ;
+      const item = formData[k] as FieldType<any>;
+      const hasErr = item.step === _step && item.required && !item.value;
       const hasErr2 = item.step === _step && item.coardinatesRequired && !item.coardinates;
-      (updated[k] as FieldType<string>) = { ...item, error: hasErr ? `${k} is required` : hasErr2 ? `${k} coordinates required` : "" };
+      (updated[k] as FieldType<any>) = { ...item, error: hasErr ? `${k} is required` : hasErr2 ? `${k} coordinates required` : "" };
     });
 
-    // validate stops
     const stopsUpdated = formData.stops.map((s) => {
       const hasErr = s.step === _step && s.required && !s.value;
       const hasErr2 = s.step === _step && s.coardinatesRequired && !s.coardinates;
@@ -175,14 +171,11 @@ import { create } from "zustand";
     });
 
     updated.stops = stopsUpdated;
-    console.log("updated ",updated)
+    set({ formData: updated });
 
-    set({ formData: updated  });
-
-   
     const anyErrorField = Object.values(updated as FormDataType).some((v) => {
       if (Array.isArray(v)) {
-        return v.some((s) => s.error!=='');
+        return v.some((s) => s.error !== '');
       }
       return v.error !== '';
     });
