@@ -184,7 +184,8 @@ import { create } from "zustand";
   },
 
   changeStep: async (isNext: boolean, _step:number) => {
-    const { formData, category, validateData } = get();
+    const { formData, category, validateData, formLoading } = get();
+    if(formLoading) return false;
     if (!isNext) {
       set((state) => ({
         ...state,
@@ -440,6 +441,7 @@ import { create } from "zustand";
     };
   });
 },
+
   resetForm: () => set({ formData: tripInitialFormData, step: 1, category: "trip", formError: "", formLoading: false, isMobileDropdownOpen:false, isOrderDone:false, orderId:'' }),
   }));
 

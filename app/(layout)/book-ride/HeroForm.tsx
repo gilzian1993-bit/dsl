@@ -21,7 +21,7 @@ useEffect(()=>{
   if(isOrderDone){
     resetForm()
   }
-},[step, isOrderDone])
+},[ isOrderDone, resetForm])
 
   return (
     <div className='flex flex-col gap-3 sm:gap-5 w-full max-w-screen-sm'>
@@ -54,7 +54,7 @@ useEffect(()=>{
      {category === 'hourly' && <NewDropdownInput Icon={TimerIcon} fieldName='duration' placeholder='Duration in Hours' options={durationArray} />}
           </div>
 
-        
+  
 <div className={`w-6 flex flex-col items-center pt-[38px] ${category === 'trip' ? 'flex' : 'hidden'}`}>
   
   {(() => {
@@ -114,7 +114,6 @@ useEffect(()=>{
     return nodes;
   })()}
 </div>
-
         </div>
 
         {formError && <div className='text-sm text-red-500'>{formError}</div>}

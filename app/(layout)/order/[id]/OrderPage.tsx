@@ -97,7 +97,7 @@ function OrderPage({ id }: { id: string }) {
 
   const formatPrice = (price: string | null | undefined) => {
     const num = Number.parseFloat(price || "0")
-    return isNaN(num) ? "£0.00" : `£${num.toFixed(2)}`
+    return isNaN(num) ? "$0.00" : `$${num.toFixed(2)}`
   }
 
   if (error) return <div className="text-center py-40 text-2xl text-red-500">{error}</div>
