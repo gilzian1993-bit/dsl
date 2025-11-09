@@ -239,13 +239,7 @@ function OrderPage({ id }: { id: string }) {
                 </div>
               )}
 
-              {/* Tax */}
-              {order.tax && Number.parseFloat(order.tax) > 0 && (
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>{formatPrice(order.tax)}</span>
-                </div>
-              )}
+              
 
               {/* Meet & Greet */}
               {order.is_meet_greet_price && Number.parseFloat(order.is_meet_greet_price) > 0 && (
@@ -316,6 +310,22 @@ function OrderPage({ id }: { id: string }) {
                 <div className="flex justify-between">
                   <span>Return Booster Seat</span>
                   <span>{formatPrice(order.return_booster_seat_price)}</span>
+                </div>
+              )}
+
+              {/* Stops Pirce */}
+              {(order.stops?.length ?? 0) > 0  && (
+                <div className="flex justify-between">
+                  <span>Stops Price</span>
+                  <span>{formatPrice(((order.stops?.length ?? 0) * 20).toString())}</span>
+                </div>
+              )}
+
+              {/* Tax */}
+              {order.tax && Number.parseFloat(order.tax) > 0 && (
+                <div className="flex justify-between">
+                  <span>Tax</span>
+                  <span>{formatPrice(order.tax)}</span>
                 </div>
               )}
             </div>

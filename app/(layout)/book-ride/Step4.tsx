@@ -52,12 +52,7 @@ function Step4() {
               <span>{formatPrice(graduatiy.value)}</span>
             </div>
           )}
-          {tax.value > 0 && (
-            <div className="flex justify-between">
-              <span>Tax (5%)</span>
-              <span>{formatPrice(tax.value)}</span>
-            </div>
-          )}
+          
           {isAirportPickupPrice.value > 0 && (
             <div className="flex justify-between">
               <span>Airport Pickup</span>
@@ -122,6 +117,12 @@ function Step4() {
             <div className="flex justify-between">
               <span>Stops</span>
               <span>{formatPrice(stopsPrice.value)}</span>
+            </div>
+          )}
+          {tax.value > 0 && (
+            <div className="flex justify-between">
+              <span>Tax (5%)</span>
+              <span>{formatPrice(tax.value)}</span>
             </div>
           )}
           
