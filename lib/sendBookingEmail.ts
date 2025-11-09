@@ -83,7 +83,7 @@ export async function sendBookingEmail(booking: BookingData) {
 
     const insertedId = insertResult[0]?.id;
     const orderLink = `https://dsllimoservice.com/order/${insertedId}`;
-    const carImage = `https://dsllimoservice.com/order/${booking.carImage}`;
+    const carImage = booking.carImage;
     const stops = stopsForDb.map((item,index)=>({label:index===0? 'Pickup Location' : stopsForDb.length-1 === index ? booking.category==='hourly' ? 'Duration' : 'Dropoff Location'  : 'Stop ' + index  , value:stopsForDb.length-1 === index && booking.category==='hourly' ? item + ' hours' : item}))
     const htmEmail = await render(NewBookingEmailTemplate({carImage, stops, viewOrderLink:orderLink}))
 
