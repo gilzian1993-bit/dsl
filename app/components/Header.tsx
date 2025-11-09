@@ -48,7 +48,7 @@ const HeaderBar: React.FC = () => {
   }, [mobileOpen]);
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <header className="relative w-full border-t border-t-[#777777] bg-[#232323] overflow-hidden z-20">
+    <header className="relative w-full border-t border-t-[#777777] bg-[#232323] overflow-hidden z-10000">
       {/* Background overlay */}
 
 
