@@ -14,7 +14,7 @@ const emailConfig = {
   secure: false,
   auth: {
     user: process.env.EMAIL_USER || "info@dsllimoservice.com",
-    pass: process.env.EMAIL_PASS || "Dsllimo12$",
+    pass: process.env.EMAIL_PASS || "Dsllimo49$",
   },
   tls: {
     ciphers: "SSLv3",
