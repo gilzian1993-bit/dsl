@@ -77,23 +77,23 @@ export default function Fleet() {
 
                         {/* Stat 1 */}
                         <div className="flex flex-col items-center text-white">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">9000</h2>
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">500+</h2>
                             <div className="w-12 border-b-2 border-white my-4"></div>
                             <p className="text-xs sm:text-sm uppercase tracking-wide">Happy Customers</p>
                         </div>
 
                         {/* Stat 2 */}
                         <div className="flex flex-col items-center text-white">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">12</h2>
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">25</h2>
                             <div className="w-12 border-b-2 border-white my-4"></div>
                             <p className="text-xs sm:text-sm uppercase tracking-wide">Luxury Fleets</p>
                         </div>
 
                         {/* Stat 3 */}
                         <div className="flex flex-col items-center text-white">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">900000</h2>
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">30k</h2>
                             <div className="w-12 border-b-2 border-white my-4"></div>
-                            <p className="text-xs sm:text-sm uppercase tracking-wide">Miles</p>
+                            <p className="text-xs sm:text-sm uppercase tracking-wide">Miles in year</p>
                         </div>
 
                         {/* Stat 4 */}
