@@ -58,7 +58,7 @@ export default function Fleet() {
             />
             < WhatWeOfferSection />
 
-            <div className="relative w-full h-[280px] sm:h-[240px] md:h-[200px] flex items-center">
+            <div className="relative w-full h-[350px] sm:h-72 lg:h-[200px] flex items-center">
                 {/* Background Image */}
                 <Image
                     src="/hero-section.png"
@@ -73,33 +73,33 @@ export default function Fleet() {
 
                 {/* Overlay Content */}
                 <div className="relative z-10 flex flex-col justify-center h-full px-4 sm:px-8 md:px-16 lg:px-32 w-full">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 text-center">
 
                         {/* Stat 1 */}
                         <div className="flex flex-col items-center text-white">
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">500+</h2>
-                            <div className="w-12 border-b-2 border-white my-4"></div>
+                            <div className="w-12 border-b-2 border-white my-2 md:my-4"></div>
                             <p className="text-xs sm:text-sm uppercase tracking-wide">Happy Customers</p>
                         </div>
 
                         {/* Stat 2 */}
                         <div className="flex flex-col items-center text-white">
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">25</h2>
-                            <div className="w-12 border-b-2 border-white my-4"></div>
+                            <div className="w-12 border-b-2 border-white my-2 md:my-4"></div>
                             <p className="text-xs sm:text-sm uppercase tracking-wide">Luxury Fleets</p>
                         </div>
 
                         {/* Stat 3 */}
                         <div className="flex flex-col items-center text-white">
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">30k</h2>
-                            <div className="w-12 border-b-2 border-white my-4"></div>
+                            <div className="w-12 border-b-2 border-white my-2 md:my-4"></div>
                             <p className="text-xs sm:text-sm uppercase tracking-wide">Miles in year</p>
                         </div>
 
                         {/* Stat 4 */}
                         <div className="flex flex-col items-center text-white">
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">30</h2>
-                            <div className="w-12 border-b-2 border-white my-4"></div>
+                            <div className="w-12 border-b-2 border-white my-2 md:my-4"></div>
                             <p className="text-xs sm:text-sm uppercase tracking-wide">Qualified Chauffeurs</p>
                         </div>
                     </div>
