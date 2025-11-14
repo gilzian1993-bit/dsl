@@ -19,7 +19,7 @@ export const fleets = [
     image: "/images/sedan/cadilac-xts.png",
     price10Miles: 80,
     price: 2.50,
-    hourly: 2,
+    hourly: 80,
     passengers: 3,
     suitcases: 3,
     features: ["WiFi", "Leather Seats", "Climate Control"],
