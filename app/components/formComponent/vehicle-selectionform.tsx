@@ -9,16 +9,13 @@ import {
     Info,
     Wifi,
     ArrowRight,
-    MapPin,
-    X,
-    ChevronDown,
+    MapPin, ChevronDown,
     Route,
-    Clock,
+    Clock
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import MapComponent from "./GoogleMap";
 import GoogleMapsRoute from "./GoogleMap";
 
 

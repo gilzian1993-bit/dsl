@@ -46,9 +46,9 @@ export default function CallActionSection() {
         </div>
 
         {/* CTA Button */}
-        <button className="bg-[#008492] hover:bg-[#00707e] text-white font-semibold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2.5 sm:py-3 rounded transition-colors duration-200">
+        <a href="/" className="bg-[#008492] hover:bg-[#00707e] text-white font-semibold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2.5 sm:py-3 rounded transition-colors duration-200">
           Book Online
-        </button>
+        </a>
       </div>
     </section>
   )
