@@ -10,7 +10,7 @@ interface TimeInputProps {
   onChange: (hour: number, minute: number) => void;
 }
 
-const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }) => {
+const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, onChange }) => {
   const initialHour = hour ?? new Date().getHours();
   const initialMinute = minute ?? 0;
 
@@ -54,12 +54,12 @@ const TimeInput: React.FC<TimeInputProps> = ({ hour, minute, minTime, onChange }
     onChange(to24Hour(selectedHour, period), selectedMinute);
   };
 
-  const handleCancel = () => {
-    // Reset the time selection to initial values
-    setSelectedHour(initialHour % 12 || 12);
-    setSelectedMinute(initialMinute);
-    setPeriod(initialHour >= 12 ? "PM" : "AM");
-  };
+  // const handleCancel = () => {
+  //   // Reset the time selection to initial values
+  //   setSelectedHour(initialHour % 12 || 12);
+  //   setSelectedMinute(initialMinute);
+  //   setPeriod(initialHour >= 12 ? "PM" : "AM");
+  // };
 
   return (
     <div className="flex flex-col items-center p-4">

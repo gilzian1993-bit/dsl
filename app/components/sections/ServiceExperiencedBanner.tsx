@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 
 export default function ServiceExperienceBanner() {
     return (
@@ -20,7 +21,6 @@ export default function ServiceExperienceBanner() {
 
                     <div className="border-t-2 border-[#008492] w-32 mb-4"></div>
 
-
                     <p className="text-[#757575] text-xs sm:text-sm md:text-base opacity-90 mb-5">
                         Behind the wheel are our highly trained, professional chauffeurs who embody
                         courtesy, discretion, and expertise. More than just drivers, they are
@@ -29,14 +29,13 @@ export default function ServiceExperienceBanner() {
                         approach guarantee a seamless experience.
                     </p>
 
-                    <a
+                    <Link
                         href="/"
                         className="inline-block italic bg-[#008492] text-white font-semibold rounded px-4 sm:px-5 py-2 text-sm sm:text-base shadow hover:bg-gray-100 hover:text-black transition w-fit"
                     >
                         Book Now
-                    </a>
+                    </Link>
                 </div>
-
             </div>
 
             {/* 🔹 Bottom Pricing Section */}
@@ -44,16 +43,16 @@ export default function ServiceExperienceBanner() {
                 <div className="flex-1 text-white text-center md:text-left text-sm sm:text-base">
                     <span className="font-semibold">WHAT ABOUT PRICING ? </span>
                     <span className="font-normal opacity-80">
-                       Don&apos;t worry, that possible may have been and the impact can be taken on your last day now.
-
+                        Don&apos;t worry, that possible may have been and the impact can be taken on your last day now.
                     </span>
                 </div>
-                <a
+
+                <Link
                     href="/"
                     className="flex items-center justify-center bg-black text-white font-semibold px-5 sm:px-6 py-2 sm:py-3 text-sm sm:text-base hover:bg-[#222] transition whitespace-nowrap rounded"
                 >
                     Check Rates <span className="ml-2">&rarr;</span>
-                </a>
+                </Link>
             </div>
         </section>
     )
