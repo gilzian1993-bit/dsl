@@ -4,12 +4,10 @@ import {
     ArrowLeft,
     ArrowRight,
     MapPin,
-    Info,
-    Edit,
+    Info
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { CardElement, useStripe, useElements, PaymentElement, Elements } from "@stripe/react-stripe-js";
-import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import PaymentCard from "../PaymentCard";
 import Image from "next/image";

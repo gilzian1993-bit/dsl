@@ -1,14 +1,13 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { MapPin, CalendarIcon, ClockIcon, ChevronDown, Plus, ArrowRightLeftIcon, ArrowUpDownIcon } from "lucide-react";
+import { MapPin, CalendarIcon, ClockIcon, ChevronDown, ArrowRightLeftIcon, ArrowUpDownIcon } from "lucide-react";
 import { Autocomplete, Libraries, useLoadScript } from "@react-google-maps/api";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import Calendar from "../../../components/ui/calendar";
 import { format } from "date-fns";
-import TimePicker from "../time-picker";
 import { Dispatch, SetStateAction } from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import TimeInput from "../time-picker";
 import { SlLocationPin } from "react-icons/sl";
 import { X } from "lucide-react";
