@@ -1,6 +1,5 @@
 "use client";
 import { Star } from "lucide-react";
-import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 
 interface HeroSectionProps {

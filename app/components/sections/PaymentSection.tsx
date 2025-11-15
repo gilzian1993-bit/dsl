@@ -74,17 +74,7 @@ interface VehicleOption {
     basePrice?: number;
     //  base: number;
 }
-interface UserInformationProps {
-    vehicle: VehicleOption;
-    pickupLocation: string;
-    dropLocation: string;
-    pickupDate: string;
-    pickupTime: string;
-    onNext: (info: UserInfo) => void;
-    onBack: () => void;
-    step: number;
-    meetGreetYes: boolean;
-}
+
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === undefined) {
     throw new Error("Key not defined")
 }
