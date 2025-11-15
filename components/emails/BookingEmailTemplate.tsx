@@ -173,7 +173,7 @@ export default function BookingEmail(props: BookingData ) {
                   ["Return Rear Seats", return_rear_seats ?? 0],
                   ["Return Booster Seats", return_booster_seats ?? 0],
                   ["Return Infant Seat", return_infantSeat ?? "No"],
-                ].filter(([label, _])=>{
+                ].filter(([label]) => {
                     if(Number(returnPrice) > 0){return true};
                     return !String(label).startsWith('Return')
                 }).map(([label, value], i) => (
@@ -241,7 +241,7 @@ export default function BookingEmail(props: BookingData ) {
                   ["Discount", `-${formatCurrency(Number(discount))}`],
                   
                  
-                ].filter(([label, _])=>{
+                ].filter(([label]) => {
                     if(Number(returnPrice) > 0){return true};
                     return !String(label).startsWith('Return')
                 }).map(([label, value], i) => (

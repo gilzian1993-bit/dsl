@@ -13,7 +13,6 @@ export default function CallActionSection() {
         className="object-cover"
       />
 
-
       {/* 🔹 Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto">
         <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-snug sm:leading-tight">
@@ -26,15 +25,17 @@ export default function CallActionSection() {
         </p>
 
         {/* Call Now */}
-        <a href="https://wa.me/18006793415"
+        <a
+          href="https://wa.me/18006793415"
           target="_blank"
-          rel="noopener noreferrer">
+          rel="noopener noreferrer"
+        >
           <div className="mb-6 sm:mb-8">
             <p className="text-white font-[var(--font-montserrat)] text-base sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6">
               CALL NOW +1 800 679 3415
             </p>
-          </div></a>
-
+          </div>
+        </a>
 
         {/* Divider with OR */}
         <div className="flex items-center justify-center mb-6 sm:mb-8">
@@ -46,9 +47,12 @@ export default function CallActionSection() {
         </div>
 
         {/* CTA Button */}
-        <a href="/" className="bg-[#008492] hover:bg-[#00707e] text-white font-semibold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2.5 sm:py-3 rounded transition-colors duration-200">
+        <Link
+          href="/"
+          className="bg-[#008492] hover:bg-[#00707e] text-white font-semibold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-2.5 sm:py-3 rounded transition-colors duration-200"
+        >
           Book Online
-        </a>
+        </Link>
       </div>
     </section>
   )

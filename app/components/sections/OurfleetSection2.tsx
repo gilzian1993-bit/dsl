@@ -2,8 +2,6 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Users, Briefcase, Wind, Wifi } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useInView } from "react-intersection-observer";
 import VehicleCard from "../VehicleCard";
 
 const fleetCategories = [
@@ -151,8 +149,6 @@ const vehicles = [
 
 export default function OurFleetSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
-  const router = useRouter();
- 
 
   const filteredVehicles =
     activeCategory === "ALL"

@@ -19,14 +19,6 @@ import { useEffect, useState } from "react";
 import GoogleMapsRoute from "./GoogleMap";
 
 
-// interfaces
-interface PriceBreakdown {
-    basePrice: number;
-    gratuity: number;
-    tollFee: number;
-    tax: number;
-    total: number;
-}
 
 interface VehicleOption {
     id: number;
