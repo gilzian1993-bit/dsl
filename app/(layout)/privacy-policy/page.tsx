@@ -35,14 +35,14 @@ export default function PrivacyPolicy() {
               <div>
                 <dt className="font-semibold">Affiliate</dt>
                 <dd className="ml-4 mb-2">
-                  means an entity that controls, is controlled by, or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest, or other securities entitled to vote for election of directors or managing authority.
+                  means an entity that controls, is controlled by, or is under common control with a party, where &quot;control&quot; means ownership of 50% or more of the shares, equity interest, or other securities entitled to vote for election of directors or managing authority.
                 </dd>
               </div>
 
               <div>
                 <dt className="font-semibold">Company</dt>
                 <dd className="ml-4 mb-2">
-                  (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to DSL Limo Service.
+                  (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to DSL Limo Service.
                 </dd>
               </div>
 
@@ -118,7 +118,7 @@ export default function PrivacyPolicy() {
             </p>
 
             <div className="ml-4">
-              <h4 className="text-lg font-semibold mb-2">1. SMS Terms & Conditions</h4>
+              <h4 className="text-lg font-semibold mb-2">1. SMS Terms &amp; Conditions</h4>
               
               <div className="space-y-4">
                 <div>
@@ -153,20 +153,20 @@ export default function PrivacyPolicy() {
 
                 <div>
                   <h5 className="font-semibold">Opt-Out Method:</h5>
-                  <p>Reply "STOP" to any SMS, or contact us directly.</p>
+                  <p>Reply &quot;STOP&quot; to any SMS, or contact us directly.</p>
                 </div>
 
                 <div>
                   <h5 className="font-semibold">Help:</h5>
-                  <p>Reply "HELP" or contact us at +1 800 679 3415</p>
+                  <p>Reply &quot;HELP&quot; or contact us at +1 800 679 3415</p>
                 </div>
 
                 <div>
                   <h5 className="font-semibold">Standard Disclosures:</h5>
                   <ul className="list-disc ml-6">
                     <li>Message and data rates may apply</li>
-                    <li>Text "STOP" to unsubscribe</li>
-                    <li>Text "HELP" for assistance</li>
+                    <li>Text &quot;STOP&quot; to unsubscribe</li>
+                    <li>Text &quot;HELP&quot; for assistance</li>
                     <li>Message frequency may vary</li>
                   </ul>
                 </div>
@@ -302,7 +302,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-4">CHILDREN'S PRIVACY</h3>
+            <h3 className="text-xl font-semibold mb-4">CHILDREN&apos;S PRIVACY</h3>
             <p>
               We do not knowingly collect data from individuals under 13.
             </p>
