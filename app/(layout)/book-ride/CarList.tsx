@@ -17,7 +17,7 @@ export const fleets = [
     type: "SEDAN",
     name: "SEDAN",
     image: "/images/sedan/cadilac-xts.png",
-    price10Miles: 2,
+    price10Miles: 80,
     price: 2.50,
     hourly: 80,
     passengers: 3,
