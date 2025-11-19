@@ -61,127 +61,259 @@ export interface OrderProps {
   created_at: string
 }
 
+interface GetOrderByIdResult {
+  status: number
+  order: OrderProps | null
+  error: string | null
+}
+
 function OrderPage({ id }: { id: string }) {
   const [order, setOrder] = useState<OrderProps | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [copiedField, setCopiedField] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const result = await getOrderById(id)
-        if (result.status === 200 && result.order) {
-          const orderData = result.order
-          const formattedOrder = {
-            ...orderData,
-            pickup_date: orderData.pickup_date ? new Date(orderData.pickup_date).toISOString() : null,
-            return_date: orderData.return_date ? new Date(orderData.return_date).toISOString() : null,
-            created_at: orderData.created_at ? orderData.created_at.toISOString() : "",
-          }
-          setOrder(formattedOrder)
-        } else {
-          setError(result.error)
-        }
-      } catch (err) {
-        console.log("error : ", err)
-        setError("Failed to fetch the order.")
-      }
+    const fetchOrder = async (): Promise<void> => {
+  try {
+    setLoading(true)
+    setError(null)
+    
+    if (!id || id === "undefined" || id === "null") {
+      setError("Invalid order ID")
+      setLoading(false)
+      return
     }
-    if (id) fetchOrder()
+
+    console.log("Fetching order for ID:", id)
+    const result = await getOrderById(id)
+    
+    console.log("API Result:", result)
+
+    if (result.status === 200 && result.order) {
+      const orderData = result.order
+      const formattedOrder: OrderProps = {
+        ...orderData,
+        pickup_date: orderData.pickup_date ? new Date(orderData.pickup_date).toISOString() : null,
+        return_date: orderData.return_date ? new Date(orderData.return_date).toISOString() : null,
+        created_at: orderData.created_at ? new Date(orderData.created_at).toISOString() : new Date().toISOString(),
+      }
+      setOrder(formattedOrder)
+    } else {
+      setError(result.error || "Failed to fetch order details")
+    }
+  } catch (err: unknown) {
+    console.error("Error in OrderPage:", err)
+    const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred"
+    setError(errorMessage)
+  } finally {
+    setLoading(false)
+  }
+}
+    
+    if (id) {
+      fetchOrder()
+    } else {
+      setError("No order ID provided")
+      setLoading(false)
+    }
   }, [id])
 
-
-  const toMiles = (km?: string | null) => {
-    const num = Number.parseFloat(km || "0")
+  const toMiles = (km?: string | null): string => {
+    if (!km) return "0"
+    const num = parseFloat(km)
     return isNaN(num) ? "0" : (num * 0.621371).toFixed(2)
   }
 
-  const formatPrice = (price: string | null | undefined) => {
-    const num = Number.parseFloat(price || "0")
+  const formatPrice = (price: string | null | undefined): string => {
+    if (!price) return "$0.00"
+    const num = parseFloat(price)
     return isNaN(num) ? "$0.00" : `$${num.toFixed(2)}`
   }
 
-  if (error) return <div className="text-center py-40 text-2xl text-red-500">{error}</div>
+  const handleCopy = (text: string, field: string): void => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedField(field)
+      setTimeout(() => setCopiedField(null), 2000)
+    }).catch((copyError: Error) => {
+      console.error("Failed to copy text:", copyError)
+    })
+  }
 
-  if (!order) return <div className="text-center py-40 text-2xl animate-pulse">Loading...</div>
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Loading Order Details</h2>
+          <p className="text-gray-600">Please wait while we fetch your order information...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Unable to Load Order</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <div className="flex gap-4 justify-center">
+            <button 
+              onClick={() => window.location.reload()}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Try Again
+            </button>
+            <button 
+              onClick={() => window.history.back()}
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // No order found
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="text-gray-400 text-6xl mb-4">📭</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Not Found</h2>
+          <p className="text-gray-600">The requested order could not be found.</p>
+        </div>
+      </div>
+    )
+  }
 
   const stops = order.stops || []
 
   return (
-    <div className="min-h-screen bg-gray-50 text-wrap break-all">
-      <div className="h-14 sm:h-20 w-full bg-black mb-10"></div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Banner */}
+      <div className="h-14 sm:h-20 w-full bg-black"></div>
 
-      <div className="px-3">
-        {/* Header */}
-        <header className="bg-[#181818] text-white flex justify-between items-center px-6 sm:px-10 py-5 max-w-5xl mx-auto rounded-2xl">
-          <Image
-            src="/Logo.png"
-            alt="DSL Logo"
-            width={120}
-            height={60}
-            className="max-w-16 sm:max-w-32 object-contain"
-            priority
-          />
-          <div className="text-right">
-            <p className="text-sm text-gray-300">Order ID</p>
-            <div className="flex items-center gap-1 justify-end">
-              <p className="text-white font-medium text-[10px] sm:text-sm">{order.id}</p>
-              <TbCopy
-                onClick={() => navigator.clipboard.writeText(order.id.toString())}
-                className="cursor-pointer text-gray-400 hover:text-gray-200"
-              />
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Order Header */}
+        <header className="bg-[#181818] text-white flex flex-col sm:flex-row justify-between items-center px-6 sm:px-8 py-6 rounded-2xl mb-8">
+          <div className="mb-4 sm:mb-0">
+            <Image
+              src="/Logo.png"
+              alt="DSL Logo"
+              width={140}
+              height={70}
+              className="w-24 sm:w-32 object-contain"
+              priority
+            />
+          </div>
+          <div className="text-center sm:text-right">
+            <p className="text-sm text-gray-300 mb-1">Order ID</p>
+            <div className="flex items-center gap-2 justify-center sm:justify-end">
+              <p className="text-white font-medium text-sm sm:text-base">#{order.id}</p>
+              <button
+                onClick={() => handleCopy(order.id.toString(), 'orderId')}
+                className="flex items-center gap-1 text-gray-400 hover:text-gray-200 transition-colors"
+                title="Copy Order ID"
+              >
+                <TbCopy className="text-lg" />
+                {copiedField === 'orderId' && (
+                  <span className="text-xs text-green-400">Copied!</span>
+                )}
+              </button>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="max-w-5xl mx-auto py-10">
+        <main className="space-y-8">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <SummaryCard label="Total Amount" value={formatPrice(order.total_price)} color="text-red-600" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <SummaryCard 
+              label="Total Amount" 
+              value={formatPrice(order.total_price)} 
+              color="text-green-600" 
+            />
             {order.category === "hourly" ? (
-              <SummaryCard label="Duration" value={`${order.hours} hours`} />
+              <SummaryCard 
+                label="Duration" 
+                value={`${order.hours || '0'} hours`} 
+              />
             ) : (
-              <SummaryCard label="Distance" value={`${toMiles(order.distance?.toString())} miles`} />
+              <SummaryCard 
+                label="Distance" 
+                value={`${toMiles(order.distance)} miles`} 
+              />
             )}
-            <SummaryCard label="Trip Type" value={order.category?.toLowerCase() ?? order.trip_type?.toLocaleUpperCase() ?? "N/A"} />
+            <SummaryCard 
+              label="Trip Type" 
+              value={order.category?.toUpperCase() || order.trip_type?.toUpperCase() || "N/A"} 
+            />
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+          {/* Route Information */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <IoCarSportSharp className="text-brandColor text-xl" /> Route Information
+              <IoCarSportSharp className="text-blue-600 text-xl" /> 
+              Route Information
             </h2>
 
             <div className="relative pl-6">
+              {/* Pickup Location */}
               <TimelineItem
-                color="green"
-                label="Pick-Up"
+                color="#10b981"
+                label="Pick-Up Location"
                 value={order.from_location}
                 date={order.pickup_date}
                 time={order.pickup_time}
               />
 
-              {stops.map((stop, i) => (
-                <TimelineItem key={i} color="blue" label={`Stop ${i + 1}`} value={stop} />
+              {/* Stops */}
+              {stops.map((stop, index) => (
+                <TimelineItem
+                  key={index}
+                  color="#3b82f6"
+                  label={`Stop ${index + 1}`}
+                  value={stop}
+                />
               ))}
 
+              {/* Destination or Duration */}
               {order.category === "hourly" ? (
-                <TimelineItem color="red" label="Duration" value={order.hours?.toString() || "N/A"} />
+                <TimelineItem
+                  color="#ef4444"
+                  label="Duration"
+                  value={`${order.hours || '0'} hours`}
+                />
               ) : (
-                <TimelineItem color="red" label="Drop-Off" value={order.to_location || "N/A"} />
+                <TimelineItem
+                  color="#ef4444"
+                  label="Drop-Off Location"
+                  value={order.to_location || "N/A"}
+                />
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Details Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Trip Details */}
             <InfoCard title="Trip Details">
               <InfoField label="Car Type" value={order.car_type || "N/A"} />
               <InfoField label="Trip Type" value={order.trip_type || "N/A"} />
               <InfoField label="Return Date" value={formatDate(order.return_date)} />
               <InfoField label="Return Time" value={order.return_time || "N/A"} />
-              <InfoField label="Flight Track" value={order.is_flight_track ? "Yes" : "No"} />
+              <InfoField label="Flight Tracking" value={order.is_flight_track ? "Yes" : "No"} />
               <InfoField label="Meet & Greet" value={order.meet_greet ? "Yes" : "No"} />
-              {order.return_trip && <InfoField label="Return Meeting" value={order.return_meet_greet ? "Yes" : "No"} />}
+              {order.return_trip && (
+                <InfoField label="Return Meet & Greet" value={order.return_meet_greet ? "Yes" : "No"} />
+              )}
               <InfoField label="Airport Pickup" value={order.is_airport_pickup ? "Yes" : "No"} />
             </InfoCard>
 
@@ -191,149 +323,137 @@ function OrderPage({ id }: { id: string }) {
               <InfoField label="Luggage" value={order.luggage?.toString() || "N/A"} />
               <InfoField label="Rear Seats" value={order.rear_seats?.toString() || "0"} />
               <InfoField label="Booster Seats" value={order.booster_seats?.toString() || "0"} />
-              <InfoField label="Infant Seat" value={order.infant_seat?.toString() || "0"} />
+              <InfoField label="Infant Seats" value={order.infant_seat?.toString() || "0"} />
               {order.return_trip && (
                 <>
                   <InfoField label="Return Rear Seats" value={order.return_rear_seats?.toString() || "0"} />
                   <InfoField label="Return Booster Seats" value={order.return_booster_seats?.toString() || "0"} />
-                  <InfoField label="Return Infant Seat" value={order.return_infant_seat?.toString() || "0"} />
+                  <InfoField label="Return Infant Seats" value={order.return_infant_seat?.toString() || "0"} />
                 </>
               )}
             </InfoCard>
 
-            {/* Customer Info */}
+            {/* Customer Information */}
             <InfoCard title="Customer Information">
-              <InfoField label="Name" value={order.name} icon={<BiUserCircle />} />
-              <InfoField label="Email" value={order.email} icon={<MdOutlineEmail />} />
-              <InfoField label="Phone" value={order.phone_number} icon={<MdOutlinePhone />} />
-              <InfoField label="Flight Number" value={order.flight_number || "N/A"} icon={<MdOutlineFlight />} />
-              <InfoField label="Airline Code" value={order.airline_code || "N/A"} icon={<MdAirlines />} />
-              <InfoField label="Payment ID" value={order.payment_id || "N/A"} icon={<MdOutlinePayment />} />
-              <InfoField label="Ordered At" value={formatDate(order.created_at.toString())} icon={<Timer />} />
+              <InfoField 
+                label="Name" 
+                value={order.name} 
+                icon={<BiUserCircle className="text-blue-600" />} 
+                onCopy={() => handleCopy(order.name, 'name')}
+                copied={copiedField === 'name'}
+              />
+              <InfoField 
+                label="Email" 
+                value={order.email} 
+                icon={<MdOutlineEmail className="text-green-600" />} 
+                onCopy={() => handleCopy(order.email, 'email')}
+                copied={copiedField === 'email'}
+              />
+              <InfoField 
+                label="Phone" 
+                value={order.phone_number} 
+                icon={<MdOutlinePhone className="text-purple-600" />} 
+                onCopy={() => handleCopy(order.phone_number, 'phone')}
+                copied={copiedField === 'phone'}
+              />
+              <InfoField 
+                label="Flight Number" 
+                value={order.flight_number || "N/A"} 
+                icon={<MdOutlineFlight className="text-orange-600" />} 
+              />
+              <InfoField 
+                label="Airline Code" 
+                value={order.airline_code || "N/A"} 
+                icon={<MdAirlines className="text-red-600" />} 
+              />
+              <InfoField 
+                label="Payment ID" 
+                value={order.payment_id || "N/A"} 
+                icon={<MdOutlinePayment className="text-indigo-600" />} 
+                onCopy={() => handleCopy(order.payment_id || '', 'paymentId')}
+                copied={copiedField === 'paymentId'}
+              />
+              <InfoField 
+                label="Order Date" 
+                value={formatDate(order.created_at)} 
+                icon={<Timer className="text-gray-600" size={18} />} 
+              />
             </InfoCard>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+          {/* Price Breakdown */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Price Breakdown</h2>
 
-            <div className="space-y-2 text-sm text-gray-600">
+            <div className="space-y-3 text-sm">
               {/* Base Price */}
-              <div className="flex justify-between">
-                <span>Base Price</span>
-                <span>{formatPrice(order.base_price)}</span>
-              </div>
+              <PriceItem label="Base Price" value={formatPrice(order.base_price)} />
 
               {/* Discount */}
-              {order.discount && Number.parseFloat(order.discount) > 0 && (
-                <div className="flex justify-between text-red-600">
-                  <span>Discount</span>
-                  <span>- {formatPrice(order.discount)}</span>
-                </div>
+              {order.discount && parseFloat(order.discount) > 0 && (
+                <PriceItem label="Discount" value={`- ${formatPrice(order.discount)}`} isDiscount />
               )}
 
-              {/* Gratuity */}
-              {order.gratuity && Number.parseFloat(order.gratuity) > 0 && (
-                <div className="flex justify-between">
-                  <span>Gratuity</span>
-                  <span>{formatPrice(order.gratuity)}</span>
-                </div>
+              {/* Additional Services */}
+              {order.gratuity && parseFloat(order.gratuity) > 0 && (
+                <PriceItem label="Gratuity" value={formatPrice(order.gratuity)} />
               )}
 
-              
-
-              {/* Meet & Greet */}
-              {order.is_meet_greet_price && Number.parseFloat(order.is_meet_greet_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Meet & Greet</span>
-                  <span>{formatPrice(order.is_meet_greet_price)}</span>
-                </div>
+              {order.is_meet_greet_price && parseFloat(order.is_meet_greet_price) > 0 && (
+                <PriceItem label="Meet & Greet" value={formatPrice(order.is_meet_greet_price)} />
               )}
 
-              {/* Rear Seat */}
-              {order.rear_seat_price && Number.parseFloat(order.rear_seat_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Rear Seat</span>
-                  <span>{formatPrice(order.rear_seat_price)}</span>
-                </div>
+              {order.rear_seat_price && parseFloat(order.rear_seat_price) > 0 && (
+                <PriceItem label="Rear Seats" value={formatPrice(order.rear_seat_price)} />
               )}
 
-              {/* Infant Seat */}
-              {order.infant_seat_price && Number.parseFloat(order.infant_seat_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Infant Seat</span>
-                  <span>{formatPrice(order.infant_seat_price)}</span>
-                </div>
+              {order.infant_seat_price && parseFloat(order.infant_seat_price) > 0 && (
+                <PriceItem label="Infant Seats" value={formatPrice(order.infant_seat_price)} />
               )}
 
-              {/* Booster Seat */}
-              {order.booster_seat_price && Number.parseFloat(order.booster_seat_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Booster Seat</span>
-                  <span>{formatPrice(order.booster_seat_price)}</span>
-                </div>
+              {order.booster_seat_price && parseFloat(order.booster_seat_price) > 0 && (
+                <PriceItem label="Booster Seats" value={formatPrice(order.booster_seat_price)} />
               )}
 
-              {/* Return Transfer */}
-              {order.return_price && Number.parseFloat(order.return_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Return Transfer</span>
-                  <span>{formatPrice(order.return_price)}</span>
-                </div>
+              {/* Return Trip Services */}
+              {order.return_price && parseFloat(order.return_price) > 0 && (
+                <PriceItem label="Return Transfer" value={formatPrice(order.return_price)} />
               )}
 
-              {/* Return Meet & Greet */}
-              {order.is_return_meet_greet_price && Number.parseFloat(order.is_return_meet_greet_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Return Meet & Greet</span>
-                  <span>{formatPrice(order.is_return_meet_greet_price)}</span>
-                </div>
+              {order.is_return_meet_greet_price && parseFloat(order.is_return_meet_greet_price) > 0 && (
+                <PriceItem label="Return Meet & Greet" value={formatPrice(order.is_return_meet_greet_price)} />
               )}
 
-              {/* Return Rear Seat */}
-              {order.return_rear_seat_price && Number.parseFloat(order.return_rear_seat_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Return Rear Seat</span>
-                  <span>{formatPrice(order.return_rear_seat_price)}</span>
-                </div>
+              {order.return_rear_seat_price && parseFloat(order.return_rear_seat_price) > 0 && (
+                <PriceItem label="Return Rear Seats" value={formatPrice(order.return_rear_seat_price)} />
               )}
 
-              {/* Return Infant Seat */}
-              {order.return_infant_seat_price && Number.parseFloat(order.return_infant_seat_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Return Infant Seat</span>
-                  <span>{formatPrice(order.return_infant_seat_price)}</span>
-                </div>
+              {order.return_infant_seat_price && parseFloat(order.return_infant_seat_price) > 0 && (
+                <PriceItem label="Return Infant Seats" value={formatPrice(order.return_infant_seat_price)} />
               )}
 
-              {/* Return Booster Seat */}
-              {order.return_booster_seat_price && Number.parseFloat(order.return_booster_seat_price) > 0 && (
-                <div className="flex justify-between">
-                  <span>Return Booster Seat</span>
-                  <span>{formatPrice(order.return_booster_seat_price)}</span>
-                </div>
+              {order.return_booster_seat_price && parseFloat(order.return_booster_seat_price) > 0 && (
+                <PriceItem label="Return Booster Seats" value={formatPrice(order.return_booster_seat_price)} />
               )}
 
-              {/* Stops Pirce */}
-              {(order.stops?.length ?? 0) > 0  && (
-                <div className="flex justify-between">
-                  <span>Stops Price</span>
-                  <span>{formatPrice(((order.stops?.length ?? 0) * 20).toString())}</span>
-                </div>
+              {/* Stops Price */}
+              {(order.stops?.length ?? 0) > 0 && (
+                <PriceItem 
+                  label={`Stops (${order.stops?.length})`} 
+                  value={formatPrice(((order.stops?.length ?? 0) * 20).toString())} 
+                />
               )}
 
               {/* Tax */}
-              {order.tax && Number.parseFloat(order.tax) > 0 && (
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>{formatPrice(order.tax)}</span>
-                </div>
+              {order.tax && parseFloat(order.tax) > 0 && (
+                <PriceItem label="Tax" value={formatPrice(order.tax)} />
               )}
             </div>
 
-            {/* Total with dashed separator */}
-            <div className="flex justify-between items-center border-t-2 border-dashed border-gray-300 mt-4 pt-4 text-lg font-bold text-gray-900">
-              <span>Total</span>
-              <span>{formatPrice(order.total_price)}</span>
+            {/* Total */}
+            <div className="flex justify-between items-center border-t-2 border-dashed border-gray-300 mt-6 pt-4 text-lg font-bold text-gray-900">
+              <span>Total Amount</span>
+              <span className="text-green-600">{formatPrice(order.total_price)}</span>
             </div>
           </div>
         </main>
@@ -344,86 +464,111 @@ function OrderPage({ id }: { id: string }) {
 
 /* ---------- Helper Components ---------- */
 
-const SummaryCard = ({
-  label,
-  value,
-  color,
-}: {
+interface SummaryCardProps {
   label: string
   value: string
   color?: string
-}) => (
-  <div className="bg-[#fff9ef] border border-yellow-200 rounded-xl p-4 flex flex-col justify-center text-center">
-    <p className="text-sm font-medium text-gray-700">{label}</p>
-    <p className={`text-xl font-bold ${color || "text-gray-800"} mt-1`}>{value}</p>
+}
+
+const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, color }) => (
+  <div className="bg-white border border-gray-200 rounded-xl p-5 text-center shadow-sm hover:shadow-md transition-shadow">
+    <p className="text-sm font-medium text-gray-600 mb-2">{label}</p>
+    <p className={`text-xl font-bold ${color || "text-gray-800"}`}>{value}</p>
   </div>
 )
 
-const TimelineItem = ({
-  color,
-  label,
-  value,
-  date,
-  time,
-}: {
+interface TimelineItemProps {
   color: string
   label: string
   value?: string
   date?: string | null
   time?: string | null
-}) => (
-  <div className="relative pb-6">
-    <div className={`absolute -left-0.5 w-4 h-4 top-1 rounded-full`} style={{ backgroundColor: color }}></div>
+}
 
+const TimelineItem: React.FC<TimelineItemProps> = ({ color, label, value, date, time }) => (
+  <div className="relative pb-6 last:pb-0">
+    <div 
+      className="absolute -left-0.5 w-4 h-4 top-1 rounded-full border-2 border-white shadow-sm"
+      style={{ backgroundColor: color }}
+    ></div>
     <div className="ml-6">
       <p className="text-sm font-semibold text-gray-800">{label}</p>
       {date && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 mt-1">
           {formatDate(date)} • {time || "N/A"}
         </p>
       )}
-      <p className="text-sm text-gray-700 mt-1">{value}</p>
+      <p className="text-sm text-gray-700 mt-1 bg-gray-50 p-2 rounded border">{value}</p>
     </div>
   </div>
 )
 
-const InfoCard = ({
-  title,
-  children,
-}: {
+interface InfoCardProps {
   title: string
   children: React.ReactNode
-}) => (
-  <div className="bg-white border border-gray-200 rounded-xl p-6">
-    <h3 className="text-md font-semibold text-gray-800 mb-4">{title}</h3>
-    <div className="space-y-3 text-sm">{children}</div>
+}
+
+const InfoCard: React.FC<InfoCardProps> = ({ title, children }) => (
+  <div className="bg-white border border-gray-200 rounded-xl p-6 h-fit">
+    <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">{title}</h3>
+    <div className="space-y-4">{children}</div>
   </div>
 )
 
-const InfoField = ({
-  label,
-  value,
-  icon,
-}: {
+interface InfoFieldProps {
   label: string
   value: string
   icon?: React.ReactNode
-}) => (
-  <div className="flex items-start gap-2">
-    {icon && <span className="text-gray-500 text-lg mt-0.5">{icon}</span>}
-    <div>
-      <p className="text-gray-500 text-xs">{label}</p>
-      <p className="text-gray-800 font-medium text-sm">{value}</p>
+  onCopy?: () => void
+  copied?: boolean
+}
+
+const InfoField: React.FC<InfoFieldProps> = ({ label, value, icon, onCopy, copied = false }) => (
+  <div className="flex items-start justify-between group">
+    <div className="flex items-start gap-3 flex-1">
+      {icon && <span className="text-lg mt-0.5 flex-shrink-0">{icon}</span>}
+      <div className="flex-1 min-w-0">
+        <p className="text-gray-500 text-xs font-medium">{label}</p>
+        <p className="text-gray-800 font-medium text-sm break-words">{value}</p>
+      </div>
     </div>
+    {onCopy && (
+      <button
+        onClick={onCopy}
+        className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 flex-shrink-0 text-gray-400 hover:text-gray-600"
+        title="Copy to clipboard"
+      >
+        {copied ? (
+          <span className="text-green-500 text-xs">Copied!</span>
+        ) : (
+          <TbCopy size={16} />
+        )}
+      </button>
+    )}
   </div>
 )
 
-/* ---------- Utils ---------- */
+interface PriceItemProps {
+  label: string
+  value: string
+  isDiscount?: boolean
+}
 
-function formatDate(date?: string | null) {
+const PriceItem: React.FC<PriceItemProps> = ({ label, value, isDiscount = false }) => (
+  <div className="flex justify-between items-center py-1">
+    <span className="text-gray-600">{label}</span>
+    <span className={`font-medium ${isDiscount ? 'text-red-600' : 'text-gray-800'}`}>
+      {value}
+    </span>
+  </div>
+)
+
+/* ---------- Utility Functions ---------- */
+
+function formatDate(date?: string | null): string {
   if (!date) return "N/A"
   try {
-    return new Date(date).toLocaleDateString("en-GB", {
+    return new Date(date).toLocaleDateString("en-US", {
       day: "2-digit",
       month: "short",
       year: "numeric",
