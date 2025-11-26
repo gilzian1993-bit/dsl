@@ -101,8 +101,8 @@ function CarList() {
           price = item.price10Miles;
           price += formData.distance.value > 10 ? (formData.distance.value - 10 ) * item.price : 0;
         }
-        const graduatiy = (price/100)*20;
-        const totalPrice =  (price + graduatiy).toFixed(2);
+        const graduatiy = ((price/100)*20)  ;
+        const totalPrice =  (price + graduatiy + formData.stopsPrice.value).toFixed(2);
         
         const isSprinter = item.name === "SPRINTER";
         
