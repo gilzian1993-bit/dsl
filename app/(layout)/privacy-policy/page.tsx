@@ -133,6 +133,8 @@ export default function PrivacyPolicy() {
                   </p>
                   <ul className="list-disc ml-6 mt-2">
                     <li>Reservation updates</li>
+                    <li>Services updates</li>
+                    <li>Customer care messages</li>
                   </ul>
                 </div>
 
@@ -146,10 +148,10 @@ export default function PrivacyPolicy() {
                   <p>Standard message and data rates may apply based on your mobile carrier.</p>
                 </div>
 
-                <div>
+                {/* <div>
                   <h5 className="font-semibold">Opt-In Method:</h5>
                   <p>You may opt in by submitting an online form.</p>
-                </div>
+                </div> */}
 
                 <div>
                   <h5 className="font-semibold">Opt-Out Method:</h5>
@@ -158,7 +160,7 @@ export default function PrivacyPolicy() {
 
                 <div>
                   <h5 className="font-semibold">Help:</h5>
-                  <p>Reply &quot;HELP&quot; or contact us at +1 800 679 3415</p>
+          
                 </div>
 
                 <div>
@@ -166,7 +168,7 @@ export default function PrivacyPolicy() {
                   <ul className="list-disc ml-6">
                     <li>Message and data rates may apply</li>
                     <li>Text &quot;STOP&quot; to unsubscribe</li>
-                    <li>Text &quot;HELP&quot; for assistance</li>
+                    <li>Reply &quot;HELP&quot; or contact us at +1 800 679 3415</li>
                     <li>Message frequency may vary</li>
                   </ul>
                 </div>
