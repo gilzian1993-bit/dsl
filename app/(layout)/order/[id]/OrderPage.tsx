@@ -387,7 +387,7 @@ function OrderPage({ id }: { id: string }) {
 
             <div className="space-y-3 text-sm">
               {/* Base Price */}
-              <PriceItem label="Base Price" value={formatPrice(order.base_price)} />
+              <PriceItem label="Base Price" value={formatPrice(String(Number(Number(order?.base_price) ?? 0 ) + (Number(order.stops?.length ?? 0)*20)))} />
 
               {/* Discount */}
               {order.discount && parseFloat(order.discount) > 0 && (
@@ -437,12 +437,12 @@ function OrderPage({ id }: { id: string }) {
               )}
 
               {/* Stops Price */}
-              {(order.stops?.length ?? 0) > 0 && (
+              {/* {(order.stops?.length ?? 0) > 0 && (
                 <PriceItem 
                   label={`Stops (${order.stops?.length})`} 
                   value={formatPrice(((order.stops?.length ?? 0) * 20).toString())} 
                 />
-              )}
+              )} */}
 
               {/* Tax */}
               {order.tax && parseFloat(order.tax) > 0 && (

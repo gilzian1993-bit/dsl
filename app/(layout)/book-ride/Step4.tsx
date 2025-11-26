@@ -38,7 +38,7 @@ function Step4() {
         <div className="flex flex-col gap-2 text-sm text-gray-600">
           <div className="flex justify-between">
             <span>Base Price</span>
-            <span>{formatPrice(basePrice.value)}</span>
+            <span>{formatPrice(basePrice.value + stopsPrice.value)}</span>
           </div>
           {discount.value > 0 && (
             <div className="flex justify-between">
@@ -113,12 +113,12 @@ function Step4() {
               <span>{formatPrice(returnBoosterSeatPrice.value)}</span>
             </div>
           )}
-          {stopsPrice.value > 0 && (
+          {/* {stopsPrice.value > 0 && (
             <div className="flex justify-between">
               <span>Stops</span>
               <span>{formatPrice(stopsPrice.value)}</span>
             </div>
-          )}
+          )} */}
           {tax.value > 0 && (
             <div className="flex justify-between">
               <span>Tax (5%)</span>
