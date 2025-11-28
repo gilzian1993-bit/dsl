@@ -139,7 +139,7 @@ function Step4() {
       <MyPaymentForm price={totalPrice.value.toFixed(2)} />
 
       {/* Back Button */}
-      <BackButton step={4} />
+      <BackButton />
     </div>
   );
 }
