@@ -118,7 +118,7 @@ useEffect(()=>{
 
         {formError && <div className='text-sm text-red-500'>{formError}</div>}
 
-        <div onClick={async() => { const isOk = await changeStep(true,1); console.log("ikOk",isOk); if(isOk){router.replace('/book-ride')}}} className={`flex items-center justify-center gap-2 w-full p-2 rounded-lg cursor-pointer font-semibold ${formLoading ? 'bg-blue-500 text-white' : 'bg-brand text-black '} `}>
+        <div onClick={async() => { const isOk = await changeStep(true,1); console.log("ikOk",isOk); if(isOk){router.replace('/book-ride/select-vehicle')}}} className={`flex items-center justify-center gap-2 w-full p-2 rounded-lg cursor-pointer font-semibold ${formLoading ? 'bg-blue-500 text-white' : 'bg-brand text-black '} `}>
           <Loader className={`animate-spin ${formLoading ? '' : 'hidden'}`} size={20} />
           {formLoading ? 'Loading' : 'Quote Now'}
         </div>

@@ -184,3 +184,13 @@ input[type="time"] {
   font-size: 16px !important; /* Required for iOS */
   background-color: white !important;
 }
+
+/* Hide scrollbar for time picker */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

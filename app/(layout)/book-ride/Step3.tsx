@@ -1,5 +1,5 @@
-import {  LuggageIcon, User, Users, Mail, Plane } from 'lucide-react'
-import React from 'react'
+import {  LuggageIcon, User, Users, Mail, Plane, Loader } from 'lucide-react'
+import React, { useState } from 'react'
 import {DetailsInput, PhoneInput} from './UserDetailInput'
 import NewDateTimePicker from './NewDateTimePicker'
 import useFormStore from '@/stores/FormStore'
@@ -8,10 +8,13 @@ import { fleets } from './CarList'
 import SelectableCheckbox from './SelectableCheckbox'
 import AddReturn from './AddReturn'
 import LoadingButton from './LoadingButton'
-import SeatSelectBox from './SelectBox'
+import ChildSeatSelector from './ChildSeatSelector'
+import { useRouter } from 'next/navigation'
 
 function Step3() {
-    const {formData, setFormData, changeStep, formLoading} = useFormStore();
+    const {formData, setFormData, formLoading, validateData} = useFormStore();
+    const router = useRouter();
+    const [isNavigating, setIsNavigating] = useState(false);
     const selectedFleet = fleets.find((item)=>item.name===formData.car.value)
     const passengersArray = Array.from(
   { length: (selectedFleet?.passengers  ?? 0) + 1 },
@@ -90,32 +93,45 @@ console.log("formData.date.value !== '' ? false : true : ",formData.date.value !
 
           <div className='font-bold'>Equipment and Extras</div>
         <SelectableCheckbox fieldName='isMeetGreet' label='Meet & Greet' subLabel='$ 25'  />
-        <div className='grid grid-cols-3 gap-3 sm:gap-5 w-full'>
-          <SeatSelectBox field='rearSeat' placeholder='Rear Seat' />
-          <SeatSelectBox field='boosterSeat' placeholder='Booster Seat' />
-          <SeatSelectBox field='infantSeat' placeholder='Infant Seat' />
-        </div>
+        <ChildSeatSelector 
+          rearSeatField='rearSeat'
+          boosterSeatField='boosterSeat'
+          infantSeatField='infantSeat'
+        />
 
 <div className="w-full overflow-hidden transition-all duration-500"
        style={{ maxHeight: formData.isReturn.value ? '200px' : '0' }}>
       <div className={`flex flex-col gap-3 pt-3 opacity-${formData.isReturn.value ? '100' : '0'} transition-opacity duration-500`}>
       <div className='font-bold'>Return Equipment and Extras</div>
         <SelectableCheckbox fieldName='isReturnMeetGreet' label='Meet & Greet' subLabel='$ 25'  />
-       <div className='grid grid-cols-3 gap-3 sm:gap-5 w-full'>
-          <SeatSelectBox field='returnRearSeat' placeholder='Rear Seat' />
-          <SeatSelectBox field='returnBoosterSeat' placeholder='Booster Seat' />
-          <SeatSelectBox field='returnInfantSeat' placeholder='Infant Seat' />
-        </div>
+        <ChildSeatSelector 
+          rearSeatField='returnRearSeat'
+          boosterSeatField='returnBoosterSeat'
+          infantSeatField='returnInfantSeat'
+        />
        </div>
        </div>
 
         </div>
         {
-          formLoading ? <LoadingButton/> :
-         <div onClick={()=>{changeStep(true,3);}} className='p-2 rounded-lg border border-gray-200 w-full text-center text-black font-bold cursor-pointer bg-brand'>
-                    Continue 
-         </div>}
-         <div onClick={()=>{changeStep(false,3);}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
+          formLoading || isNavigating ? (
+            <div className='p-2 rounded-lg border border-gray-200 w-full text-center text-white font-bold bg-blue-500 flex items-center justify-center gap-2'>
+              <Loader className="animate-spin" size={20} />
+              Loading
+            </div>
+          ) : (
+            <div onClick={async ()=>{
+              if(!validateData(3)){
+                setIsNavigating(true);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                router.push('/book-ride/confirm-payment');
+              }
+            }} className='p-2 rounded-lg border border-gray-200 w-full text-center text-black font-bold cursor-pointer bg-brand hover:bg-[#0294a4] transition-colors'>
+              Continue 
+            </div>
+          )
+        }
+         <div onClick={()=>{router.push('/book-ride/select-vehicle');}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
                     Back 
          </div>
     </div>

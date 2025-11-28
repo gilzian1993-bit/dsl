@@ -1,15 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { GoInfo, GoPeople } from "react-icons/go";
 import { PiSuitcase } from "react-icons/pi";
 import { cn } from "@/lib/utils";
 import useFormStore from "@/stores/FormStore";
 import { brandColor } from "@/lib/colors";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader } from "lucide-react";
 import LoadingButton from "./LoadingButton";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export const fleets = [
   {
@@ -82,13 +83,19 @@ export const fleets = [
 
 
 function CarList() {
-  const { formData, category, setFormData, changeStep, formLoading } = useFormStore();
+  const { formData, category, setFormData, formLoading } = useFormStore();
+  const router = useRouter();
+  const [loadingVehicle, setLoadingVehicle] = useState<string | null>(null);
 
-  const handleSelect = (item: (typeof fleets)[0], price:number, graduatiy:number) => {
+  const handleSelect = async (item: (typeof fleets)[0], price:number, graduatiy:number) => {
+    setLoadingVehicle(item.name);
     setFormData("car", item.name, '');
     setFormData("basePrice", price, '');
     setFormData("graduatiy", graduatiy, '');
-    changeStep(true,2);
+    
+    // Small delay to show loading state, then navigate
+    await new Promise(resolve => setTimeout(resolve, 300));
+    router.push('/book-ride/passenger-details');
   };
 
   return (
@@ -167,22 +174,28 @@ function CarList() {
               </>
             )}
             
-            {formLoading && formData.car.value===item.name ? <LoadingButton/>  :
-            item.isAvailable ?
-            <button
-              onClick={() => handleSelect(item, price, graduatiy)}
-              className={`bg-brand hover:bg-[#0294a4] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base w-fit flex justify-center items-center gap-1`}
-            >
-              <span>Select</span> <span className="max-md:hidden">Vehicle</span>
-              <ArrowRight className="max-lg:hidden text-2xl" size={20}/>
-              <ArrowRight className="lg:hidden" size={15}/>
-            </button>
-            : <Link href='/contact' className={`bg-brand hover:bg-[#0294a4] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base flex justify-center items-center gap-1 w-full`}>Request</Link>
-            }
+            {loadingVehicle === item.name ? (
+              <div className="bg-blue-500 text-white rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base w-full flex justify-center items-center gap-1">
+                <Loader className="animate-spin" size={20} />
+                <span>Loading</span>
+              </div>
+            ) : item.isAvailable ? (
+              <button
+                onClick={() => handleSelect(item, price, graduatiy)}
+                disabled={loadingVehicle !== null}
+                className={`bg-brand hover:bg-[#0294a4] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base w-fit flex justify-center items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <span>Select</span> <span className="max-md:hidden">Vehicle</span>
+                <ArrowRight className="max-lg:hidden text-2xl" size={20}/>
+                <ArrowRight className="lg:hidden" size={15}/>
+              </button>
+            ) : (
+              <Link href='/contact' className={`bg-brand hover:bg-[#0294a4] text-black rounded-md p-1 md:px-4 md:py-2 transition-all max-md:text-base flex justify-center items-center gap-1 w-full`}>Request</Link>
+            )}
           </div>
         </div>
       })}
-       <div onClick={()=>{changeStep(false,2);}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
+       <div onClick={()=>{router.push('/');}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
                     Back 
          </div>
     </div>
