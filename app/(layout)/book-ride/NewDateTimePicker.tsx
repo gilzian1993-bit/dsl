@@ -67,6 +67,23 @@ export default function NewDateTimePicker({
     }
   }, [dateOpen, timeOpen])
 
+  // Prevent body scroll on mobile when calendar is open
+  useEffect(() => {
+    if (dateOpen) {
+      // Check if mobile view
+      const isMobile = window.innerWidth < 640
+      if (isMobile) {
+        document.body.style.overflow = 'hidden'
+      }
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [dateOpen])
+
   // Initialize hour, minute, and AM/PM from selectedTime (24-hour format)
   useEffect(() => {
     if (selectedTime) {
@@ -234,72 +251,97 @@ export default function NewDateTimePicker({
           </div>
 
           {dateOpen && !isDisable && (
-            <div
-              className={cn(
-                "absolute top-full mt-2 z-50 bg-white text-gray-900 rounded-xl shadow-2xl border border-gray-200 p-3 sm:p-4",
-                "w-[280px] sm:w-[320px]",
-                "left-0 right-0 mx-auto sm:left-auto sm:right-0 sm:mx-0"
-              )}
-            >
-              <div className="flex items-center justify-between mb-2 sm:mb-3">
-                <button
-                  type="button"
-                  onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 rotate-180 text-gray-600" />
-                </button>
-                <span className="font-semibold text-sm sm:text-base lg:text-lg text-gray-900">
-                  {format(currentMonth, "MMMM yyyy")}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-                </button>
-              </div>
-              <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs lg:text-sm font-medium mb-1.5 sm:mb-2 text-gray-600">
-                {daysOfWeek.map((day) => (
-                  <div key={day} className="py-1 sm:py-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 text-center text-xs sm:text-sm gap-0.5 sm:gap-1">
-                {getCalendarDays().map((date, idx) => {
-                  const inactive = date.getMonth() !== currentMonth.getMonth()
-                  const today = startOfDay(new Date())
-                  const disabled =
-                    (minSelectableDate && isBefore(date, startOfDay(minSelectableDate))) ||
-                    isBefore(date, startOfDay(new Date()))
+            <>
+              {/* Mobile Modal Overlay */}
+              <div
+                className="fixed inset-0 bg-black/50 z-[9998] sm:hidden"
+                onClick={() => setDateOpen(false)}
+              />
+              {/* Calendar Container */}
+              <div
+                className={cn(
+                  // Mobile: Fixed bottom modal with rounded top corners
+                  "fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-t-2xl shadow-2xl border-t border-gray-200",
+                  "max-h-[85vh] overflow-y-auto",
+                  // Desktop: Absolute dropdown
+                  "sm:absolute sm:top-full sm:mt-2 sm:bottom-auto sm:left-auto sm:right-0 sm:rounded-xl sm:border sm:max-h-none sm:overflow-visible",
+                  "sm:w-[320px] sm:z-50"
+                )}
+              >
+                {/* Mobile: Cancel Button Header */}
+                <div className="sticky top-0 bg-black text-white text-center py-3 px-4 rounded-t-2xl sm:hidden z-10">
+                  <button
+                    type="button"
+                    onClick={() => setDateOpen(false)}
+                    className="text-white font-medium text-base"
+                  >
+                    Cancel
+                  </button>
+                </div>
 
-                  const isSelected =
-                    selectedDate && isSameDay(date, new Date(selectedDate))
-
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => !disabled && handleDateSelect(date)}
-                      className={cn(
-                        "py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg cursor-pointer transition-all border-2 border-transparent text-[10px] sm:text-xs lg:text-sm",
-                        disabled
-                          ? "text-gray-300 cursor-not-allowed"
-                          : inactive
-                            ? "text-gray-400"
-                            : "hover:bg-[#008492]/10 hover:text-[#008492]",
-                        isSelected
-                          ? "bg-[#008492] text-white border-[#008492] font-semibold hover:bg-[#008492]/90"
-                          : ""
-                      )}
+                {/* Calendar Content */}
+                <div className="p-3 sm:p-4">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                      className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      {date.getDate()}
-                    </div>
-                  )
-                })}
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 rotate-180 text-gray-600" />
+                    </button>
+                    <span className="font-semibold text-sm sm:text-base lg:text-lg text-gray-900">
+                      {format(currentMonth, "MMMM yyyy")}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                      className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs lg:text-sm font-medium mb-1.5 sm:mb-2 text-gray-600">
+                    {daysOfWeek.map((day) => (
+                      <div key={day} className="py-1 sm:py-2">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-7 text-center text-xs sm:text-sm gap-0.5 sm:gap-1 pb-2 sm:pb-0">
+                    {getCalendarDays().map((date, idx) => {
+                      const inactive = date.getMonth() !== currentMonth.getMonth()
+                      const today = startOfDay(new Date())
+                      const disabled =
+                        (minSelectableDate && isBefore(date, startOfDay(minSelectableDate))) ||
+                        isBefore(date, startOfDay(new Date()))
+
+                      const isSelected =
+                        selectedDate && isSameDay(date, new Date(selectedDate))
+
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => !disabled && handleDateSelect(date)}
+                          className={cn(
+                            "py-1 sm:py-1.5 lg:py-2 rounded-md sm:rounded-lg cursor-pointer transition-all border-2 border-transparent text-[10px] sm:text-xs lg:text-sm",
+                            disabled
+                              ? "text-gray-300 cursor-not-allowed"
+                              : inactive
+                                ? "text-gray-400"
+                                : "hover:bg-[#008492]/10 hover:text-[#008492]",
+                            isSelected
+                              ? "bg-[#008492] text-white border-[#008492] font-semibold hover:bg-[#008492]/90"
+                              : ""
+                          )}
+                        >
+                          {date.getDate()}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
 

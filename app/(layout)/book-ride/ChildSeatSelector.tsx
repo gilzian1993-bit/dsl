@@ -77,7 +77,9 @@ function ChildSeatSelector({
     setFormData(infantSeatField, infantTotal);
   }, [childSeats, rearSeatField, boosterSeatField, infantSeatField, setFormData]);
 
-  const handleAddSeat = () => {
+  const handleAddSeat = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     const newSeat: ChildSeat = {
       id: `booster-${Date.now()}-${Math.random()}`,
       type: 'booster',
@@ -111,6 +113,7 @@ function ChildSeatSelector({
     <div className="w-full flex flex-col gap-3">
       {/* Add Child Seat Link */}
       <button
+        type="button"
         onClick={handleAddSeat}
         className="text-blue-600 hover:text-blue-700 text-sm font-medium self-start cursor-pointer"
       >
@@ -137,11 +140,27 @@ function ChildSeatSelector({
                     )
                   );
                 }}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    // Prevent scroll when select closes by maintaining scroll position
+                    requestAnimationFrame(() => {
+                      const scrollY = window.scrollY;
+                      const activeElement = document.activeElement as HTMLElement;
+                      if (activeElement && activeElement !== document.body) {
+                        activeElement.blur();
+                      }
+                      // Restore scroll position if it changed
+                      if (Math.abs(window.scrollY - scrollY) > 1) {
+                        window.scrollTo(0, scrollY);
+                      }
+                    });
+                  }
+                }}
               >
                 <SelectTrigger className="p-2 rounded-md w-full border border-gray-300 bg-white flex items-center gap-2">
                   <SelectValue>{getSeatLabel(seat.type)}</SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[9999]">
                   {seatTypeOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
@@ -154,7 +173,12 @@ function ChildSeatSelector({
             {/* Quantity Controls */}
             <div className="flex items-center gap-0 border border-gray-300 rounded-md overflow-hidden">
               <button
-                onClick={() => handleQuantityChange(seat.id, -1)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleQuantityChange(seat.id, -1);
+                }}
                 className="p-1.5 hover:bg-gray-100 transition-colors flex items-center justify-center"
                 aria-label="Decrease quantity"
               >
@@ -164,6 +188,7 @@ function ChildSeatSelector({
                 type="number"
                 value={seat.quantity}
                 onChange={(e) => {
+                  e.stopPropagation();
                   const value = Math.max(0, parseInt(e.target.value) || 0);
                   setChildSeats(prevSeats =>
                     prevSeats.map(s =>
@@ -171,11 +196,22 @@ function ChildSeatSelector({
                     ).filter(s => s.quantity > 0)
                   );
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
                 className="w-12 text-center border-0 border-l border-r border-gray-300 focus:outline-none focus:ring-0 py-1"
                 min="0"
               />
               <button
-                onClick={() => handleQuantityChange(seat.id, 1)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleQuantityChange(seat.id, 1);
+                }}
                 className="p-1.5 hover:bg-gray-100 transition-colors flex items-center justify-center"
                 aria-label="Increase quantity"
               >
@@ -185,7 +221,12 @@ function ChildSeatSelector({
 
             {/* Delete Button */}
             <button
-              onClick={() => handleDeleteSeat(seat.id)}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDeleteSeat(seat.id);
+              }}
               className="p-2 hover:bg-red-50 rounded-md transition-colors text-red-600"
               aria-label="Delete seat"
             >
