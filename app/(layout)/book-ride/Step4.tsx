@@ -23,7 +23,13 @@ function Step4() {
     returnBoosterSeatPrice,
     totalPrice,
     stopsPrice,
-    isAirportPickupPrice
+    isAirportPickupPrice,
+    rearSeat,
+    infantSeat,
+    boosterSeat,
+    returnRearSeat,
+    returnInfantSeat,
+    returnBoosterSeat
   } = formData;
 
   const formatPrice = (price: number) => (price > 0 ? `$ ${price.toFixed(2)}` : '—');
@@ -67,19 +73,19 @@ function Step4() {
           )}
           {rearSeatPrice.value > 0 && (
             <div className="flex justify-between">
-              <span>Rear Seat</span>
+              <span>Rear Seat {rearSeat.value > 0 ? `(${rearSeat.value}x)` : ''}</span>
               <span>{formatPrice(rearSeatPrice.value)}</span>
             </div>
           )}
           {infantSeatPrice.value > 0 && (
             <div className="flex justify-between">
-              <span>Infant Seat</span>
+              <span>Infant Seat {infantSeat.value > 0 ? `(${infantSeat.value}x)` : ''}</span>
               <span>{formatPrice(infantSeatPrice.value)}</span>
             </div>
           )}
           {boosterSeatPrice.value > 0 && (
             <div className="flex justify-between">
-              <span>Booster Seat</span>
+              <span>Booster Seat {boosterSeat.value > 0 ? `(${boosterSeat.value}x)` : ''}</span>
               <span>{formatPrice(boosterSeatPrice.value)}</span>
             </div>
           )}
@@ -97,19 +103,19 @@ function Step4() {
           )}
           {returnRearSeatPrice.value > 0 && (
             <div className="flex justify-between">
-              <span>Return Rear Seat</span>
+              <span>Return Rear Seat {returnRearSeat.value > 0 ? `(${returnRearSeat.value}x)` : ''}</span>
               <span>{formatPrice(returnRearSeatPrice.value)}</span>
             </div>
           )}
           {returnInfantSeatPrice.value > 0 && (
             <div className="flex justify-between">
-              <span>Return Infant Seat</span>
+              <span>Return Infant Seat {returnInfantSeat.value > 0 ? `(${returnInfantSeat.value}x)` : ''}</span>
               <span>{formatPrice(returnInfantSeatPrice.value)}</span>
             </div>
           )}
           {returnBoosterSeatPrice.value > 0 && (
             <div className="flex justify-between">
-              <span>Return Booster Seat</span>
+              <span>Return Booster Seat {returnBoosterSeat.value > 0 ? `(${returnBoosterSeat.value}x)` : ''}</span>
               <span>{formatPrice(returnBoosterSeatPrice.value)}</span>
             </div>
           )}

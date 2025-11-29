@@ -93,47 +93,53 @@ console.log("formData.date.value !== '' ? false : true : ",formData.date.value !
 
           <div className='font-bold'>Equipment and Extras</div>
         <SelectableCheckbox fieldName='isMeetGreet' label='Meet & Greet' subLabel='$ 25'  />
-        <ChildSeatSelector 
-          rearSeatField='rearSeat'
-          boosterSeatField='boosterSeat'
-          infantSeatField='infantSeat'
-        />
+        <div className="relative z-10">
+          <ChildSeatSelector 
+            rearSeatField='rearSeat'
+            boosterSeatField='boosterSeat'
+            infantSeatField='infantSeat'
+          />
+        </div>
 
-<div className="w-full overflow-hidden transition-all duration-500"
-       style={{ maxHeight: formData.isReturn.value ? '200px' : '0' }}>
+<div className={`w-full transition-all duration-500 ${formData.isReturn.value ? 'overflow-visible' : 'overflow-hidden'}`}
+       style={{ maxHeight: formData.isReturn.value ? '1000px' : '0' }}>
       <div className={`flex flex-col gap-3 pt-3 opacity-${formData.isReturn.value ? '100' : '0'} transition-opacity duration-500`}>
       <div className='font-bold'>Return Equipment and Extras</div>
         <SelectableCheckbox fieldName='isReturnMeetGreet' label='Meet & Greet' subLabel='$ 25'  />
-        <ChildSeatSelector 
-          rearSeatField='returnRearSeat'
-          boosterSeatField='returnBoosterSeat'
-          infantSeatField='returnInfantSeat'
-        />
+        <div className="relative z-10">
+          <ChildSeatSelector 
+            rearSeatField='returnRearSeat'
+            boosterSeatField='returnBoosterSeat'
+            infantSeatField='returnInfantSeat'
+          />
+        </div>
        </div>
        </div>
 
         </div>
-        {
-          formLoading || isNavigating ? (
-            <div className='p-2 rounded-lg border border-gray-200 w-full text-center text-white font-bold bg-blue-500 flex items-center justify-center gap-2'>
-              <Loader className="animate-spin" size={20} />
-              Loading
-            </div>
-          ) : (
-            <div onClick={async ()=>{
-              if(!validateData(3)){
-                setIsNavigating(true);
-                await new Promise(resolve => setTimeout(resolve, 300));
-                router.push('/book-ride/confirm-payment');
-              }
-            }} className='p-2 rounded-lg border border-gray-200 w-full text-center text-black font-bold cursor-pointer bg-brand hover:bg-[#0294a4] transition-colors'>
-              Continue 
-            </div>
-          )
-        }
-         <div onClick={()=>{router.push('/book-ride/select-vehicle');}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
-                    Back 
-         </div>
+        <div className="relative z-0">
+          {
+            formLoading || isNavigating ? (
+              <div className='p-2 rounded-lg border border-gray-200 w-full text-center text-white font-bold bg-blue-500 flex items-center justify-center gap-2'>
+                <Loader className="animate-spin" size={20} />
+                Loading
+              </div>
+            ) : (
+              <div onClick={async ()=>{
+                if(!validateData(3)){
+                  setIsNavigating(true);
+                  await new Promise(resolve => setTimeout(resolve, 300));
+                  router.push('/book-ride/confirm-payment');
+                }
+              }} className='p-2 rounded-lg border border-gray-200 w-full text-center text-black font-bold cursor-pointer bg-brand hover:bg-[#0294a4] transition-colors'>
+                Continue 
+              </div>
+            )
+          }
+           <div onClick={()=>{router.push('/book-ride/select-vehicle');}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
+                      Back 
+           </div>
+        </div>
     </div>
    )
 }
