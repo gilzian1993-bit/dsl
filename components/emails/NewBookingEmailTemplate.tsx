@@ -70,6 +70,13 @@ export function NewBookingEmailTemplate({
             ))}
           </Section>
 
+          {/* Note */}
+          <Section style={noteSection}>
+            <Text style={noteText}>
+              <strong>Note : Toll fee is not included in that trip</strong>
+            </Text>
+          </Section>
+
           {/* View Order Button */}
           <Section style={buttonSection}>
             <Button style={button} href={viewOrderLink}>
@@ -155,9 +162,22 @@ const stopValue: React.CSSProperties = {
   fontWeight: "500",
 };
 
+const noteSection: React.CSSProperties = {
+  textAlign: "center",
+  marginTop: "20px",
+  marginBottom: "10px",
+};
+
+const noteText: React.CSSProperties = {
+  fontSize: "14px",
+  color: "#333",
+  fontWeight: "600",
+  textAlign: "center",
+};
+
 const buttonSection: React.CSSProperties = {
   textAlign: "center",
-  marginTop: "30px",
+  marginTop: "20px",
 };
 
 const button: React.CSSProperties = {

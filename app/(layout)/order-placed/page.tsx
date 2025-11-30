@@ -28,6 +28,39 @@ const router = useRouter()
 
   const selectedFleet = fleets.find((item)=>item.name===formData.car.value);
 
+  const formatTime = (time?: string | null): string => {
+    if (!time) return "N/A"
+    try {
+      const [hours24, minutes] = time.split(":")
+      const hours24Int = parseInt(hours24)
+      
+      if (isNaN(hours24Int) || isNaN(parseInt(minutes))) {
+        return time // Return original if parsing fails
+      }
+      
+      let hours12: number
+      let period: string
+      
+      if (hours24Int === 0) {
+        hours12 = 12
+        period = "AM"
+      } else if (hours24Int === 12) {
+        hours12 = 12
+        period = "PM"
+      } else if (hours24Int > 12) {
+        hours12 = hours24Int - 12
+        period = "PM"
+      } else {
+        hours12 = hours24Int
+        period = "AM"
+      }
+      
+      return `${hours12}:${minutes.padStart(2, "0")} ${period}`
+    } catch {
+      return time || "N/A"
+    }
+  }
+
 useEffect(()=>{
     if(!isOrderDone){
         router.replace('/')
@@ -74,7 +107,7 @@ useEffect(()=>{
 
               <div className='flex flex-col gap-1'>
                 <div className='text-gray-500' >Pickup Date & Time</div>
-                <div>{formData.date.value} {formData.time.value}</div>
+                <div>{formData.date.value} {formatTime(formData.time.value)}</div>
               </div>
 
               <div className='flex items-center justify-end w-full'>
