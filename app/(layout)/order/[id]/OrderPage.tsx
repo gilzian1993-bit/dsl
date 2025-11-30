@@ -308,7 +308,7 @@ function OrderPage({ id }: { id: string }) {
               <InfoField label="Car Type" value={order.car_type || "N/A"} />
               <InfoField label="Trip Type" value={order.trip_type || "N/A"} />
               <InfoField label="Return Date" value={formatDate(order.return_date)} />
-              <InfoField label="Return Time" value={order.return_time || "N/A"} />
+              <InfoField label="Return Time" value={formatTime(order.return_time)} />
               <InfoField label="Flight Tracking" value={order.is_flight_track ? "Yes" : "No"} />
               <InfoField label="Meet & Greet" value={order.meet_greet ? "Yes" : "No"} />
               {order.return_trip && (
@@ -495,7 +495,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ color, label, value, date, 
       <p className="text-sm font-semibold text-gray-800">{label}</p>
       {date && (
         <p className="text-xs text-gray-500 mt-1">
-          {formatDate(date)} • {time || "N/A"}
+          {formatDate(date)} • {formatTime(time)}
         </p>
       )}
       <p className="text-sm text-gray-700 mt-1 bg-gray-50 p-2 rounded border">{value}</p>
@@ -575,6 +575,39 @@ function formatDate(date?: string | null): string {
     })
   } catch {
     return "N/A"
+  }
+}
+
+function formatTime(time?: string | null): string {
+  if (!time) return "N/A"
+  try {
+    const [hours24, minutes] = time.split(":")
+    const hours24Int = parseInt(hours24)
+    
+    if (isNaN(hours24Int) || isNaN(parseInt(minutes))) {
+      return time // Return original if parsing fails
+    }
+    
+    let hours12: number
+    let period: string
+    
+    if (hours24Int === 0) {
+      hours12 = 12
+      period = "AM"
+    } else if (hours24Int === 12) {
+      hours12 = 12
+      period = "PM"
+    } else if (hours24Int > 12) {
+      hours12 = hours24Int - 12
+      period = "PM"
+    } else {
+      hours12 = hours24Int
+      period = "AM"
+    }
+    
+    return `${hours12}:${minutes.padStart(2, "0")} ${period}`
+  } catch {
+    return time || "N/A"
   }
 }
 
