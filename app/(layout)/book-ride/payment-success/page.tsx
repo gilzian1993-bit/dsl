@@ -1,10 +1,10 @@
 'use client'
 import useFormStore from '@/stores/FormStore'
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, Suspense } from 'react'
 import { Loader } from 'lucide-react'
 
-function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { formData, setFormData, changeStep, formLoading, formError, changeCategory } = useFormStore()
@@ -196,6 +196,21 @@ function PaymentSuccessPage() {
   }
 
   return null
+}
+
+function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className='w-full bg-slate-50 flex flex-col min-h-[50vh] items-center justify-center py-16'>
+        <div className='flex flex-col items-center gap-4'>
+          <Loader className="animate-spin" size={40} />
+          <div className='text-xl font-semibold'>Loading...</div>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
+  )
 }
 
 export default PaymentSuccessPage
