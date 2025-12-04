@@ -12,6 +12,7 @@ function Page() {
 const { isOrderDone, formData, category,id }  = useFormStore()
 const router = useRouter()
  const headerRef = useRef<HTMLDivElement | null>(null)
+ const [countdown, setCountdown] = React.useState(8)
 
  const { fromLocation, toLocation, stops, duration } = formData;
   
@@ -69,7 +70,25 @@ useEffect(()=>{
     if (headerRef.current) {
       headerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-},[isOrderDone])
+},[isOrderDone, router])
+
+// Countdown timer for redirect
+useEffect(() => {
+  if (!isOrderDone) return
+
+  const timer = setInterval(() => {
+    setCountdown((prev) => {
+      if (prev <= 1) {
+        clearInterval(timer)
+        router.push('/')
+        return 0
+      }
+      return prev - 1
+    })
+  }, 1000)
+
+  return () => clearInterval(timer)
+}, [isOrderDone, router])
 
     return (
     <div className=' w-full bg-slate-100 flex flex-col min-h-[50vh]'>
@@ -82,6 +101,9 @@ useEffect(()=>{
             <div className='text-gray-800 '>Great choice, {formData.name.value}</div>
             <div className='text-black text-2xl lg:text-4xl font-bold'>YOUR RESERVATION IS CONFIRMED</div>
             <div className='text-gray-800'>We&apos;ve sent a confirmation email to {formData.email.value}</div>
+            <div className='text-gray-600 text-sm lg:text-base mt-2'>
+              Redirecting to home page in <span className='font-bold text-brand'>{countdown}</span> {countdown === 1 ? 'second' : 'seconds'}...
+            </div>
             </div>
 
          <div className='w-full grid md:grid-cols-3 lg:gap-5'>

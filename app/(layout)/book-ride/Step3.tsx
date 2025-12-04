@@ -12,7 +12,7 @@ import ChildSeatSelector from './ChildSeatSelector'
 import { useRouter } from 'next/navigation'
 
 function Step3() {
-    const {formData, setFormData, formLoading, validateData} = useFormStore();
+    const {formData, setFormData, formLoading, validateData, category} = useFormStore();
     const router = useRouter();
     const [isNavigating, setIsNavigating] = useState(false);
     const selectedFleet = fleets.find((item)=>item.name===formData.car.value)
@@ -128,11 +128,99 @@ console.log("formData.date.value !== '' ? false : true : ",formData.date.value !
               <div onClick={async ()=>{
                 if(!validateData(3)){
                   setIsNavigating(true);
-                  await new Promise(resolve => setTimeout(resolve, 300));
-                  router.push('/book-ride/confirm-payment');
+                  try {
+                    // Prepare all form data to store in metadata
+                    // Convert formData to a serializable format
+                    const formDataForStorage = {
+                      // Basic Info
+                      name: formData.name.value,
+                      email: formData.email.value,
+                      phone: formData.phone.value,
+                      
+                      // Route Info
+                      fromLocation: formData.fromLocation.value,
+                      toLocation: formData.toLocation.value,
+                      stops: formData.stops.map(s => s.value),
+                      date: formData.date.value,
+                      time: formData.time.value,
+                      returnDate: formData.returnDate.value,
+                      returnTime: formData.returnTime.value,
+                      
+                      // Passenger Info
+                      passengers: formData.passengers.value,
+                      bags: formData.bags.value,
+                      
+                      // Flight Info
+                      flightName: formData.flightName.value,
+                      flightNumber: formData.flightNumber.value,
+                      
+                      // Car Info
+                      car: formData.car.value,
+                      
+                      // Seats
+                      rearSeat: formData.rearSeat.value,
+                      boosterSeat: formData.boosterSeat.value,
+                      infantSeat: formData.infantSeat.value,
+                      returnRearSeat: formData.returnRearSeat.value,
+                      returnBoosterSeat: formData.returnBoosterSeat.value,
+                      returnInfantSeat: formData.returnInfantSeat.value,
+                      
+                      // Options
+                      isAirportPickup: formData.isAirportPickup.value,
+                      isMeetGreet: formData.isMeetGreet.value,
+                      isReturnMeetGreet: formData.isReturnMeetGreet.value,
+                      isReturn: formData.isReturn.value,
+                      
+                      // Pricing
+                      basePrice: formData.basePrice.value,
+                      graduatiy: formData.graduatiy.value,
+                      tax: formData.tax.value,
+                      discount: formData.discount.value,
+                      isAirportPickupPrice: formData.isAirportPickupPrice.value,
+                      isMeetGreetPrice: formData.isMeetGreetPrice.value,
+                      rearSeatPrice: formData.rearSeatPrice.value,
+                      infantSeatPrice: formData.infantSeatPrice.value,
+                      boosterSeatPrice: formData.boosterSeatPrice.value,
+                      returnPrice: formData.returnPrice.value,
+                      isReturnMeetGreetPrice: formData.isReturnMeetGreetPrice.value,
+                      returnRearSeatPrice: formData.returnRearSeatPrice.value,
+                      returnInfantSeatPrice: formData.returnInfantSeatPrice.value,
+                      returnBoosterSeatPrice: formData.returnBoosterSeatPrice.value,
+                      stopsPrice: formData.stopsPrice.value,
+                      totalPrice: formData.totalPrice.value,
+                      distance: formData.distance.value,
+                      duration: formData.duration.value,
+                      category: category, // Include category
+                    };
+
+                    // Create Stripe Checkout Session
+                    const response = await fetch('/api/create-checkout-session', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        amount: formData.totalPrice.value,
+                        formData: formDataForStorage, // Send all form data
+                      }),
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.url) {
+                      // Redirect to Stripe Checkout
+                      window.location.href = data.url;
+                    } else {
+                      console.error('Failed to create checkout session:', data);
+                      setIsNavigating(false);
+                    }
+                  } catch (error) {
+                    console.error('Error creating checkout session:', error);
+                    setIsNavigating(false);
+                  }
                 }
               }} className='p-2 rounded-lg border border-gray-200 w-full text-center text-black font-bold cursor-pointer bg-brand hover:bg-[#0294a4] transition-colors'>
-                Continue 
+                Process to Pay
               </div>
             )
           }
