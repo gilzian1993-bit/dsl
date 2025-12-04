@@ -17,6 +17,7 @@ export const bookings = pgTable("dsl_booking", {
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),
   phone_number: varchar("phone_number", { length: 50 }).notNull(),
+  payment_status: varchar("payment_status", { length: 50 }).default("pending"),
 
   // 🔹 Route Info
   from_location: varchar("from_location", { length: 500 }).notNull(),
