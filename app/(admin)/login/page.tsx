@@ -24,9 +24,7 @@ const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
-
 type LoginFormValues = z.infer<typeof loginSchema>;
-
 export default function AdminLoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +35,6 @@ export default function AdminLoginPage() {
       password: "",
     },
   });
-
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
