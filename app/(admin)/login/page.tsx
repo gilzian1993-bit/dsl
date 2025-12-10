@@ -30,7 +30,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function AdminLoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
