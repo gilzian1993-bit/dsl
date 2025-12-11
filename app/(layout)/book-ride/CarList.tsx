@@ -20,7 +20,7 @@ export const fleets = [
     image: "/images/sedan/cadilac-xts.png",
     price10Miles: 80,
     price: 2.50,
-    hourly: 80,
+    hourly: 70,
     passengers: 3,
     suitcases: 3,
     features: ["WiFi", "Leather Seats", "Climate Control"],
@@ -37,7 +37,7 @@ export const fleets = [
     image: "/images/SUV/lincoln-aviator.png",
     price10Miles: 90,
     price: 2.75,
-    hourly: 90,
+    hourly: 80,
     passengers: 4,
     suitcases: 4,
     features: ["WiFi", "Leather Seats", "Rear Climate Control"],
@@ -195,9 +195,6 @@ function CarList() {
           </div>
         </div>
       })}
-       <div onClick={()=>{router.push('/');}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
-                    Back 
-         </div>
     </div>
   );
 }
