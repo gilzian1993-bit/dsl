@@ -116,6 +116,16 @@ const HeaderBar: React.FC = () => {
           >
             <FaWhatsapp className="w-6 h-6 text-green-500" />
           </a>
+
+          {/* Phone */}
+          <a
+            href="tel:+18006793415"
+            className="flex items-center justify-center w-9 h-9 hover:opacity-80 transition-opacity"
+            onClick={() => setIsOpen(false)}
+            aria-label="Phone"
+          >
+            <FaPhone className="w-5 h-5 text-white" />
+          </a>
         </div>
 
 
