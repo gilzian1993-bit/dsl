@@ -11,6 +11,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -46,17 +47,39 @@ export default function AdminSidebar() {
           height={60}
           className="object-contain"
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Instagram Icon */}
+          <a
+            href="https://www.instagram.com/dsl_limo25?igsh=c3A5eXY4NjlnYXN2&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 text-pink-600 hover:text-pink-700 transition-colors"
+            aria-label="Instagram"
+          >
+            <FaInstagram className="h-5 w-5" />
+          </a>
+          {/* WhatsApp Icon */}
+          <a
+            href="https://wa.me/19178478075"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 text-green-600 hover:text-green-700 transition-colors"
+            aria-label="WhatsApp"
+          >
+            <FaWhatsapp className="h-5 w-5" />
+          </a>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Mobile sidebar overlay */}

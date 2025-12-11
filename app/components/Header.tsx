@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaPhone } from "react-icons/fa";
+import { FaPhone, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 interface NavItem {
   label: string;
@@ -92,27 +92,29 @@ const HeaderBar: React.FC = () => {
         <div className="hidden md:block absolute right-[20%] top-1/2 -translate-y-1/2 z-20">
           <Search className="w-[15px] h-[15px] text-[#ededed] cursor-pointer" />
         </div>
-        <div className="flex-1 flex mr-5 justify-end md:hidden gap-3">
-          {/* Email */}
+        <div className="flex-1 flex mr-5 justify-end md:hidden gap-1">
+          {/* Instagram */}
           <a
-            href="mailto:info@dsllimoservice.com"
+            href="https://www.instagram.com/dsl_limo25?igsh=c3A5eXY4NjlnYXN2&utm_source=qr"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center w-9 h-9 rounded-md bg-[#F56040] text-white shadow"
+            className="flex items-center justify-center w-9 h-9 hover:opacity-80 transition-opacity"
             onClick={() => setIsOpen(false)}
-            aria-label="Email"
+            aria-label="Instagram"
           >
-            <MdEmail className="w-6 h-6" />
+            <FaInstagram className="w-6 h-6 text-pink-600" />
           </a>
 
           {/* WhatsApp */}
           <a
-            href="tel:+18006793415"
-            className="flex items-center justify-center w-9 h-9 rounded-md bg-[#1E90FF] text-white shadow"
+            href="https://wa.me/19178478075"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-9 h-9 hover:opacity-80 transition-opacity"
             onClick={() => setIsOpen(false)}
-            aria-label="Call"
+            aria-label="WhatsApp"
           >
-            <FaPhone className="w-6 h-6" />
+            <FaWhatsapp className="w-6 h-6 text-green-500" />
           </a>
         </div>
 
