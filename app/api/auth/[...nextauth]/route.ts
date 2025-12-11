@@ -73,8 +73,16 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
 };
+
+// Validate secret is set
+if (!process.env.NEXTAUTH_SECRET && !process.env.AUTH_SECRET) {
+  console.warn(
+    "⚠️  Warning: NEXTAUTH_SECRET is not set. Authentication may not work properly."
+  );
+}
 
 const handler = NextAuth(authOptions);
 

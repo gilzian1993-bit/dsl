@@ -45,7 +45,12 @@ export default function AdminLoginPage() {
       });
 
       if (result?.error) {
-        toast.error("Invalid email or password");
+        console.error("Login error:", result.error);
+        if (result.error === "Configuration") {
+          toast.error("Server configuration error. Please contact support.");
+        } else {
+          toast.error("Invalid email or password");
+        }
       } else if (result?.ok) {
         toast.success("Login successful");
         router.push("/dashboard");
@@ -53,7 +58,9 @@ export default function AdminLoginPage() {
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("An error occurred during login");
+      const errorMessage =
+        error instanceof Error ? error.message : "An error occurred during login";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
