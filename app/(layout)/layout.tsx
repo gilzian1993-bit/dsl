@@ -63,6 +63,26 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
   }) {
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "DSL Limo Services",
+    url: "https://yourdomain.com",
+    logo: "https://yourdomain.com/logo.png",
+    telephone: "+1-000-000-0000",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "123 Main St",
+      addressLocality: "Your City",
+      addressRegion: "Your State",
+      postalCode: "00000",
+      addressCountry: "USA",
+    },
+    image: "https://yourdomain.com/og-image.jpg",
+    description:
+      "Premium luxury limousine and chauffeur services for airport, corporate, and special events.",
+  };
+
   return (
     <html lang="en">
       <head>
@@ -74,35 +94,19 @@ export default function RootLayout({
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer','GTM-5FTPCVQZ');
         `}</Script>
+      </head>
 
-        {/* Schema Markup (SEO Boost) */}
+      <body 
+        className={`${geistSans.variable} ${geistMono.variable}`}
+        suppressHydrationWarning
+      >
+        {/* Schema Markup (SEO Boost) - JSON-LD in body is valid and prevents hydration issues */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "LocalBusiness",
-              name: "DSL Limo Services",
-              url: "https://yourdomain.com",
-              logo: "https://yourdomain.com/logo.png",
-              telephone: "+1-000-000-0000",
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: "123 Main St",
-                addressLocality: "Your City",
-                addressRegion: "Your State",
-                postalCode: "00000",
-                addressCountry: "USA",
-              },
-              image: "https://yourdomain.com/og-image.jpg",
-              description:
-                "Premium luxury limousine and chauffeur services for airport, corporate, and special events.",
-            }),
+            __html: JSON.stringify(schemaMarkup),
           }}
         />
-      </head>
-
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe

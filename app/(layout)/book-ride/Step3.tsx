@@ -1,4 +1,4 @@
-import {  LuggageIcon, User, Users, Mail, Plane, Loader } from 'lucide-react'
+import {  LuggageIcon, User, Users, Mail, Plane, Loader, ArrowLeft } from 'lucide-react'
 import React, { useState } from 'react'
 import {DetailsInput, PhoneInput} from './UserDetailInput'
 import NewDateTimePicker from './NewDateTimePicker'
@@ -224,9 +224,6 @@ console.log("formData.date.value !== '' ? false : true : ",formData.date.value !
               </div>
             )
           }
-           <div onClick={()=>{router.push('/book-ride/select-vehicle');}} className='p-2 rounded-lg border border-gray-500 w-full text-center text-gray-700 font-semibold cursor-pointer'>
-                      Back 
-           </div>
         </div>
     </div>
    )
