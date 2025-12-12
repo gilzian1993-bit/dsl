@@ -6,26 +6,26 @@ export default function ServicesSection() {
     {
       title: "POINT-TO-POINT",
       description:
-        "Enjoy short, reliable rides from one location to another without delays. Whether it is a business meeting, a social event, or a casual outing, we ensure smooth journeys. Travel in comfort and reach your destination stress-free.",
-      icon: "/road.svg",
+        "Enjoy direct, reliable rides from one location to another without delays.",
+      image: "/brunette-businesswoman-inside-car.jpg",
     },
     {
       title: "HOURLY HIRE",
       description:
-        "Hire a professional driver and vehicle for the hours that suit your schedule. This flexible option is ideal for multiple stops, shopping trips, or meetings. Stay in control of your time while we handle the driving between meetings, trips, or exploring the city.",
-      icon: "/clock.svg",
+        "Hire a professional driver and vehicle by the hour to match your schedule.",
+      image: "/brunette-businesswoman-posing-inside-car.jpg",
     },
     {
       title: "AIRPORT TRANSFERS",
       description:
-        "Start and end your trip with our dependable airport transfer service. We’ll track your flight in real-time, pick you up on arrival, and travel with ease and comfort. No missed flights, no travel stress—just timely pickups and drop-offs.",
-      icon: "/airport.svg",
+        "Start or end your trip with our dependable airport transfer service.",
+      image: "/airports-1.png",
     },
     {
       title: "AS DIRECTED",
       description:
-        "With our 'As Directed' service, your journey is designed entirely around your schedule. No predefined routes—just personalized rides to take you wherever you need to go. From meetings to events, enjoy complete flexibility.",
-      icon: "/direction-sign.svg",
+        "With our \"As Directed\" service, your journey is designed entirely around your schedule.",
+      image: "/brunette-businesswoman-inside-car.jpg",
     },
   ]
 
@@ -45,31 +45,30 @@ export default function ServicesSection() {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => {
-
             return (
-              <div key={index} className="flex flex-col items-start">
-                <div className="flex items-start gap-4">
-
-                  <Image
-                    src={service.icon}
-                    alt={service.title}
-                    width={30}
-                    height={30}
-                    className="mt-1 shrink-0"
-                  />
-
-                  <div>
-                    <h3 className="text-base font-bold text-black mb-2">{service.title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">{service.description}</p>
-                    <a
-                      href="#"
-                      className="text-[#1EACC7] font-medium italic text-sm mt-3 inline-block"
-                    >
-                      Read More
-                    </a>
-                  </div>
+              <div 
+                key={index} 
+                className="relative rounded-lg overflow-hidden aspect-[4/5] group cursor-pointer"
+              >
+                <Image
+                  src={service.image}
+                  alt={service.title}
+                  fill
+                  className="object-cover"
+                />
+                {/* Dark overlay gradient from bottom */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                
+                {/* Content at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-lg font-bold text-white uppercase mb-2">
+                    {service.title}
+                  </h3>
+                  <p className="text-white text-sm leading-relaxed">
+                    {service.description}
+                  </p>
                 </div>
               </div>
             );
