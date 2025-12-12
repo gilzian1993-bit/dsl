@@ -31,7 +31,6 @@ export default function WhyChooseUsSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="order-2 lg:order-1">
-            <p className="text-gray-500 text-sm mb-2">How It Works</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
               Why Choose Our Black Car Service in New York
             </h2>
@@ -61,10 +60,10 @@ export default function WhyChooseUsSection() {
           <div className="order-1 lg:order-2">
             <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-lg overflow-hidden">
               <Image
-                src="/brunette-businesswoman-inside-car.jpg"
+                src="/why-choose-us.png"
                 alt="Professional chauffeur in luxury car"
                 fill
-                className="object-cover"
+                className="object-cover object-left"
               />
             </div>
           </div>
