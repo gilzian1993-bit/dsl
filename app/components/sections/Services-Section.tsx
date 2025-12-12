@@ -41,7 +41,6 @@ export default function ServicesSection() {
             </h2>
             <div className="flex-1 h-px bg-gray-400 max-w-24"></div>
           </div>
-          <p className="text-gray-600 text-md">Magna Risus Vestibulum Vulputate</p>
         </div>
 
 
