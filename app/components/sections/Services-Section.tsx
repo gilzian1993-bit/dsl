@@ -7,25 +7,25 @@ export default function ServicesSection() {
       title: "POINT-TO-POINT",
       description:
         "Enjoy direct, reliable rides from one location to another without delays.",
-      image: "/brunette-businesswoman-inside-car.jpg",
+      image: "/point-to-point-service.jpg",
     },
     {
       title: "HOURLY HIRE",
       description:
         "Hire a professional driver and vehicle by the hour to match your schedule.",
-      image: "/brunette-businesswoman-posing-inside-car.jpg",
+      image: "/hourly-hire-service.jpg",
     },
     {
       title: "AIRPORT TRANSFERS",
       description:
         "Start or end your trip with our dependable airport transfer service.",
-      image: "/airports-1.png",
+      image: "/airport-transfer.jpg",
     },
     {
       title: "AS DIRECTED",
       description:
         "With our \"As Directed\" service, your journey is designed entirely around your schedule.",
-      image: "/brunette-businesswoman-inside-car.jpg",
+      image: "/as-dected.jpg",
     },
   ]
 
